@@ -96,7 +96,11 @@ export default async function MockCheckoutPage({
             </p>
           </div>
 
-          <form action="/api/membership/mock-complete" className="mt-8">
+          <form
+            action="/api/membership/mock-complete"
+            className="mt-8"
+            method="post"
+          >
             <input name="contact_id" type="hidden" value={contact.id} />
             <button
               className="w-full rounded-full bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
