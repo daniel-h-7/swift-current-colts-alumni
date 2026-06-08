@@ -16,8 +16,8 @@ Stripe is intentionally not included yet.
 Create `.env.local` from `.env.example`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+NEXT_PUBLIC_SUPABASE_URL=https://njdqzdqlrzlziejlskar.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_58f3JENxdSRYpLXicCWC0Q_6XVtUFl-
 ```
 
 Add those same variables in Vercel under Project Settings, Environment Variables.
