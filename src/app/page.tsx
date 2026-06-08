@@ -22,11 +22,15 @@ export default function Home() {
           alt="Football stadium under Friday night lights"
           fill
           priority
-          className="object-cover opacity-55"
+          className="scale-105 object-cover opacity-80 saturate-125 contrast-110"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/70 via-black/75 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.22),transparent_45%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-blue-950/45 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.10),rgba(0,0,0,0.62)_72%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.55),transparent_26%,transparent_74%,rgba(2,6,23,0.55))]" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_38%,rgba(37,99,235,0.20),transparent_22%),radial-gradient(circle_at_66%_42%,rgba(220,38,38,0.18),transparent_24%)]" />
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
           <div>
@@ -49,16 +53,16 @@ export default function Home() {
 
         <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 text-center">
           <div className="max-w-5xl">
-            <p className="mb-5 text-sm uppercase tracking-[8px] text-red-500">
+            <p className="mb-5 text-sm font-black uppercase tracking-[8px] text-red-400 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               Colts Football Alumni and Booster Club
             </p>
 
-            <h2 className="text-6xl md:text-8xl font-black leading-none drop-shadow-2xl">
+            <h2 className="text-6xl md:text-8xl font-black leading-none text-white drop-shadow-[0_6px_30px_rgba(0,0,0,0.95)]">
               THE LEGACY
-              <span className="block text-blue-500">LIVES ON.</span>
+              <span className="block text-blue-400 drop-shadow-[0_0_26px_rgba(37,99,235,0.55)]">LIVES ON.</span>
             </h2>
 
-            <p className="mx-auto mt-8 max-w-2xl text-lg md:text-2xl text-gray-300">
+            <p className="mx-auto mt-8 max-w-2xl text-lg font-semibold leading-8 text-gray-100 drop-shadow-[0_3px_18px_rgba(0,0,0,0.95)] md:text-2xl">
               Connecting generations of Colts football while supporting the athletes who wear the jersey today.
             </p>
 
