@@ -8,7 +8,6 @@ import {
   Sport,
   sports,
 } from "@/lib/contact-options";
-import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -50,11 +49,17 @@ export function JoinForm() {
     };
 
     try {
-      const supabase = createBrowserSupabaseClient();
-      const { error } = await supabase.from("contacts").insert(contact);
+      const response = await fetch("/api/contacts", {
+        body: JSON.stringify(contact),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        const result = (await response.json()) as { error?: string };
+        throw new Error(result.error ?? "Unable to save your contact.");
       }
 
       form.reset();

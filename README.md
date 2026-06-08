@@ -5,7 +5,7 @@ This is the Next.js home for Swift Current Colts Football Alumni and Booster Clu
 This first CRM milestone adds:
 
 - A dedicated public `/join` page for alumni, booster, family, and supporter signups.
-- Supabase client setup for browser inserts and server-side dashboard reads.
+- Supabase client setup for server-side form inserts and dashboard reads.
 - An unprotected `/admin` contacts dashboard.
 - Filters for graduation year, relationship type, sport, email opt-in, and SMS opt-in.
 
