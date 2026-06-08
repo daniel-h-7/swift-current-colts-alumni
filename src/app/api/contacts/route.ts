@@ -6,6 +6,8 @@ import {
 } from "@/lib/contact-options";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+
 function isValidContact(value: unknown): value is ContactInsert {
   if (!value || typeof value !== "object") {
     return false;
