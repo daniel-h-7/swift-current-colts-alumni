@@ -58,6 +58,16 @@ export type Contact = {
   created_at: string;
 };
 
+export type ContactActivity = {
+  id: string;
+  contact_id: string;
+  activity_type: string;
+  title: string;
+  body: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at: string;
+};
+
 export type ContactInsert = Omit<
   Contact,
   "id" | "created_at" | "status" | "membership_status" | "tags" | "admin_notes"

@@ -14,6 +14,7 @@ This first CRM milestone adds:
 - Search, sortable columns, membership filters, paid-through filters, and filtered CSV exports.
 - CRM summary cards for contacts, membership health, and communication opt-ins.
 - Admin-managed membership settings for annual amount, renewal deadline, join status, and join page copy.
+- Contact activity timeline for admin updates, ready for future Stripe webhook events.
 - Stripe-ready membership fields for annual dues, paid-through dates, and future Stripe IDs.
 
 Stripe is intentionally not included yet.
@@ -159,6 +160,27 @@ alter table public.crm_settings enable row level security;
 ```
 
 The app reads and writes `crm_settings` through the server using `SUPABASE_SERVICE_ROLE_KEY`, so no public settings policy is required.
+
+Create the contact activity table:
+
+```sql
+create table if not exists public.contact_activities (
+  id uuid primary key default gen_random_uuid(),
+  contact_id uuid not null references public.contacts(id) on delete cascade,
+  activity_type text not null,
+  title text not null,
+  body text,
+  metadata jsonb not null default '{}',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists contact_activities_contact_created_idx
+  on public.contact_activities (contact_id, created_at desc);
+
+alter table public.contact_activities enable row level security;
+```
+
+The app writes and reads contact activity through the server using `SUPABASE_SERVICE_ROLE_KEY`. Later Stripe webhook events can insert payment and renewal activity into this same table.
 
 For an existing table created before status and tags were added, run this migration:
 

@@ -3,10 +3,12 @@ import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
   Contact,
+  ContactActivity,
   contactStatuses,
   membershipStatuses,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { logContactActivity } from "@/lib/contact-activity";
 import {
   formatCurrencyFromCents,
   formatContactName,
@@ -46,6 +48,22 @@ async function getContact(id: string) {
   return data as Contact | null;
 }
 
+async function getContactActivities(contactId: string) {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("contact_activities")
+    .select("*")
+    .eq("contact_id", contactId)
+    .order("created_at", { ascending: false })
+    .limit(25);
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as ContactActivity[];
+}
+
 async function updateContact(formData: FormData) {
   "use server";
 
@@ -59,32 +77,43 @@ async function updateContact(formData: FormData) {
     .map((tag) => tag.trim())
     .filter(Boolean);
   const annualDues = String(formData.get("annual_dues_amount") ?? "").trim();
+  const updates = {
+    admin_notes: String(formData.get("admin_notes") ?? "").trim() || null,
+    annual_dues_amount_cents: annualDues
+      ? Math.round(Number.parseFloat(annualDues) * 100)
+      : null,
+    last_payment_at:
+      String(formData.get("last_payment_at") ?? "").trim() || null,
+    membership_status: String(formData.get("membership_status") ?? ""),
+    paid_through: String(formData.get("paid_through") ?? "").trim() || null,
+    status: String(formData.get("status") ?? ""),
+    stripe_checkout_session_id:
+      String(formData.get("stripe_checkout_session_id") ?? "").trim() || null,
+    stripe_customer_id:
+      String(formData.get("stripe_customer_id") ?? "").trim() || null,
+    tags,
+  };
 
   const supabase = createServerSupabaseClient();
   const { error } = await supabase
     .from("contacts")
-    .update({
-      admin_notes: String(formData.get("admin_notes") ?? "").trim() || null,
-      annual_dues_amount_cents: annualDues
-        ? Math.round(Number.parseFloat(annualDues) * 100)
-        : null,
-      last_payment_at:
-        String(formData.get("last_payment_at") ?? "").trim() || null,
-      membership_status: String(formData.get("membership_status") ?? ""),
-      paid_through: String(formData.get("paid_through") ?? "").trim() || null,
-      status: String(formData.get("status") ?? ""),
-      stripe_checkout_session_id:
-        String(formData.get("stripe_checkout_session_id") ?? "").trim() ||
-        null,
-      stripe_customer_id:
-        String(formData.get("stripe_customer_id") ?? "").trim() || null,
-      tags,
-    })
+    .update(updates)
     .eq("id", id);
 
   if (error) {
     throw error;
   }
+
+  await logContactActivity({
+    body: `Status: ${updates.status}. Membership: ${updates.membership_status}.`,
+    contactId: id,
+    metadata: {
+      fields: Object.keys(updates),
+      source: "admin",
+    },
+    title: "Contact updated",
+    type: "admin_update",
+  });
 
   revalidatePath("/admin");
   revalidatePath(`/admin/contacts/${id}`);
@@ -121,7 +150,10 @@ export default async function ContactDetailPage({
 
   const { id } = await params;
   const { saved } = await searchParams;
-  const contact = await getContact(id);
+  const [contact, activities] = await Promise.all([
+    getContact(id),
+    getContactActivities(id).catch(() => [] as ContactActivity[]),
+  ]);
 
   if (!contact) {
     notFound();
@@ -235,6 +267,34 @@ export default async function ContactDetailPage({
                 ))
               ) : (
                 <span className="text-gray-500">No tags yet.</span>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+            <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+              Activity Timeline
+            </p>
+            <div className="mt-5 space-y-4">
+              {activities.length ? (
+                activities.map((activity) => (
+                  <div
+                    className="border-l-2 border-blue-500/50 pl-4"
+                    key={activity.id}
+                  >
+                    <p className="font-black text-white">{activity.title}</p>
+                    {activity.body ? (
+                      <p className="mt-1 text-sm text-gray-300">
+                        {activity.body}
+                      </p>
+                    ) : null}
+                    <p className="mt-2 text-xs font-bold uppercase tracking-[2px] text-gray-500">
+                      {formatDate(activity.created_at)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No activity yet.</p>
               )}
             </div>
           </div>
