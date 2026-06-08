@@ -22,15 +22,14 @@ export default function Home() {
           alt="Football stadium under Friday night lights"
           fill
           priority
-          className="scale-105 object-cover opacity-80 saturate-125 contrast-110"
+          className="object-cover object-center opacity-85 saturate-125 contrast-110 md:scale-110 md:object-[center_42%]"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-blue-950/45 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.10),rgba(0,0,0,0.62)_72%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.55),transparent_26%,transparent_74%,rgba(2,6,23,0.55))]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-blue-950/28 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.64)_0%,rgba(0,0,0,0.36)_36%,rgba(0,0,0,0.18)_62%,rgba(0,0,0,0.34)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.28)_34%,rgba(0,0,0,0.08)_62%,rgba(0,0,0,0.18)_100%)]" />
         <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]" />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_38%,rgba(37,99,235,0.20),transparent_22%),radial-gradient(circle_at_66%_42%,rgba(220,38,38,0.18),transparent_24%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_42%,rgba(37,99,235,0.24),transparent_24%),radial-gradient(circle_at_78%_43%,rgba(220,38,38,0.22),transparent_26%)]" />
 
         <nav className="relative z-10 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
           <div>
