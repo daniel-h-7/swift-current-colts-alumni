@@ -58,7 +58,7 @@ async function getContactActivities(contactId: string) {
     .limit(25);
 
   if (error) {
-    throw error;
+    throw new Error(error.message);
   }
 
   return (data ?? []) as ContactActivity[];
@@ -104,16 +104,21 @@ async function updateContact(formData: FormData) {
     throw error;
   }
 
-  await logContactActivity({
-    body: `Status: ${updates.status}. Membership: ${updates.membership_status}.`,
-    contactId: id,
-    metadata: {
-      fields: Object.keys(updates),
-      source: "admin",
-    },
-    title: "Contact updated",
-    type: "admin_update",
-  });
+  try {
+    await logContactActivity({
+      body: `Status: ${updates.status}. Membership: ${updates.membership_status}.`,
+      contactId: id,
+      metadata: {
+        fields: Object.keys(updates),
+        source: "admin",
+      },
+      title: "Contact updated",
+      type: "admin_update",
+    });
+  } catch {
+    // Activity is useful, but contact saves should not fail if the activity table
+    // has not been migrated yet.
+  }
 
   revalidatePath("/admin");
   revalidatePath(`/admin/contacts/${id}`);
@@ -150,9 +155,17 @@ export default async function ContactDetailPage({
 
   const { id } = await params;
   const { saved } = await searchParams;
-  const [contact, activities] = await Promise.all([
+  const [contact, activityResult] = await Promise.all([
     getContact(id),
-    getContactActivities(id).catch(() => [] as ContactActivity[]),
+    getContactActivities(id)
+      .then((activities) => ({ activities, error: "" }))
+      .catch((error: unknown) => ({
+        activities: [] as ContactActivity[],
+        error:
+          error instanceof Error
+            ? error.message
+            : "Activity timeline could not load.",
+      })),
   ]);
 
   if (!contact) {
@@ -160,6 +173,7 @@ export default async function ContactDetailPage({
   }
 
   const tags = getContactTags(contact);
+  const activities = activityResult.activities;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -276,6 +290,12 @@ export default async function ContactDetailPage({
               Activity Timeline
             </p>
             <div className="mt-5 space-y-4">
+              {activityResult.error ? (
+                <div className="rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+                  Activity timeline could not load: {activityResult.error}
+                </div>
+              ) : null}
+
               {activities.length ? (
                 activities.map((activity) => (
                   <div
