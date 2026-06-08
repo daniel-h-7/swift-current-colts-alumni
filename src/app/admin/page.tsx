@@ -24,17 +24,99 @@ type SearchParams = {
   email_opt_in?: string;
   sms_opt_in?: string;
   status?: string;
+  sort_by?: string;
+  sort_dir?: string;
 };
 
 const filterClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 
+const sortableColumns = [
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "graduation_year", label: "Grad Year" },
+  { key: "relationship_type", label: "Relationship" },
+  { key: "sport", label: "Sport" },
+  { key: "status", label: "Status" },
+  { key: "tags", label: "Tags" },
+  { key: "email_opt_in", label: "Email Opt-In" },
+  { key: "sms_opt_in", label: "SMS" },
+  { key: "notes", label: "Notes" },
+  { key: "created_at", label: "Added" },
+] as const;
+
+type SortKey = (typeof sortableColumns)[number]["key"];
+type SortDirection = "asc" | "desc";
+
+function getSort(filters: SearchParams): {
+  sortBy: SortKey;
+  sortDir: SortDirection;
+} {
+  const allowedKeys = sortableColumns.map((column) => column.key);
+  const sortBy = allowedKeys.includes(filters.sort_by as SortKey)
+    ? (filters.sort_by as SortKey)
+    : "created_at";
+  const sortDir = filters.sort_dir === "asc" ? "asc" : "desc";
+
+  return { sortBy, sortDir };
+}
+
+function getSortHref(filters: SearchParams, sortBy: SortKey) {
+  const currentSort = getSort(filters);
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value && key !== "sort_by" && key !== "sort_dir") {
+      params.set(key, value);
+    }
+  });
+
+  params.set("sort_by", sortBy);
+  params.set(
+    "sort_dir",
+    currentSort.sortBy === sortBy && currentSort.sortDir === "asc"
+      ? "desc"
+      : "asc",
+  );
+
+  return `/admin?${params.toString()}`;
+}
+
+function SortHeader({
+  filters,
+  label,
+  sortBy,
+}: {
+  filters: SearchParams;
+  label: string;
+  sortBy: SortKey;
+}) {
+  const currentSort = getSort(filters);
+  const isActive = currentSort.sortBy === sortBy;
+
+  return (
+    <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
+      <Link
+        className="inline-flex items-center gap-2 text-white hover:text-blue-300"
+        href={getSortHref(filters, sortBy)}
+      >
+        {label}
+        <span className={isActive ? "text-blue-300" : "text-white/35"}>
+          {isActive && currentSort.sortDir === "asc" ? "^" : "v"}
+        </span>
+      </Link>
+    </th>
+  );
+}
+
 async function getContacts(filters: SearchParams) {
+  const { sortBy, sortDir } = getSort(filters);
+  const ascending = sortDir === "asc";
   const supabase = createServerSupabaseClient();
   let query = supabase
     .from("contacts")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*");
 
   if (filters.graduation_year) {
     query = query.eq(
@@ -61,6 +143,14 @@ async function getContacts(filters: SearchParams) {
 
   if (filters.status) {
     query = query.eq("status", filters.status);
+  }
+
+  if (sortBy === "name") {
+    query = query
+      .order("last_name", { ascending })
+      .order("first_name", { ascending });
+  } else {
+    query = query.order(sortBy, { ascending, nullsFirst: false });
   }
 
   const { data, error } = await query;
@@ -150,6 +240,13 @@ export default async function AdminPage({
           </div>
 
           <form action="/admin" className="mt-6 grid gap-5 md:grid-cols-6">
+            <input name="sort_by" type="hidden" value={getSort(filters).sortBy} />
+            <input
+              name="sort_dir"
+              type="hidden"
+              value={getSort(filters).sortDir}
+            />
+
             <label className="text-sm font-bold text-gray-200">
               Graduation year
               <input
@@ -282,28 +379,15 @@ export default async function AdminPage({
             <table className="min-w-full divide-y divide-white/10 text-left text-sm">
               <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
                 <tr>
-                  {[
-                    "Name",
-                    "Email",
-                    "Phone",
-                    "Grad Year",
-                    "Relationship",
-                    "Sport",
-                    "Status",
-                    "Tags",
-                    "Email",
-                    "SMS",
-                    "Notes",
-                    "Added",
-                    "",
-                  ].map((heading) => (
-                    <th
-                      className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]"
-                      key={heading}
-                    >
-                      {heading}
-                    </th>
+                  {sortableColumns.map((column) => (
+                    <SortHeader
+                      filters={filters}
+                      key={column.key}
+                      label={column.label}
+                      sortBy={column.key}
+                    />
                   ))}
+                  <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]" />
                 </tr>
               </thead>
 
