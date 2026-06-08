@@ -110,6 +110,23 @@ function getTodayDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+
+  return fallback;
+}
+
 function SortHeader({
   filters,
   label,
@@ -162,38 +179,44 @@ async function getCount(
   const { count, error } = await query;
 
   if (error) {
-    throw error;
+    throw new Error(error.message);
   }
 
   return count ?? 0;
 }
 
+async function getSafeCount(
+  label: string,
+  column?: string,
+  operator?: "eq" | "gte" | "lt" | "is",
+  value?: string | boolean | null,
+) {
+  try {
+    return {
+      error: "",
+      label,
+      value: await getCount(column, operator, value),
+    };
+  } catch (error) {
+    return {
+      error: getErrorMessage(error, `Unable to load ${label}.`),
+      label,
+      value: 0,
+    };
+  }
+}
+
 async function getSummaryStats() {
   const today = getTodayDate();
-  const [
-    totalContacts,
-    activeMembers,
-    expiredMemberships,
-    missingPaidThrough,
-    emailOptIns,
-    smsOptIns,
-  ] = await Promise.all([
-    getCount(),
-    getCount("membership_status", "eq", "Active Member"),
-    getCount("paid_through", "lt", today),
-    getCount("paid_through", "is", null),
-    getCount("email_opt_in", "eq", true),
-    getCount("sms_opt_in", "eq", true),
-  ]);
 
-  return [
-    { label: "Total Contacts", value: totalContacts },
-    { label: "Active Members", value: activeMembers },
-    { label: "Expired Memberships", value: expiredMemberships },
-    { label: "Missing Paid Through", value: missingPaidThrough },
-    { label: "Email Opt-Ins", value: emailOptIns },
-    { label: "SMS Opt-Ins", value: smsOptIns },
-  ];
+  return Promise.all([
+    getSafeCount("Total Contacts"),
+    getSafeCount("Active Members", "membership_status", "eq", "Active Member"),
+    getSafeCount("Expired Memberships", "paid_through", "lt", today),
+    getSafeCount("Missing Paid Through", "paid_through", "is", null),
+    getSafeCount("Email Opt-Ins", "email_opt_in", "eq", true),
+    getSafeCount("SMS Opt-Ins", "sms_opt_in", "eq", true),
+  ]);
 }
 
 async function getContacts(filters: SearchParams) {
@@ -282,26 +305,26 @@ export default async function AdminPage({
 
   const filters = await searchParams;
   let contacts: Contact[] = [];
-  let summaryStats: Array<{ label: string; value: number }> = [];
+  let summaryStats: Array<{ error: string; label: string; value: number }> = [];
   let errorMessage = "";
   let summaryErrorMessage = "";
 
   try {
     contacts = await getContacts(filters);
   } catch (error) {
-    errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Unable to load contacts from Supabase.";
+    errorMessage = getErrorMessage(
+      error,
+      "Unable to load contacts from Supabase.",
+    );
   }
 
   try {
     summaryStats = await getSummaryStats();
   } catch (error) {
-    summaryErrorMessage =
-      error instanceof Error
-        ? error.message
-        : "Unable to load summary stats from Supabase.";
+    summaryErrorMessage = getErrorMessage(
+      error,
+      "Unable to load summary stats from Supabase.",
+    );
   }
 
   return (
@@ -364,6 +387,11 @@ export default async function AdminPage({
                   <p className="mt-3 text-3xl font-black text-white">
                     {stat.value}
                   </p>
+                  {stat.error ? (
+                    <p className="mt-3 text-xs font-bold leading-5 text-red-300">
+                      {stat.error}
+                    </p>
+                  ) : null}
                 </div>
               ))
             : null}
