@@ -1,8 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { JoinForm } from "@/components/join-form";
+import {
+  formatMembershipAmount,
+  getMembershipSettings,
+} from "@/lib/membership-settings";
 
-export default function JoinPage() {
+export default async function JoinPage() {
+  const settings = await getMembershipSettings();
+
   return (
     <main className="min-h-screen bg-black text-white">
       <section className="relative min-h-screen overflow-hidden px-6 py-8">
@@ -39,19 +45,36 @@ export default function JoinPage() {
           <div className="grid flex-1 gap-10 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
             <div>
               <p className="text-sm uppercase tracking-[6px] text-red-500">
-                Colts CRM
+                {settings.membership_year_label}
               </p>
               <h1 className="mt-4 text-5xl font-black leading-none md:text-7xl">
-                Join the Colts network.
+                {settings.join_headline}
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-300">
-                One clean contact record helps the club reach alumni, families,
-                boosters, and community supporters when it matters.
+                {settings.join_body}
               </p>
+              <div className="mt-6 rounded-3xl border border-white/10 bg-zinc-950/80 p-5">
+                <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+                  Annual Membership
+                </p>
+                <p className="mt-2 text-3xl font-black text-white">
+                  {formatMembershipAmount(settings)}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-gray-400">
+                  Stripe checkout will be connected later. For now, this page
+                  captures the CRM record and prepares the annual membership
+                  flow.
+                </p>
+                {!settings.join_is_open ? (
+                  <p className="mt-4 rounded-2xl border border-red-500/30 bg-red-950/40 p-3 text-sm font-bold text-red-200">
+                    Membership signups are currently closed.
+                  </p>
+                ) : null}
+              </div>
               <div className="mt-8 h-1 w-40 rounded-full bg-gradient-to-r from-blue-600 via-white to-red-600" />
             </div>
 
-            <JoinForm />
+            <JoinForm isOpen={settings.join_is_open} />
           </div>
         </div>
       </section>

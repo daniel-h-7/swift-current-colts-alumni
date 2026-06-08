@@ -12,6 +12,8 @@ This first CRM milestone adds:
 - Contact detail pages with status, membership status, tags, and admin notes.
 - Protected CSV export.
 - Search, sortable columns, membership filters, paid-through filters, and filtered CSV exports.
+- CRM summary cards for contacts, membership health, and communication opt-ins.
+- Admin-managed membership settings for annual amount, renewal deadline, join status, and join page copy.
 - Stripe-ready membership fields for annual dues, paid-through dates, and future Stripe IDs.
 
 Stripe is intentionally not included yet.
@@ -133,6 +135,30 @@ drop policy if exists "Anyone can read contacts for unprotected admin milestone"
 ```
 
 The public join form inserts and updates through the app server. The unique email index lets repeat submissions update the existing contact instead of creating a duplicate.
+
+Create the settings table for annual membership configuration:
+
+```sql
+create table if not exists public.crm_settings (
+  id text primary key default 'default',
+  annual_membership_amount_cents integer not null default 10000,
+  membership_year_label text not null default '2026 Colts Football Alumni & Booster Club',
+  renewal_deadline date,
+  join_is_open boolean not null default true,
+  join_headline text not null default 'Join the Colts network.',
+  join_body text not null default 'One clean contact record helps the club reach alumni, families, boosters, and community supporters when it matters.',
+  updated_at timestamptz not null default now(),
+  constraint crm_settings_singleton check (id = 'default')
+);
+
+insert into public.crm_settings (id)
+values ('default')
+on conflict (id) do nothing;
+
+alter table public.crm_settings enable row level security;
+```
+
+The app reads and writes `crm_settings` through the server using `SUPABASE_SERVICE_ROLE_KEY`, so no public settings policy is required.
 
 For an existing table created before status and tags were added, run this migration:
 

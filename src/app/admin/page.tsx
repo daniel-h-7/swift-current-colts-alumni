@@ -137,6 +137,65 @@ function SortHeader({
   );
 }
 
+async function getCount(
+  column?: string,
+  operator?: "eq" | "gte" | "lt" | "is",
+  value?: string | boolean | null,
+) {
+  const supabase = createServerSupabaseClient();
+  let query = supabase
+    .from("contacts")
+    .select("id", { count: "exact", head: true });
+
+  if (column && operator) {
+    if (operator === "is") {
+      query = query.is(column, value);
+    } else if (operator === "eq") {
+      query = query.eq(column, value);
+    } else if (operator === "gte") {
+      query = query.gte(column, value);
+    } else {
+      query = query.lt(column, value);
+    }
+  }
+
+  const { count, error } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
+}
+
+async function getSummaryStats() {
+  const today = getTodayDate();
+  const [
+    totalContacts,
+    activeMembers,
+    expiredMemberships,
+    missingPaidThrough,
+    emailOptIns,
+    smsOptIns,
+  ] = await Promise.all([
+    getCount(),
+    getCount("membership_status", "eq", "Active Member"),
+    getCount("paid_through", "lt", today),
+    getCount("paid_through", "is", null),
+    getCount("email_opt_in", "eq", true),
+    getCount("sms_opt_in", "eq", true),
+  ]);
+
+  return [
+    { label: "Total Contacts", value: totalContacts },
+    { label: "Active Members", value: activeMembers },
+    { label: "Expired Memberships", value: expiredMemberships },
+    { label: "Missing Paid Through", value: missingPaidThrough },
+    { label: "Email Opt-Ins", value: emailOptIns },
+    { label: "SMS Opt-Ins", value: smsOptIns },
+  ];
+}
+
 async function getContacts(filters: SearchParams) {
   const { sortBy, sortDir } = getSort(filters);
   const ascending = sortDir === "asc";
@@ -223,10 +282,14 @@ export default async function AdminPage({
 
   const filters = await searchParams;
   let contacts: Contact[] = [];
+  let summaryStats: Array<{ label: string; value: number }> = [];
   let errorMessage = "";
 
   try {
-    contacts = await getContacts(filters);
+    [contacts, summaryStats] = await Promise.all([
+      getContacts(filters),
+      getSummaryStats(),
+    ]);
   } catch (error) {
     errorMessage =
       error instanceof Error
@@ -265,6 +328,12 @@ export default async function AdminPage({
               Export CSV
             </Link>
             <Link
+              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              href="/admin/settings"
+            >
+              Settings
+            </Link>
+            <Link
               className="rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-500"
               href="/admin/logout"
             >
@@ -275,7 +344,23 @@ export default async function AdminPage({
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <section className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+        <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+          {summaryStats.map((stat) => (
+            <div
+              className="rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl"
+              key={stat.label}
+            >
+              <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+                {stat.label}
+              </p>
+              <p className="mt-3 text-3xl font-black text-white">
+                {stat.value}
+              </p>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-6 rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-2xl font-black">Filters</h2>

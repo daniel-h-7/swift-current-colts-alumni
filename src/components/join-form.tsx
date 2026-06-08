@@ -16,12 +16,19 @@ const fieldClass =
 
 const labelClass = "text-sm font-bold text-gray-200";
 
-export function JoinForm() {
+export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!isOpen) {
+      setStatus("error");
+      setMessage("Membership signups are currently closed.");
+      return;
+    }
+
     setStatus("submitting");
     setMessage("");
 
@@ -206,10 +213,14 @@ export function JoinForm() {
 
       <button
         className="mt-6 w-full rounded-full bg-red-600 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={status === "submitting"}
+        disabled={status === "submitting" || !isOpen}
         type="submit"
       >
-        {status === "submitting" ? "Saving..." : "Join the Colts Network"}
+        {status === "submitting"
+          ? "Saving..."
+          : isOpen
+            ? "Join the Colts Network"
+            : "Signups Closed"}
       </button>
     </form>
   );
