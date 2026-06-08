@@ -52,8 +52,8 @@ export default function Home() {
             </p>
 
             <h2 className="text-6xl md:text-8xl font-black leading-none drop-shadow-2xl">
-              The Legacy
-              <span className="block text-blue-500">Lives On.</span>
+              THE LEGACY
+              <span className="block text-blue-500">LIVES ON.</span>
             </h2>
 
             <p className="mx-auto mt-8 max-w-2xl text-lg md:text-2xl text-gray-300">
