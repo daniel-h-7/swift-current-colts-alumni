@@ -284,17 +284,24 @@ export default async function AdminPage({
   let contacts: Contact[] = [];
   let summaryStats: Array<{ label: string; value: number }> = [];
   let errorMessage = "";
+  let summaryErrorMessage = "";
 
   try {
-    [contacts, summaryStats] = await Promise.all([
-      getContacts(filters),
-      getSummaryStats(),
-    ]);
+    contacts = await getContacts(filters);
   } catch (error) {
     errorMessage =
       error instanceof Error
         ? error.message
         : "Unable to load contacts from Supabase.";
+  }
+
+  try {
+    summaryStats = await getSummaryStats();
+  } catch (error) {
+    summaryErrorMessage =
+      error instanceof Error
+        ? error.message
+        : "Unable to load summary stats from Supabase.";
   }
 
   return (
@@ -345,20 +352,28 @@ export default async function AdminPage({
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
-          {summaryStats.map((stat) => (
-            <div
-              className="rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl"
-              key={stat.label}
-            >
-              <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
-                {stat.label}
-              </p>
-              <p className="mt-3 text-3xl font-black text-white">
-                {stat.value}
-              </p>
-            </div>
-          ))}
+          {summaryStats.length
+            ? summaryStats.map((stat) => (
+                <div
+                  className="rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl"
+                  key={stat.label}
+                >
+                  <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+                    {stat.label}
+                  </p>
+                  <p className="mt-3 text-3xl font-black text-white">
+                    {stat.value}
+                  </p>
+                </div>
+              ))
+            : null}
         </section>
+
+        {summaryErrorMessage ? (
+          <section className="mt-6 rounded-3xl border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
+            Summary stats could not load: {summaryErrorMessage}
+          </section>
+        ) : null}
 
         <section className="mt-6 rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
