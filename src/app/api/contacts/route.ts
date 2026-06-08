@@ -29,21 +29,33 @@ function isValidContact(value: unknown): value is ContactInsert {
 }
 
 export async function POST(request: Request) {
-  const contact = await request.json();
+  try {
+    const contact = await request.json();
 
-  if (!isValidContact(contact)) {
+    if (!isValidContact(contact)) {
+      return NextResponse.json(
+        { error: "Please check the contact form fields and try again." },
+        { status: 400 },
+      );
+    }
+
+    const supabase = createServerSupabaseClient();
+    const { error } = await supabase.from("contacts").insert(contact);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
     return NextResponse.json(
-      { error: "Please check the contact form fields and try again." },
-      { status: 400 },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to save your contact.",
+      },
+      { status: 500 },
     );
   }
-
-  const supabase = createServerSupabaseClient();
-  const { error } = await supabase.from("contacts").insert(contact);
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ ok: true });
 }

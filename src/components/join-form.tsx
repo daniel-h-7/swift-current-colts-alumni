@@ -58,8 +58,19 @@ export function JoinForm() {
       });
 
       if (!response.ok) {
-        const result = (await response.json()) as { error?: string };
-        throw new Error(result.error ?? "Unable to save your contact.");
+        const responseText = await response.text();
+        let errorMessage = "Unable to save your contact.";
+
+        if (responseText) {
+          try {
+            const result = JSON.parse(responseText) as { error?: string };
+            errorMessage = result.error ?? errorMessage;
+          } catch {
+            errorMessage = responseText;
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       form.reset();
