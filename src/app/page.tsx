@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const events = [
   ["Alumni Golf Classic", "June 21, 2026"],
@@ -42,6 +43,7 @@ export default function Home() {
             <a href="#donate">Donate</a>
             <a href="#alumni">Alumni</a>
             <a href="#events">Events</a>
+            <Link href="/admin">Admin</Link>
           </div>
         </nav>
 
@@ -61,9 +63,9 @@ export default function Home() {
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <a href="#alumni" className="rounded-full bg-blue-700 px-8 py-4 font-bold hover:bg-blue-600">
+              <Link href="/join" className="rounded-full bg-blue-700 px-8 py-4 font-bold hover:bg-blue-600">
                 Join the Alumni Network
-              </a>
+              </Link>
               <a href="#donate" className="rounded-full bg-red-600 px-8 py-4 font-bold hover:bg-red-500">
                 Become a Monthly Booster
               </a>

@@ -1,4 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is the Next.js home for Swift Current Colts Football Alumni and Booster Club.
+
+## CRM milestone
+
+This first CRM milestone adds:
+
+- A dedicated public `/join` page for alumni, booster, family, and supporter signups.
+- Supabase client setup for browser inserts and server-side dashboard reads.
+- An unprotected `/admin` contacts dashboard.
+- Filters for graduation year, relationship type, sport, email opt-in, and SMS opt-in.
+
+Stripe is intentionally not included yet.
+
+## Supabase environment variables
+
+Create `.env.local` from `.env.example`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+Add those same variables in Vercel under Project Settings, Environment Variables.
+
+## Supabase SQL table setup
+
+Run this in the Supabase SQL editor:
+
+```sql
+create table if not exists public.contacts (
+  id uuid primary key default gen_random_uuid(),
+  first_name text not null,
+  last_name text not null,
+  email text not null,
+  phone text,
+  graduation_year integer,
+  relationship_type text not null check (
+    relationship_type in (
+      'Alumni',
+      'Parent / Guardian',
+      'Booster',
+      'Coach / Staff',
+      'Community Supporter',
+      'Student Athlete'
+    )
+  ),
+  sport text not null check (
+    sport in (
+      'Football',
+      'Cheer',
+      'Band',
+      'Athletics Support',
+      'Other'
+    )
+  ),
+  email_opt_in boolean not null default true,
+  sms_opt_in boolean not null default false,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists contacts_created_at_idx
+  on public.contacts (created_at desc);
+
+create index if not exists contacts_graduation_year_idx
+  on public.contacts (graduation_year);
+
+create index if not exists contacts_relationship_type_idx
+  on public.contacts (relationship_type);
+
+create index if not exists contacts_sport_idx
+  on public.contacts (sport);
+
+alter table public.contacts enable row level security;
+
+create policy "Anyone can add contacts"
+  on public.contacts
+  for insert
+  to anon
+  with check (true);
+
+create policy "Anyone can read contacts for unprotected admin milestone"
+  on public.contacts
+  for select
+  to anon
+  using (true);
+```
+
+The read policy is intentionally open because `/admin` is unprotected for this milestone. Replace it when authentication is added.
 
 ## Getting Started
 
