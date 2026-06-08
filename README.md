@@ -16,6 +16,7 @@ This first CRM milestone adds:
 - Admin-managed membership settings for annual amount, renewal deadline, join status, and join page copy.
 - Contact activity timeline for admin updates, ready for future Stripe webhook events.
 - Stripe-ready membership fields for annual dues, paid-through dates, and future Stripe IDs.
+- Mock membership checkout flow that marks contacts Pending Payment, then Active Member for testing before Stripe is connected.
 
 Stripe is intentionally not included yet.
 
@@ -233,12 +234,21 @@ create index if not exists contacts_status_idx
 
 ## Paid membership direction
 
-The current `/join` page is free contact capture. The intended next evolution is annual paid membership:
+The current `/join` page starts a mock annual membership checkout:
+
+- The contact is created or updated.
+- Membership status is set to `Pending Payment`.
+- The user is sent to `/membership/mock-checkout`.
+- The mock completion button marks the contact as `Active Member`, sets `last_payment_at`, sets `paid_through`, and logs activity.
+
+When Stripe is connected, replace the mock checkout destination with a real Stripe Checkout session:
 
 - Show fixed annual membership donation tiers.
 - Send users through Stripe Checkout before creating or activating a membership.
 - Store Stripe customer, checkout session, annual dues amount, last payment, and paid-through fields on the contact record.
 - Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
+
+The placeholder webhook route lives at `/api/stripe/webhook`.
 
 ## Getting Started
 

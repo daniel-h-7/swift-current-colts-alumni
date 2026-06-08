@@ -1,0 +1,45 @@
+import Image from "next/image";
+import Link from "next/link";
+
+export default function MembershipSuccessPage() {
+  return (
+    <main className="min-h-screen bg-black text-white">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
+        <Image
+          src="/images/stadium.jpg"
+          alt="Football stadium under Friday night lights"
+          fill
+          priority
+          className="object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/80 via-black/85 to-black" />
+
+        <div className="relative z-10 w-full max-w-xl rounded-3xl border border-white/10 bg-zinc-950/90 p-8 text-center shadow-2xl">
+          <p className="text-sm uppercase tracking-[5px] text-red-500">
+            Membership Complete
+          </p>
+          <h1 className="mt-3 text-4xl font-black">
+            Welcome to the Colts network.
+          </h1>
+          <p className="mt-4 text-gray-400">
+            Your test annual membership has been marked active in the CRM.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              className="rounded-full bg-blue-700 px-6 py-3 font-bold text-white hover:bg-blue-600"
+              href="/"
+            >
+              Home
+            </Link>
+            <Link
+              className="rounded-full border border-white/15 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              href="/admin"
+            >
+              Admin
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}

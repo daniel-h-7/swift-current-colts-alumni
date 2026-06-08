@@ -56,7 +56,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
     };
 
     try {
-      const response = await fetch("/api/contacts", {
+      const response = await fetch("/api/membership/checkout", {
         body: JSON.stringify(contact),
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +66,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
 
       if (!response.ok) {
         const responseText = await response.text();
-        let errorMessage = "Unable to save your contact.";
+        let errorMessage = "Unable to start membership checkout.";
 
         if (responseText) {
           try {
@@ -80,9 +80,13 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
         throw new Error(errorMessage);
       }
 
-      form.reset();
-      setStatus("success");
-      setMessage("You are on the Colts list. We will be in touch soon.");
+      const result = (await response.json()) as { checkoutUrl?: string };
+
+      if (!result.checkoutUrl) {
+        throw new Error("Membership checkout did not return a destination.");
+      }
+
+      window.location.href = result.checkoutUrl;
     } catch (error) {
       setStatus("error");
       setMessage(
@@ -219,7 +223,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
         {status === "submitting"
           ? "Saving..."
           : isOpen
-            ? "Join the Colts Network"
+            ? "Continue to Membership"
             : "Signups Closed"}
       </button>
     </form>
