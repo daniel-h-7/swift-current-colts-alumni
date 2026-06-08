@@ -50,6 +50,11 @@ export type Contact = {
   membership_status?: MembershipStatus | null;
   tags?: string[] | null;
   admin_notes?: string | null;
+  annual_dues_amount_cents?: number | null;
+  paid_through?: string | null;
+  last_payment_at?: string | null;
+  stripe_customer_id?: string | null;
+  stripe_checkout_session_id?: string | null;
   created_at: string;
 };
 

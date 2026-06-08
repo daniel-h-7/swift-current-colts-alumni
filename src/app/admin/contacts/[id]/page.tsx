@@ -8,8 +8,10 @@ import {
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
+  formatCurrencyFromCents,
   formatContactName,
   formatDate,
+  formatOptionalDate,
   getContactStatus,
   getContactTags,
   getMembershipStatus,
@@ -56,14 +58,26 @@ async function updateContact(formData: FormData) {
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
+  const annualDues = String(formData.get("annual_dues_amount") ?? "").trim();
 
   const supabase = createServerSupabaseClient();
   const { error } = await supabase
     .from("contacts")
     .update({
       admin_notes: String(formData.get("admin_notes") ?? "").trim() || null,
+      annual_dues_amount_cents: annualDues
+        ? Math.round(Number.parseFloat(annualDues) * 100)
+        : null,
+      last_payment_at:
+        String(formData.get("last_payment_at") ?? "").trim() || null,
       membership_status: String(formData.get("membership_status") ?? ""),
+      paid_through: String(formData.get("paid_through") ?? "").trim() || null,
       status: String(formData.get("status") ?? ""),
+      stripe_checkout_session_id:
+        String(formData.get("stripe_checkout_session_id") ?? "").trim() ||
+        null,
+      stripe_customer_id:
+        String(formData.get("stripe_customer_id") ?? "").trim() || null,
       tags,
     })
     .eq("id", id);
@@ -182,6 +196,18 @@ export default async function ContactDetailPage({
               label="SMS Opt-In"
               value={contact.sms_opt_in ? "Yes" : "No"}
             />
+            <DetailItem
+              label="Annual Dues"
+              value={formatCurrencyFromCents(contact.annual_dues_amount_cents)}
+            />
+            <DetailItem
+              label="Paid Through"
+              value={formatOptionalDate(contact.paid_through)}
+            />
+            <DetailItem
+              label="Last Payment"
+              value={formatOptionalDate(contact.last_payment_at)}
+            />
           </div>
 
           <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
@@ -258,6 +284,65 @@ export default async function ContactDetailPage({
                   </option>
                 ))}
               </select>
+            </label>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="block text-sm font-bold text-gray-200">
+                Annual dues amount
+                <input
+                  className={fieldClass}
+                  defaultValue={
+                    typeof contact.annual_dues_amount_cents === "number"
+                      ? (contact.annual_dues_amount_cents / 100).toFixed(2)
+                      : ""
+                  }
+                  min="0"
+                  name="annual_dues_amount"
+                  placeholder="100.00"
+                  step="0.01"
+                  type="number"
+                />
+              </label>
+
+              <label className="block text-sm font-bold text-gray-200">
+                Paid through
+                <input
+                  className={fieldClass}
+                  defaultValue={contact.paid_through ?? ""}
+                  name="paid_through"
+                  type="date"
+                />
+              </label>
+            </div>
+
+            <label className="block text-sm font-bold text-gray-200">
+              Last payment date
+              <input
+                className={fieldClass}
+                defaultValue={contact.last_payment_at ?? ""}
+                name="last_payment_at"
+                type="date"
+              />
+            </label>
+
+            <label className="block text-sm font-bold text-gray-200">
+              Stripe customer ID
+              <input
+                className={fieldClass}
+                defaultValue={contact.stripe_customer_id ?? ""}
+                name="stripe_customer_id"
+                placeholder="cus_..."
+              />
+            </label>
+
+            <label className="block text-sm font-bold text-gray-200">
+              Stripe checkout session ID
+              <input
+                className={fieldClass}
+                defaultValue={contact.stripe_checkout_session_id ?? ""}
+                name="stripe_checkout_session_id"
+                placeholder="cs_..."
+              />
             </label>
 
             <label className="block text-sm font-bold text-gray-200">

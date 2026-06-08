@@ -11,6 +11,7 @@ This first CRM milestone adds:
 - Duplicate handling by email address.
 - Contact detail pages with status, membership status, tags, and admin notes.
 - Protected CSV export.
+- Stripe-ready membership fields for annual dues, paid-through dates, and future Stripe IDs.
 
 Stripe is intentionally not included yet.
 
@@ -82,6 +83,11 @@ create table if not exists public.contacts (
   ),
   tags text[] not null default '{}',
   admin_notes text,
+  annual_dues_amount_cents integer,
+  paid_through date,
+  last_payment_at date,
+  stripe_customer_id text,
+  stripe_checkout_session_id text,
   created_at timestamptz not null default now()
 );
 
@@ -134,7 +140,12 @@ alter table public.contacts
   add column if not exists status text not null default 'New',
   add column if not exists membership_status text not null default 'Not Started',
   add column if not exists tags text[] not null default '{}',
-  add column if not exists admin_notes text;
+  add column if not exists admin_notes text,
+  add column if not exists annual_dues_amount_cents integer,
+  add column if not exists paid_through date,
+  add column if not exists last_payment_at date,
+  add column if not exists stripe_customer_id text,
+  add column if not exists stripe_checkout_session_id text;
 
 do $$
 begin
@@ -177,7 +188,7 @@ The current `/join` page is free contact capture. The intended next evolution is
 
 - Show fixed annual membership donation tiers.
 - Send users through Stripe Checkout before creating or activating a membership.
-- Store Stripe customer, checkout session, and membership renewal fields on the contact record.
+- Store Stripe customer, checkout session, annual dues amount, last payment, and paid-through fields on the contact record.
 - Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
 
 ## Getting Started

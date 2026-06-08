@@ -23,3 +23,18 @@ export function formatDate(value: string) {
     year: "numeric",
   }).format(new Date(value));
 }
+
+export function formatOptionalDate(value: string | null | undefined) {
+  return value ? formatDate(value) : "-";
+}
+
+export function formatCurrencyFromCents(value: number | null | undefined) {
+  if (typeof value !== "number") {
+    return "-";
+  }
+
+  return new Intl.NumberFormat("en-CA", {
+    currency: "CAD",
+    style: "currency",
+  }).format(value / 100);
+}

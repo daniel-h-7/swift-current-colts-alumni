@@ -8,10 +8,13 @@ import {
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
+  formatCurrencyFromCents,
   formatContactName,
   formatDate,
+  formatOptionalDate,
   getContactStatus,
   getContactTags,
+  getMembershipStatus,
 } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -39,6 +42,10 @@ const sortableColumns = [
   { key: "relationship_type", label: "Relationship" },
   { key: "sport", label: "Sport" },
   { key: "status", label: "Status" },
+  { key: "membership_status", label: "Membership" },
+  { key: "annual_dues_amount_cents", label: "Dues" },
+  { key: "paid_through", label: "Paid Through" },
+  { key: "last_payment_at", label: "Last Payment" },
   { key: "tags", label: "Tags" },
   { key: "email_opt_in", label: "Email Opt-In" },
   { key: "sms_opt_in", label: "SMS" },
@@ -422,6 +429,22 @@ export default async function AdminPage({
                         {getContactStatus(contact)}
                       </span>
                     </td>
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <span className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
+                        {getMembershipStatus(contact)}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatCurrencyFromCents(
+                        contact.annual_dues_amount_cents,
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatOptionalDate(contact.paid_through)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatOptionalDate(contact.last_payment_at)}
+                    </td>
                     <td className="min-w-48 px-4 py-4">
                       <div className="flex flex-wrap gap-2">
                         {getContactTags(contact).length ? (
@@ -469,7 +492,7 @@ export default async function AdminPage({
                   <tr>
                     <td
                       className="px-4 py-12 text-center font-bold text-gray-400"
-                      colSpan={13}
+                      colSpan={17}
                     >
                       No contacts match the current filters.
                     </td>
