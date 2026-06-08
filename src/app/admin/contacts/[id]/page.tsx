@@ -27,11 +27,37 @@ type ContactPageParams = {
 };
 
 type ContactSearchParams = {
+  error?: string;
   saved?: string;
 };
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+
+function getActionErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+
+  return "Unable to save contact.";
+}
+
+function getErrorRedirect(id: string, error: unknown) {
+  const params = new URLSearchParams({
+    error: getActionErrorMessage(error),
+  });
+
+  return `/admin/contacts/${id}?${params.toString()}`;
+}
 
 async function getContact(id: string) {
   const supabase = createServerSupabaseClient();
@@ -101,7 +127,7 @@ async function updateContact(formData: FormData) {
     .eq("id", id);
 
   if (error) {
-    throw error;
+    redirect(getErrorRedirect(id, error));
   }
 
   try {
@@ -115,9 +141,10 @@ async function updateContact(formData: FormData) {
       title: "Contact updated",
       type: "admin_update",
     });
-  } catch {
+  } catch (error) {
     // Activity is useful, but contact saves should not fail if the activity table
     // has not been migrated yet.
+    console.error("Unable to log contact activity", error);
   }
 
   revalidatePath("/admin");
@@ -154,7 +181,7 @@ export default async function ContactDetailPage({
   }
 
   const { id } = await params;
-  const { saved } = await searchParams;
+  const { error, saved } = await searchParams;
   const [contact, activityResult] = await Promise.all([
     getContact(id),
     getContactActivities(id)
@@ -330,6 +357,12 @@ export default async function ContactDetailPage({
           {saved === "1" ? (
             <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
               Contact updated.
+            </div>
+          ) : null}
+
+          {error ? (
+            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+              {error}
             </div>
           ) : null}
 
