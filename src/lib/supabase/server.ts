@@ -1,13 +1,50 @@
 import { createClient } from "@supabase/supabase-js";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
+const checkedEnvPaths = new Set<string>();
+
+function findLocalEnvFile() {
+  const startPaths = [
+    process.cwd(),
+    dirname(fileURLToPath(import.meta.url)),
+    "/Users/danherick/gridiron-alumni/gridiron-alumni",
+  ];
+
+  for (const startPath of startPaths) {
+    let currentPath = startPath;
+
+    for (let depth = 0; depth < 8; depth += 1) {
+      const envPath = join(currentPath, ".env.local");
+      checkedEnvPaths.add(envPath);
+
+      if (existsSync(envPath)) {
+        return envPath;
+      }
+
+      const parentPath = dirname(currentPath);
+
+      if (parentPath === currentPath) {
+        break;
+      }
+
+      currentPath = parentPath;
+    }
+  }
+
+  return undefined;
+}
 
 function readLocalEnvValue(key: string) {
   try {
-    const envFile = readFileSync(join(projectRoot, ".env.local"), "utf8");
+    const envPath = findLocalEnvFile();
+
+    if (!envPath) {
+      return undefined;
+    }
+
+    const envFile = readFileSync(envPath, "utf8");
     const line = envFile
       .split(/\r?\n/)
       .find((entry) => entry.trim().startsWith(`${key}=`));
@@ -30,7 +67,9 @@ export function createServerSupabaseClient() {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL and a public Supabase key.",
+      `Missing NEXT_PUBLIC_SUPABASE_URL and a public Supabase key. Checked: ${Array.from(
+        checkedEnvPaths,
+      ).join(", ")}`,
     );
   }
 
