@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {
   Contact,
   contactStatuses,
+  membershipStatuses,
   relationshipTypes,
   sports,
 } from "@/lib/contact-options";
@@ -21,12 +22,15 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type SearchParams = {
+  q?: string;
   graduation_year?: string;
   relationship_type?: string;
   sport?: string;
   email_opt_in?: string;
   sms_opt_in?: string;
   status?: string;
+  membership_status?: string;
+  paid_status?: string;
   sort_by?: string;
   sort_dir?: string;
 };
@@ -90,6 +94,22 @@ function getSortHref(filters: SearchParams, sortBy: SortKey) {
   return `/admin?${params.toString()}`;
 }
 
+function getExportHref(filters: SearchParams) {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) {
+      params.set(key, value);
+    }
+  });
+
+  return `/admin/export${params.size ? `?${params.toString()}` : ""}`;
+}
+
+function getTodayDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function SortHeader({
   filters,
   label,
@@ -120,10 +140,17 @@ function SortHeader({
 async function getContacts(filters: SearchParams) {
   const { sortBy, sortDir } = getSort(filters);
   const ascending = sortDir === "asc";
+  const searchTerm = filters.q?.trim().replaceAll(",", " ");
   const supabase = createServerSupabaseClient();
   let query = supabase
     .from("contacts")
     .select("*");
+
+  if (searchTerm) {
+    query = query.or(
+      `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`,
+    );
+  }
 
   if (filters.graduation_year) {
     query = query.eq(
@@ -150,6 +177,22 @@ async function getContacts(filters: SearchParams) {
 
   if (filters.status) {
     query = query.eq("status", filters.status);
+  }
+
+  if (filters.membership_status) {
+    query = query.eq("membership_status", filters.membership_status);
+  }
+
+  if (filters.paid_status === "active") {
+    query = query.gte("paid_through", getTodayDate());
+  }
+
+  if (filters.paid_status === "expired") {
+    query = query.lt("paid_through", getTodayDate());
+  }
+
+  if (filters.paid_status === "missing") {
+    query = query.is("paid_through", null);
   }
 
   if (sortBy === "name") {
@@ -217,7 +260,7 @@ export default async function AdminPage({
             </Link>
             <Link
               className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
-              href="/admin/export"
+              href={getExportHref(filters)}
             >
               Export CSV
             </Link>
@@ -238,7 +281,7 @@ export default async function AdminPage({
               <h2 className="text-2xl font-black">Filters</h2>
               <p className="mt-2 text-gray-400">
                 Narrow the contact list by class year, relationship, program,
-                status, and opt-in preferences.
+                status, membership, paid-through date, and opt-in preferences.
               </p>
             </div>
             <p className="font-black text-blue-400">
@@ -253,6 +296,17 @@ export default async function AdminPage({
               type="hidden"
               value={getSort(filters).sortDir}
             />
+
+            <label className="text-sm font-bold text-gray-200 md:col-span-2">
+              Search
+              <input
+                className={filterClass}
+                defaultValue={filters.q ?? ""}
+                name="q"
+                placeholder="Name, email, or phone"
+                type="search"
+              />
+            </label>
 
             <label className="text-sm font-bold text-gray-200">
               Graduation year
@@ -355,6 +409,46 @@ export default async function AdminPage({
                     {status}
                   </option>
                 ))}
+              </select>
+            </label>
+
+            <label className="text-sm font-bold text-gray-200">
+              Membership
+              <select
+                className={filterClass}
+                defaultValue={filters.membership_status ?? ""}
+                name="membership_status"
+              >
+                <option className="bg-zinc-950" value="">
+                  All
+                </option>
+                {membershipStatuses.map((status) => (
+                  <option className="bg-zinc-950" key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="text-sm font-bold text-gray-200">
+              Paid through
+              <select
+                className={filterClass}
+                defaultValue={filters.paid_status ?? ""}
+                name="paid_status"
+              >
+                <option className="bg-zinc-950" value="">
+                  All
+                </option>
+                <option className="bg-zinc-950" value="active">
+                  Current
+                </option>
+                <option className="bg-zinc-950" value="expired">
+                  Expired
+                </option>
+                <option className="bg-zinc-950" value="missing">
+                  Missing
+                </option>
               </select>
             </label>
 

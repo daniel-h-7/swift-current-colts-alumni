@@ -11,6 +11,7 @@ This first CRM milestone adds:
 - Duplicate handling by email address.
 - Contact detail pages with status, membership status, tags, and admin notes.
 - Protected CSV export.
+- Search, sortable columns, membership filters, paid-through filters, and filtered CSV exports.
 - Stripe-ready membership fields for annual dues, paid-through dates, and future Stripe IDs.
 
 Stripe is intentionally not included yet.
