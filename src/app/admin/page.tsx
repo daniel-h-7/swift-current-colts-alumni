@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   Contact,
   relationshipTypes,
   sports,
 } from "@/lib/contact-options";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -71,6 +73,10 @@ export default async function AdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
   const filters = await searchParams;
   let contacts: Contact[] = [];
   let errorMessage = "";
@@ -107,6 +113,12 @@ export default async function AdminPage({
               href="/join"
             >
               Join Form
+            </Link>
+            <Link
+              className="rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-500"
+              href="/admin/logout"
+            >
+              Log Out
             </Link>
           </div>
         </div>

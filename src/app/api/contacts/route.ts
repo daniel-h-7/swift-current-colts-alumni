@@ -42,7 +42,9 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServerSupabaseClient();
-    const { error } = await supabase.from("contacts").insert(contact);
+    const { error } = await supabase
+      .from("contacts")
+      .upsert(contact, { onConflict: "email" });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

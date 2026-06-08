@@ -55,19 +55,20 @@ function readLocalEnvValue(key: string) {
   }
 }
 
-function getEnvValue(key: string) {
+export function getServerEnvValue(key: string) {
   return process.env[key] || readLocalEnvValue(key);
 }
 
 export function createServerSupabaseClient() {
-  const supabaseUrl = getEnvValue("NEXT_PUBLIC_SUPABASE_URL");
+  const supabaseUrl = getServerEnvValue("NEXT_PUBLIC_SUPABASE_URL");
   const supabaseAnonKey =
-    getEnvValue("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
-    getEnvValue("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+    getServerEnvValue("SUPABASE_SERVICE_ROLE_KEY") ??
+    getServerEnvValue("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
+    getServerEnvValue("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      `Missing NEXT_PUBLIC_SUPABASE_URL and a public Supabase key. Checked: ${Array.from(
+      `Missing NEXT_PUBLIC_SUPABASE_URL and a Supabase key. Checked: ${Array.from(
         checkedEnvPaths,
       ).join(", ")}`,
     );

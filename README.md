@@ -6,8 +6,9 @@ This first CRM milestone adds:
 
 - A dedicated public `/join` page for alumni, booster, family, and supporter signups.
 - Supabase client setup for server-side form inserts and dashboard reads.
-- An unprotected `/admin` contacts dashboard.
+- A password-protected `/admin` contacts dashboard.
 - Filters for graduation year, relationship type, sport, email opt-in, and SMS opt-in.
+- Duplicate handling by email address.
 
 Stripe is intentionally not included yet.
 
@@ -16,11 +17,16 @@ Stripe is intentionally not included yet.
 Create `.env.local` from `.env.example`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://njdqzdqlrzlziejlskar.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_58f3JENxdSRYpLXicCWC0Q_6XVtUFl-
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-key
+SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
+ADMIN_PASSWORD=choose-a-strong-admin-password
+ADMIN_SESSION_SECRET=choose-a-long-random-session-secret
 ```
 
 Add those same variables in Vercel under Project Settings, Environment Variables.
+
+Use the Supabase publishable key for `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Use the Supabase service role key for `SUPABASE_SERVICE_ROLE_KEY`, and keep that key server-only. Do not expose the service role key in browser code.
 
 ## Supabase SQL table setup
 
@@ -71,6 +77,9 @@ create index if not exists contacts_relationship_type_idx
 create index if not exists contacts_sport_idx
   on public.contacts (sport);
 
+create unique index if not exists contacts_email_unique_idx
+  on public.contacts (email);
+
 alter table public.contacts enable row level security;
 
 create policy "Anyone can add contacts"
@@ -86,7 +95,23 @@ create policy "Anyone can read contacts for unprotected admin milestone"
   using (true);
 ```
 
-The read policy is intentionally open because `/admin` is unprotected for this milestone. Replace it when authentication is added.
+The app now protects `/admin` with `ADMIN_PASSWORD`, but the first milestone SQL kept read access open for quick setup. Once `SUPABASE_SERVICE_ROLE_KEY` is configured and the dashboard works, tighten the read policy:
+
+```sql
+drop policy if exists "Anyone can read contacts for unprotected admin milestone"
+  on public.contacts;
+```
+
+The public join form inserts and updates through the app server. The unique email index lets repeat submissions update the existing contact instead of creating a duplicate.
+
+## Paid membership direction
+
+The current `/join` page is free contact capture. The intended next evolution is annual paid membership:
+
+- Show fixed annual membership donation tiers.
+- Send users through Stripe Checkout before creating or activating a membership.
+- Store Stripe customer, checkout session, and membership renewal fields on the contact record.
+- Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
 
 ## Getting Started
 
