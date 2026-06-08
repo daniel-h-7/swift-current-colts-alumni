@@ -9,6 +9,8 @@ This first CRM milestone adds:
 - A password-protected `/admin` contacts dashboard.
 - Filters for graduation year, relationship type, sport, email opt-in, and SMS opt-in.
 - Duplicate handling by email address.
+- Contact detail pages with status, membership status, tags, and admin notes.
+- Protected CSV export.
 
 Stripe is intentionally not included yet.
 
@@ -62,6 +64,24 @@ create table if not exists public.contacts (
   email_opt_in boolean not null default true,
   sms_opt_in boolean not null default false,
   notes text,
+  status text not null default 'New' check (
+    status in (
+      'New',
+      'Active',
+      'Follow Up',
+      'Do Not Contact'
+    )
+  ),
+  membership_status text not null default 'Not Started' check (
+    membership_status in (
+      'Not Started',
+      'Pending Payment',
+      'Active Member',
+      'Expired'
+    )
+  ),
+  tags text[] not null default '{}',
+  admin_notes text,
   created_at timestamptz not null default now()
 );
 
@@ -79,6 +99,9 @@ create index if not exists contacts_sport_idx
 
 create unique index if not exists contacts_email_unique_idx
   on public.contacts (email);
+
+create index if not exists contacts_status_idx
+  on public.contacts (status);
 
 alter table public.contacts enable row level security;
 
@@ -103,6 +126,50 @@ drop policy if exists "Anyone can read contacts for unprotected admin milestone"
 ```
 
 The public join form inserts and updates through the app server. The unique email index lets repeat submissions update the existing contact instead of creating a duplicate.
+
+For an existing table created before status and tags were added, run this migration:
+
+```sql
+alter table public.contacts
+  add column if not exists status text not null default 'New',
+  add column if not exists membership_status text not null default 'Not Started',
+  add column if not exists tags text[] not null default '{}',
+  add column if not exists admin_notes text;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'contacts_status_check'
+  ) then
+    alter table public.contacts
+      add constraint contacts_status_check
+      check (status in ('New', 'Active', 'Follow Up', 'Do Not Contact'));
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'contacts_membership_status_check'
+  ) then
+    alter table public.contacts
+      add constraint contacts_membership_status_check
+      check (
+        membership_status in (
+          'Not Started',
+          'Pending Payment',
+          'Active Member',
+          'Expired'
+        )
+      );
+  end if;
+end $$;
+
+create unique index if not exists contacts_email_unique_idx
+  on public.contacts (email);
+
+create index if not exists contacts_status_idx
+  on public.contacts (status);
+```
 
 ## Paid membership direction
 

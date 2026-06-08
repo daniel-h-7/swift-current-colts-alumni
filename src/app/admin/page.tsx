@@ -2,10 +2,17 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Contact,
+  contactStatuses,
   relationshipTypes,
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import {
+  formatContactName,
+  formatDate,
+  getContactStatus,
+  getContactTags,
+} from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -16,18 +23,11 @@ type SearchParams = {
   sport?: string;
   email_opt_in?: string;
   sms_opt_in?: string;
+  status?: string;
 };
 
 const filterClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(value));
-}
 
 async function getContacts(filters: SearchParams) {
   const supabase = createServerSupabaseClient();
@@ -57,6 +57,10 @@ async function getContacts(filters: SearchParams) {
 
   if (filters.sms_opt_in) {
     query = query.eq("sms_opt_in", filters.sms_opt_in === "true");
+  }
+
+  if (filters.status) {
+    query = query.eq("status", filters.status);
   }
 
   const { data, error } = await query;
@@ -115,6 +119,12 @@ export default async function AdminPage({
               Join Form
             </Link>
             <Link
+              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              href="/admin/export"
+            >
+              Export CSV
+            </Link>
+            <Link
               className="rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-500"
               href="/admin/logout"
             >
@@ -131,7 +141,7 @@ export default async function AdminPage({
               <h2 className="text-2xl font-black">Filters</h2>
               <p className="mt-2 text-gray-400">
                 Narrow the contact list by class year, relationship, program,
-                and opt-in preferences.
+                status, and opt-in preferences.
               </p>
             </div>
             <p className="font-black text-blue-400">
@@ -139,7 +149,7 @@ export default async function AdminPage({
             </p>
           </div>
 
-          <form action="/admin" className="mt-6 grid gap-5 md:grid-cols-5">
+          <form action="/admin" className="mt-6 grid gap-5 md:grid-cols-6">
             <label className="text-sm font-bold text-gray-200">
               Graduation year
               <input
@@ -226,7 +236,25 @@ export default async function AdminPage({
               </select>
             </label>
 
-            <div className="flex flex-wrap gap-3 md:col-span-5">
+            <label className="text-sm font-bold text-gray-200">
+              Status
+              <select
+                className={filterClass}
+                defaultValue={filters.status ?? ""}
+                name="status"
+              >
+                <option className="bg-zinc-950" value="">
+                  All
+                </option>
+                {contactStatuses.map((status) => (
+                  <option className="bg-zinc-950" key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="flex flex-wrap gap-3 md:col-span-6">
               <button
                 className="rounded-full bg-red-600 px-6 py-3 font-black uppercase tracking-[3px] text-white hover:bg-red-500"
                 type="submit"
@@ -261,10 +289,13 @@ export default async function AdminPage({
                     "Grad Year",
                     "Relationship",
                     "Sport",
+                    "Status",
+                    "Tags",
                     "Email",
                     "SMS",
                     "Notes",
                     "Added",
+                    "",
                   ].map((heading) => (
                     <th
                       className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]"
@@ -280,7 +311,12 @@ export default async function AdminPage({
                 {contacts.map((contact) => (
                   <tr className="align-top hover:bg-white/[0.04]" key={contact.id}>
                     <td className="whitespace-nowrap px-4 py-4 font-black text-white">
-                      {contact.first_name} {contact.last_name}
+                      <Link
+                        className="hover:text-blue-300"
+                        href={`/admin/contacts/${contact.id}`}
+                      >
+                        {formatContactName(contact)}
+                      </Link>
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
                       {contact.email}
@@ -298,6 +334,27 @@ export default async function AdminPage({
                       {contact.sport}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4">
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-gray-200">
+                        {getContactStatus(contact)}
+                      </span>
+                    </td>
+                    <td className="min-w-48 px-4 py-4">
+                      <div className="flex flex-wrap gap-2">
+                        {getContactTags(contact).length ? (
+                          getContactTags(contact).map((tag) => (
+                            <span
+                              className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300"
+                              key={tag}
+                            >
+                              {tag}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-gray-500">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4">
                       <span className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300">
                         {contact.email_opt_in ? "Yes" : "No"}
                       </span>
@@ -313,6 +370,14 @@ export default async function AdminPage({
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
                       {formatDate(contact.created_at)}
                     </td>
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <Link
+                        className="font-black text-blue-400 hover:text-blue-300"
+                        href={`/admin/contacts/${contact.id}`}
+                      >
+                        View
+                      </Link>
+                    </td>
                   </tr>
                 ))}
 
@@ -320,7 +385,7 @@ export default async function AdminPage({
                   <tr>
                     <td
                       className="px-4 py-12 text-center font-bold text-gray-400"
-                      colSpan={10}
+                      colSpan={13}
                     >
                       No contacts match the current filters.
                     </td>
