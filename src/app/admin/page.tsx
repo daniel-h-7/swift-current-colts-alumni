@@ -359,6 +359,12 @@ export default async function AdminPage({
             </Link>
             <Link
               className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              href="/admin/campaigns"
+            >
+              Campaigns
+            </Link>
+            <Link
+              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
               href="/admin/settings"
             >
               Settings

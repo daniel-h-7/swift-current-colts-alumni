@@ -17,6 +17,7 @@ This first CRM milestone adds:
 - Contact activity timeline for admin updates, ready for future Stripe webhook events.
 - Stripe-ready membership fields for annual dues, paid-through dates, and future Stripe IDs.
 - Mock membership checkout flow that marks contacts Pending Payment, then Active Member for testing before Stripe is connected.
+- Campaigns and draft email blasts with an email-width editor and metrics fields for future open/click tracking.
 
 Stripe is intentionally not included yet.
 
@@ -249,6 +250,46 @@ When Stripe is connected, replace the mock checkout destination with a real Stri
 - Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
 
 The placeholder webhook route lives at `/api/stripe/webhook`.
+
+## Campaigns and blasts
+
+Create the campaign tables:
+
+```sql
+create table if not exists public.campaigns (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text,
+  status text not null default 'Draft' check (status in ('Draft', 'Active', 'Archived')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.campaign_blasts (
+  id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null references public.campaigns(id) on delete cascade,
+  title text not null,
+  subject text not null,
+  preheader text,
+  html_content text not null,
+  status text not null default 'Draft' check (status in ('Draft', 'Scheduled', 'Sent')),
+  audience_filter text,
+  sent_at timestamptz,
+  recipient_count integer not null default 0,
+  open_count integer not null default 0,
+  click_count integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists campaign_blasts_campaign_updated_idx
+  on public.campaign_blasts (campaign_id, updated_at desc);
+
+alter table public.campaigns enable row level security;
+alter table public.campaign_blasts enable row level security;
+```
+
+The campaign module is draft-only for now. Future sending can connect an email provider, generate tracked links, and update `recipient_count`, `open_count`, and `click_count`.
 
 ## Getting Started
 
