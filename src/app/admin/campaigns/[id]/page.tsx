@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Blast, Campaign, getClickRate, getOpenRate } from "@/lib/campaign-options";
+import {
+  Blast,
+  Campaign,
+  getClickRate,
+  getOpenRate,
+  summarizeAudienceFilter,
+} from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -117,7 +123,16 @@ export default async function CampaignDetailPage({
             <table className="min-w-full divide-y divide-white/10 text-left text-sm">
               <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
                 <tr>
-                  {["Blast", "Status", "Recipients", "Open", "Click", "Updated", ""].map((heading) => (
+                  {[
+                    "Blast",
+                    "Audience",
+                    "Status",
+                    "Recipients",
+                    "Open",
+                    "Click",
+                    "Updated",
+                    "",
+                  ].map((heading) => (
                     <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]" key={heading}>
                       {heading}
                     </th>
@@ -130,6 +145,9 @@ export default async function CampaignDetailPage({
                     <td className="px-4 py-4">
                       <p className="font-black text-white">{blast.title}</p>
                       <p className="mt-1 text-gray-400">{blast.subject}</p>
+                    </td>
+                    <td className="max-w-sm px-4 py-4 text-gray-300">
+                      {summarizeAudienceFilter(blast.audience_filter)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.status}</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.recipient_count}</td>
@@ -145,7 +163,7 @@ export default async function CampaignDetailPage({
                 ))}
                 {!blasts.length ? (
                   <tr>
-                    <td className="px-4 py-12 text-center font-bold text-gray-400" colSpan={7}>
+                    <td className="px-4 py-12 text-center font-bold text-gray-400" colSpan={8}>
                       No blasts yet.
                     </td>
                   </tr>

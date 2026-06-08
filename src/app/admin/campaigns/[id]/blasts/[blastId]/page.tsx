@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { Blast } from "@/lib/campaign-options";
+import { Blast, serializeAudienceFilter } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
@@ -38,7 +38,7 @@ async function updateBlast(formData: FormData) {
   const { error } = await supabase
     .from("campaign_blasts")
     .update({
-      audience_filter: String(formData.get("audience_filter") ?? "").trim() || null,
+      audience_filter: serializeAudienceFilter(formData),
       html_content: String(formData.get("html_content") ?? "").trim(),
       preheader: String(formData.get("preheader") ?? "").trim() || null,
       subject: String(formData.get("subject") ?? "").trim(),

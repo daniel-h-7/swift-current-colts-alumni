@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { serializeAudienceFilter } from "@/lib/campaign-options";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
 
@@ -20,7 +21,7 @@ async function createBlast(formData: FormData) {
   const { data, error } = await supabase
     .from("campaign_blasts")
     .insert({
-      audience_filter: String(formData.get("audience_filter") ?? "").trim() || null,
+      audience_filter: serializeAudienceFilter(formData),
       campaign_id: campaignId,
       html_content: String(formData.get("html_content") ?? "").trim(),
       preheader: String(formData.get("preheader") ?? "").trim() || null,
