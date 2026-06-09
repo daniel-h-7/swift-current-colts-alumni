@@ -14,8 +14,8 @@ export function EmailEditor({
 }) {
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const savedRangeRef = useRef<Range | null>(null);
   const [html, setHtml] = useState(defaultValue);
-  const [imageMaxWidth, setImageMaxWidth] = useState(560);
 
   function syncHtml() {
     setHtml(editorRef.current?.innerHTML ?? "");
@@ -42,9 +42,17 @@ export function EmailEditor({
     return range;
   }
 
+  function saveEditorRange() {
+    const range = getEditorRange();
+
+    if (range) {
+      savedRangeRef.current = range.cloneRange();
+    }
+  }
+
   function insertHtml(htmlToInsert: string) {
     editorRef.current?.focus();
-    const range = getEditorRange();
+    const range = getEditorRange() ?? savedRangeRef.current;
 
     if (!range) {
       editorRef.current?.insertAdjacentHTML("beforeend", htmlToInsert);
@@ -82,6 +90,33 @@ export function EmailEditor({
     return range?.toString().trim() ?? "";
   }
 
+  function getSelectedListItems() {
+    const range = getEditorRange();
+
+    if (!range) {
+      return [];
+    }
+
+    const fragment = range.cloneContents();
+    const blockElements = Array.from(
+      fragment.querySelectorAll("p, div, li, h1, h2, h3"),
+    );
+    const blockItems = blockElements
+      .map((element) => element.textContent?.trim() ?? "")
+      .filter(Boolean);
+
+    if (blockItems.length > 1) {
+      return blockItems;
+    }
+
+    return range
+      .toString()
+      .split(/\n+/)
+      .flatMap((line) => line.split(/\s{2,}/))
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
   function runCommand(command: string, value?: string) {
     editorRef.current?.focus();
     document.execCommand(command, false, value);
@@ -101,11 +136,9 @@ export function EmailEditor({
   }
 
   function addList(type: "ul" | "ol") {
-    const selectedText = getSelectedText();
-    const items = (selectedText ? selectedText.split(/\n+/) : ["List item"])
-      .map((item) => item.trim())
-      .filter(Boolean);
-    const listItems = items.map((item) => `<li>${item}</li>`).join("");
+    const items = getSelectedListItems();
+    const resolvedItems = items.length ? items : ["List item"];
+    const listItems = resolvedItems.map((item) => `<li>${item}</li>`).join("");
     const style =
       type === "ul"
         ? "margin:0 0 16px 22px;padding:0;list-style-type:disc;"
@@ -126,7 +159,33 @@ export function EmailEditor({
   }
 
   function chooseImage() {
+    saveEditorRange();
     fileInputRef.current?.click();
+  }
+
+  function getImageDimensions() {
+    const widthValue = window.prompt(
+      "Image width in pixels. Maximum recommended width is 600.",
+      "560",
+    );
+
+    if (widthValue === null) {
+      return null;
+    }
+
+    const width = Math.min(
+      600,
+      Math.max(40, Number.parseInt(widthValue, 10) || 560),
+    );
+    const heightValue = window.prompt(
+      "Optional image height in pixels. Leave blank to keep proportions.",
+      "",
+    );
+    const height = heightValue
+      ? Math.max(20, Number.parseInt(heightValue, 10) || 0)
+      : null;
+
+    return { height, width };
   }
 
   function addImage(event: ChangeEvent<HTMLInputElement>) {
@@ -144,8 +203,19 @@ export function EmailEditor({
         return;
       }
 
+      const dimensions = getImageDimensions();
+
+      if (!dimensions) {
+        event.target.value = "";
+        return;
+      }
+
+      const heightStyle = dimensions.height
+        ? `height:${dimensions.height}px;object-fit:cover;`
+        : "height:auto;";
+
       insertHtml(
-        `<img src="${result}" alt="" style="display:block;width:100%;max-width:${imageMaxWidth}px;height:auto;margin:18px auto;border-radius:12px;" />`,
+        `<img src="${result}" alt="" style="display:block;width:100%;max-width:${dimensions.width}px;${heightStyle}margin:18px auto;border-radius:12px;" />`,
       );
       event.target.value = "";
     };
@@ -163,7 +233,7 @@ export function EmailEditor({
           onClick={() => runCommand("bold")}
           type="button"
         >
-          B
+          <span className="font-black">B</span>
         </button>
         <button
           className={buttonClass}
@@ -171,7 +241,7 @@ export function EmailEditor({
           onClick={() => runCommand("italic")}
           type="button"
         >
-          I
+          <span className="italic">I</span>
         </button>
         <button
           className={buttonClass}
@@ -195,7 +265,7 @@ export function EmailEditor({
           onClick={() => addList("ul")}
           type="button"
         >
-          Bullet List
+          • List
         </button>
         <button
           className={buttonClass}
@@ -203,7 +273,7 @@ export function EmailEditor({
           onClick={() => addList("ol")}
           type="button"
         >
-          Numbered List
+          1. List
         </button>
         <button
           className={buttonClass}
@@ -213,25 +283,13 @@ export function EmailEditor({
         >
           Link
         </button>
-        <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200">
-          Image max width
-          <input
-            className="w-20 rounded-lg border border-white/10 bg-black/45 px-2 py-1 text-white outline-none focus:border-blue-500"
-            max="600"
-            min="120"
-            onChange={(event) => setImageMaxWidth(Number(event.target.value))}
-            type="number"
-            value={imageMaxWidth}
-          />
-          px
-        </label>
         <button
           className={buttonClass}
           onMouseDown={keepEditorSelection}
           onClick={chooseImage}
           type="button"
         >
-          Upload Image
+          Upload Image (max 600px)
         </button>
         <input
           accept="image/*"
@@ -247,7 +305,10 @@ export function EmailEditor({
           className="mx-auto min-h-96 max-w-[600px] rounded-2xl border border-slate-200 bg-white p-6 leading-7 outline-none"
           contentEditable
           dangerouslySetInnerHTML={{ __html: defaultValue }}
+          onBlur={saveEditorRange}
           onInput={syncHtml}
+          onKeyUp={saveEditorRange}
+          onMouseUp={saveEditorRange}
           ref={editorRef}
           suppressContentEditableWarning
         />
