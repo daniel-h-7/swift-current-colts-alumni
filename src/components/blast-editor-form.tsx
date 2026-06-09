@@ -243,8 +243,6 @@ export function BlastEditorForm({
               </div>
             </section>
 
-            {children}
-
             <label className="block text-sm font-bold text-gray-200">
               Email subject
               <input
@@ -284,6 +282,8 @@ export function BlastEditorForm({
             </button>
           </form>
         </section>
+
+        {children ? <div className="mt-6 space-y-6">{children}</div> : null}
       </div>
     </main>
   );
