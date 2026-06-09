@@ -30,6 +30,15 @@ export type Blast = {
   updated_at: string;
 };
 
+export type BlastEvent = {
+  id: string;
+  blast_id: string;
+  event_type: string;
+  email: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at: string;
+};
+
 export type BlastAudienceFilter = {
   email_opt_in?: boolean;
   graduation_year?: string;

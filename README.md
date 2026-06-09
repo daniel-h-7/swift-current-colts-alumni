@@ -285,11 +285,24 @@ create table if not exists public.campaign_blasts (
 create index if not exists campaign_blasts_campaign_updated_idx
   on public.campaign_blasts (campaign_id, updated_at desc);
 
+create table if not exists public.campaign_blast_events (
+  id uuid primary key default gen_random_uuid(),
+  blast_id uuid not null references public.campaign_blasts(id) on delete cascade,
+  event_type text not null,
+  email text,
+  metadata jsonb not null default '{}',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists campaign_blast_events_blast_created_idx
+  on public.campaign_blast_events (blast_id, created_at desc);
+
 alter table public.campaigns enable row level security;
 alter table public.campaign_blasts enable row level security;
+alter table public.campaign_blast_events enable row level security;
 ```
 
-The campaign module is draft-only for now. `campaign_blasts.audience_filter` stores JSON rules for graduation year, relationship type, sport, CRM status, membership status, paid-through state, opt-ins, and tags. Blast edit pages preview the matching audience count and the first matching recipients. Future sending can connect an email provider, resolve those audience filters into recipients, generate tracked links, and update `recipient_count`, `open_count`, and `click_count`.
+The campaign module is draft-only for now. `campaign_blasts.audience_filter` stores JSON rules for graduation year, relationship type, sport, CRM status, membership status, paid-through state, opt-ins, and tags. Blast edit pages preview the matching audience count and the first matching recipients. Test-send requests are recorded in `campaign_blast_events`, but no email is sent until a provider is connected. Future sending can connect an email provider, resolve those audience filters into recipients, generate tracked links, and update `recipient_count`, `open_count`, and `click_count`.
 
 ## Getting Started
 
