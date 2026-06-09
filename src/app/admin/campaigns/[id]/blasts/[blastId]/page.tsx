@@ -9,6 +9,7 @@ import {
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getAudiencePreview } from "@/lib/campaign-audience";
 import { formatContactName } from "@/lib/contact-format";
+import { sendCampaignTestEmail } from "@/lib/email-provider";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
 
@@ -89,20 +90,70 @@ async function recordTestSend(formData: FormData) {
   const blastId = String(formData.get("blast_id") ?? "");
   const email = String(formData.get("test_email") ?? "").trim().toLowerCase();
   const supabase = createServerSupabaseClient();
-  const { error } = await supabase.from("campaign_blast_events").insert({
-    blast_id: blastId,
-    email,
-    event_type: "test_send_requested",
-    metadata: {
-      mode: "mock",
-      note: "No email provider connected yet.",
-    },
-  });
+  const { data: blast, error: blastError } = await supabase
+    .from("campaign_blasts")
+    .select("html_content, preheader, subject")
+    .eq("id", blastId)
+    .maybeSingle();
 
-  if (error) {
+  if (blastError || !blast) {
     redirect(
       `/admin/campaigns/${campaignId}/blasts/${blastId}?test_error=${encodeURIComponent(
-        error.message,
+        blastError?.message ?? "Unable to load this blast before sending.",
+      )}`,
+    );
+  }
+
+  let testError: string | null = null;
+
+  const result = await sendCampaignTestEmail({
+    html: blast.html_content,
+    preheader: blast.preheader,
+    subject: blast.subject,
+    to: email,
+  }).catch((error: unknown) => {
+    testError =
+      error instanceof Error
+        ? error.message
+        : "Unable to send this test email.";
+    return null;
+  });
+
+  if (result) {
+    const { error } = await supabase.from("campaign_blast_events").insert({
+      blast_id: blastId,
+      email,
+      event_type: "test_send_sent",
+      metadata: {
+        mode: "real",
+        provider: result.provider,
+        provider_id: result.providerId,
+      },
+    });
+
+    if (error) {
+      testError = error.message;
+    }
+  }
+
+  if (testError) {
+    const message = testError;
+
+    await supabase.from("campaign_blast_events").insert({
+      blast_id: blastId,
+      email,
+      event_type: "test_send_failed",
+      metadata: {
+        message,
+        mode: "real",
+        provider: "resend",
+      },
+    });
+
+    revalidatePath(`/admin/campaigns/${campaignId}/blasts/${blastId}`);
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?test_error=${encodeURIComponent(
+        message,
       )}`,
     );
   }
@@ -162,8 +213,8 @@ export default async function EditBlastPage({
             <div>
               <h2 className="text-xl font-black">Send Test</h2>
               <p className="mt-2 text-sm leading-6 text-gray-400">
-                This records a safe test-send request. No email is sent until a
-                provider is connected.
+                Sends a real test email through Resend when the provider
+                variables are configured.
               </p>
             </div>
             <p className="text-sm font-bold text-gray-400">
@@ -173,7 +224,7 @@ export default async function EditBlastPage({
 
           {query.test_sent === "1" ? (
             <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
-              Test send request recorded.
+              Test email sent and recorded.
             </div>
           ) : null}
 

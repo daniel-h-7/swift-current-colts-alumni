@@ -302,7 +302,26 @@ alter table public.campaign_blasts enable row level security;
 alter table public.campaign_blast_events enable row level security;
 ```
 
-The campaign module is draft-only for now. `campaign_blasts.audience_filter` stores JSON rules for graduation year, relationship type, sport, CRM status, membership status, paid-through state, opt-ins, and tags. Blast edit pages preview the matching audience count and the first matching recipients. Test-send requests are recorded in `campaign_blast_events`, but no email is sent until a provider is connected. Future sending can connect an email provider, resolve those audience filters into recipients, generate tracked links, and update `recipient_count`, `open_count`, and `click_count`.
+The campaign module can create campaigns and blasts, filter audiences by graduation year, relationship type, sport, CRM status, membership status, paid-through state, opt-ins, and tags, and send real test emails through Resend when configured. Full audience sends are still intentionally disabled until deliverability, unsubscribe handling, and sender approval are ready.
+
+## Email Provider Setup
+
+Resend is the recommended starting provider for this project. It is the most cost-effective for the current stage because the free transactional tier includes 3,000 emails/month with a 100 emails/day limit, and the first paid transactional tier starts at $20/month for 50,000 emails/month. For comparison, Postmark's free tier is for testing with 100 emails/month and paid plans start at $15/month for 10,000 emails/month, while Mailgun's paid plans and overage model are less simple for this early CRM stage.
+
+1. Create a Resend account.
+2. Verify a sending domain in Resend.
+3. Create an API key in Resend.
+4. Add these Vercel Environment Variables:
+
+```bash
+RESEND_API_KEY=your-server-only-resend-api-key
+RESEND_FROM_EMAIL="Colts Alumni <updates@your-domain.com>"
+RESEND_REPLY_TO_EMAIL=your-reply-address@example.com
+```
+
+`RESEND_REPLY_TO_EMAIL` is optional. `RESEND_FROM_EMAIL` must use a verified Resend domain before production sends will work reliably.
+
+After adding or changing these variables in Vercel, redeploy the site. Locally, add the same values to `.env.local` and restart `npm run dev`.
 
 ## Getting Started
 
