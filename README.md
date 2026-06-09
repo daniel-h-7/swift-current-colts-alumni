@@ -145,6 +145,10 @@ Create the settings table for annual membership configuration:
 create table if not exists public.crm_settings (
   id text primary key default 'default',
   annual_membership_amount_cents integer not null default 10000,
+  email_from_address text not null default 'onboarding@resend.dev',
+  email_from_name text not null default 'Colts Alumni',
+  email_reply_to text not null default '',
+  email_sending_domain text not null default '',
   membership_year_label text not null default '2026 Colts Football Alumni & Booster Club',
   renewal_deadline date,
   join_is_open boolean not null default true,
@@ -162,6 +166,18 @@ alter table public.crm_settings enable row level security;
 ```
 
 The app reads and writes `crm_settings` through the server using `SUPABASE_SERVICE_ROLE_KEY`, so no public settings policy is required.
+
+If your `crm_settings` table already exists, run this migration:
+
+```sql
+alter table public.crm_settings
+  add column if not exists email_from_address text not null default 'onboarding@resend.dev',
+  add column if not exists email_from_name text not null default 'Colts Alumni',
+  add column if not exists email_reply_to text not null default '',
+  add column if not exists email_sending_domain text not null default '';
+
+notify pgrst, 'reload schema';
+```
 
 Create the contact activity table:
 
@@ -311,15 +327,13 @@ Resend is the recommended starting provider for this project. It is the most cos
 1. Create a Resend account.
 2. Verify a sending domain in Resend.
 3. Create an API key in Resend.
-4. Add these Vercel Environment Variables:
+4. Add this Vercel Environment Variable:
 
 ```bash
 RESEND_API_KEY=your-server-only-resend-api-key
-RESEND_FROM_EMAIL="Colts Alumni <updates@your-domain.com>"
-RESEND_REPLY_TO_EMAIL=your-reply-address@example.com
 ```
 
-`RESEND_REPLY_TO_EMAIL` is optional. `RESEND_FROM_EMAIL` must use a verified Resend domain before production sends will work reliably.
+Sender name, from email, reply-to email, and sending domain are managed inside `/admin/settings`. The from email must use a verified sending domain before production sends will work reliably. If your main domain is locked behind limited DNS management, use a separate sending domain with DNS you control.
 
 After adding or changing these variables in Vercel, redeploy the site. Locally, add the same values to `.env.local` and restart `npm run dev`.
 

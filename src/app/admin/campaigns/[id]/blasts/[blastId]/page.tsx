@@ -9,6 +9,7 @@ import {
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getAudiencePreview } from "@/lib/campaign-audience";
 import { formatContactName } from "@/lib/contact-format";
+import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
@@ -105,10 +106,13 @@ async function recordTestSend(formData: FormData) {
   }
 
   let testError: string | null = null;
+  const emailSettings = await getEmailSettings();
 
   const result = await sendCampaignTestEmail({
+    from: formatFromEmail(emailSettings),
     html: blast.html_content,
     preheader: blast.preheader,
+    replyTo: emailSettings.email_reply_to,
     subject: blast.subject,
     to: email,
   }).catch((error: unknown) => {
@@ -128,6 +132,8 @@ async function recordTestSend(formData: FormData) {
         mode: "real",
         provider: result.provider,
         provider_id: result.providerId,
+        reply_to: emailSettings.email_reply_to || null,
+        sender: formatFromEmail(emailSettings),
       },
     });
 
@@ -147,6 +153,8 @@ async function recordTestSend(formData: FormData) {
         message,
         mode: "real",
         provider: "resend",
+        reply_to: emailSettings.email_reply_to || null,
+        sender: formatFromEmail(emailSettings),
       },
     });
 

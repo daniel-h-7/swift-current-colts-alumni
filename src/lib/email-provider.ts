@@ -1,6 +1,8 @@
 type SendEmailInput = {
+  from: string;
   html: string;
   preheader?: string | null;
+  replyTo?: string | null;
   subject: string;
   to: string;
 };
@@ -21,18 +23,15 @@ export type SendEmailResult = {
 
 function getRequiredEmailEnv() {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
 
-  if (!apiKey || !from) {
+  if (!apiKey) {
     throw new Error(
-      "Missing RESEND_API_KEY or RESEND_FROM_EMAIL. Add both in Vercel Environment Variables, then redeploy.",
+      "Missing RESEND_API_KEY. Add it in Vercel Environment Variables, then redeploy.",
     );
   }
 
   return {
     apiKey,
-    from,
-    replyTo: process.env.RESEND_REPLY_TO_EMAIL,
   };
 }
 
@@ -59,12 +58,12 @@ function buildEmailHtml({ html, preheader }: Pick<SendEmailInput, "html" | "preh
 }
 
 export async function sendCampaignTestEmail(input: SendEmailInput): Promise<SendEmailResult> {
-  const { apiKey, from, replyTo } = getRequiredEmailEnv();
+  const { apiKey } = getRequiredEmailEnv();
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({
-      from,
+      from: input.from,
       html: buildEmailHtml(input),
-      reply_to: replyTo || undefined,
+      reply_to: input.replyTo || undefined,
       subject: input.subject,
       to: [input.to],
     }),
