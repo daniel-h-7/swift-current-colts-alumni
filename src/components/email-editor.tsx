@@ -5,6 +5,12 @@ import { ChangeEvent, MouseEvent, useRef, useState } from "react";
 const buttonClass =
   "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-black text-gray-200 hover:border-blue-500 hover:text-white";
 
+const selectClass =
+  "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200 outline-none hover:border-blue-500 focus:border-blue-500";
+
+const colorInputClass =
+  "h-10 w-12 cursor-pointer rounded-xl border border-white/10 bg-white/[0.04] p-1";
+
 export function EmailEditor({
   defaultValue,
   name,
@@ -90,6 +96,13 @@ export function EmailEditor({
     return range?.toString().trim() ?? "";
   }
 
+  function applyInlineStyle(style: string, fallbackText = "Styled text") {
+    const selectedText = getSelectedText();
+    const text = selectedText || fallbackText;
+
+    insertHtml(`<span style="${style}">${text}</span>`);
+  }
+
   function getSelectedListItems() {
     const range = getEditorRange();
 
@@ -156,6 +169,15 @@ export function EmailEditor({
         `<a href="${url}" style="color:#1d4ed8;font-weight:700;text-decoration:underline;">${text}</a>`,
       );
     }
+  }
+
+  function setAlignment(alignment: "left" | "center" | "right") {
+    const selectedText = getSelectedText();
+    const content = selectedText || "Aligned text";
+
+    insertHtml(
+      `<p style="margin:0 0 16px;text-align:${alignment};">${content}</p>`,
+    );
   }
 
   function chooseImage() {
@@ -290,6 +312,90 @@ export function EmailEditor({
           type="button"
         >
           Upload Image (max 600px)
+        </button>
+        <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200">
+          Text
+          <input
+            className={colorInputClass}
+            defaultValue="#0f172a"
+            onChange={(event) =>
+              applyInlineStyle(`color:${event.target.value};`)
+            }
+            onMouseDown={saveEditorRange}
+            type="color"
+          />
+        </label>
+        <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200">
+          Highlight
+          <input
+            className={colorInputClass}
+            defaultValue="#fef08a"
+            onChange={(event) =>
+              applyInlineStyle(`background-color:${event.target.value};`)
+            }
+            onMouseDown={saveEditorRange}
+            type="color"
+          />
+        </label>
+        <select
+          className={selectClass}
+          defaultValue=""
+          onChange={(event) => {
+            if (event.target.value) {
+              applyInlineStyle(`font-family:${event.target.value};`);
+              event.target.value = "";
+            }
+          }}
+          onMouseDown={saveEditorRange}
+        >
+          <option value="">Font</option>
+          <option value="Arial, Helvetica, sans-serif">Arial</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Times New Roman', Times, serif">Times</option>
+          <option value="'Courier New', Courier, monospace">Courier</option>
+          <option value="Verdana, Geneva, sans-serif">Verdana</option>
+        </select>
+        <select
+          className={selectClass}
+          defaultValue=""
+          onChange={(event) => {
+            if (event.target.value) {
+              applyInlineStyle(`font-size:${event.target.value}px;`);
+              event.target.value = "";
+            }
+          }}
+          onMouseDown={saveEditorRange}
+        >
+          <option value="">Size</option>
+          {[12, 14, 16, 18, 20, 24, 28, 32, 36].map((size) => (
+            <option key={size} value={size}>
+              {size}px
+            </option>
+          ))}
+        </select>
+        <button
+          className={buttonClass}
+          onMouseDown={keepEditorSelection}
+          onClick={() => setAlignment("left")}
+          type="button"
+        >
+          Left
+        </button>
+        <button
+          className={buttonClass}
+          onMouseDown={keepEditorSelection}
+          onClick={() => setAlignment("center")}
+          type="button"
+        >
+          Center
+        </button>
+        <button
+          className={buttonClass}
+          onMouseDown={keepEditorSelection}
+          onClick={() => setAlignment("right")}
+          type="button"
+        >
+          Right
         </button>
         <input
           accept="image/*"
