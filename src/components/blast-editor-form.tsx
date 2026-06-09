@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReactNode } from "react";
 import { EmailEditor } from "@/components/email-editor";
 import {
   contactStatuses,
@@ -16,6 +17,7 @@ export function BlastEditorForm({
   backHref,
   blastId,
   campaignId,
+  children,
   defaultAudience = "",
   defaultHtml,
   defaultPreheader = "",
@@ -28,6 +30,7 @@ export function BlastEditorForm({
   backHref: string;
   blastId?: string;
   campaignId: string;
+  children?: ReactNode;
   defaultAudience?: string;
   defaultHtml: string;
   defaultPreheader?: string;
@@ -239,6 +242,8 @@ export function BlastEditorForm({
                 </label>
               </div>
             </section>
+
+            {children}
 
             <label className="block text-sm font-bold text-gray-200">
               Email subject

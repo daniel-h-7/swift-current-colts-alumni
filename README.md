@@ -289,7 +289,7 @@ alter table public.campaigns enable row level security;
 alter table public.campaign_blasts enable row level security;
 ```
 
-The campaign module is draft-only for now. `campaign_blasts.audience_filter` stores JSON rules for graduation year, relationship type, sport, CRM status, membership status, paid-through state, opt-ins, and tags. Future sending can connect an email provider, resolve those audience filters into recipients, generate tracked links, and update `recipient_count`, `open_count`, and `click_count`.
+The campaign module is draft-only for now. `campaign_blasts.audience_filter` stores JSON rules for graduation year, relationship type, sport, CRM status, membership status, paid-through state, opt-ins, and tags. Blast edit pages preview the matching audience count and the first matching recipients. Future sending can connect an email provider, resolve those audience filters into recipients, generate tracked links, and update `recipient_count`, `open_count`, and `click_count`.
 
 ## Getting Started
 
