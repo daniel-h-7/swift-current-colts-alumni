@@ -335,6 +335,19 @@ RESEND_API_KEY=your-server-only-resend-api-key
 
 Sender name, from email, reply-to email, and sending domain are managed inside `/admin/settings`. The from email must use a verified sending domain before production sends will work reliably. If your main domain is locked behind limited DNS management, use a separate sending domain with DNS you control.
 
+For demos, test emails can be sent through an SMTP inbox instead of Resend by enabling SMTP demo mode:
+
+```bash
+EMAIL_PROVIDER=smtp-demo
+SMTP_HOST=your-smtp-host
+SMTP_PORT=587
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+SMTP_DEMO_TO_EMAIL=optional-demo-inbox@example.com
+```
+
+`SMTP_DEMO_TO_EMAIL` is optional. When it is set, every campaign test email is redirected to that inbox while the original intended recipient is noted in the email body and send history. Use `SMTP_SECURE=true` for implicit TLS on port 465.
+
 After adding or changing these variables in Vercel, redeploy the site. Locally, add the same values to `.env.local` and restart `npm run dev`.
 
 ## Getting Started

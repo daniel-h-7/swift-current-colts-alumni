@@ -10,7 +10,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getAudiencePreview } from "@/lib/campaign-audience";
 import { formatContactName } from "@/lib/contact-format";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
-import { sendCampaignTestEmail } from "@/lib/email-provider";
+import { getEmailProviderMode, sendCampaignTestEmail } from "@/lib/email-provider";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
 
@@ -91,6 +91,7 @@ async function recordTestSend(formData: FormData) {
   const blastId = String(formData.get("blast_id") ?? "");
   const email = String(formData.get("test_email") ?? "").trim().toLowerCase();
   const supabase = createServerSupabaseClient();
+  const emailProviderMode = getEmailProviderMode();
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
     .select("html_content, preheader, subject")
@@ -129,10 +130,11 @@ async function recordTestSend(formData: FormData) {
       email,
       event_type: "test_send_sent",
       metadata: {
-        mode: "real",
         provider: result.provider,
         provider_id: result.providerId,
+        delivered_to: result.deliveredTo,
         reply_to: emailSettings.email_reply_to || null,
+        mode: result.mode,
         sender: formatFromEmail(emailSettings),
       },
     });
@@ -151,8 +153,8 @@ async function recordTestSend(formData: FormData) {
       event_type: "test_send_failed",
       metadata: {
         message,
-        mode: "real",
-        provider: "resend",
+        mode: emailProviderMode,
+        provider: emailProviderMode === "smtp-demo" ? "smtp" : "resend",
         reply_to: emailSettings.email_reply_to || null,
         sender: formatFromEmail(emailSettings),
       },
@@ -168,6 +170,23 @@ async function recordTestSend(formData: FormData) {
 
   revalidatePath(`/admin/campaigns/${campaignId}/blasts/${blastId}`);
   redirect(`/admin/campaigns/${campaignId}/blasts/${blastId}?test_sent=1`);
+}
+
+function getEventProviderDetail(event: BlastEvent) {
+  const metadata = event.metadata ?? {};
+  const mode = typeof metadata.mode === "string" ? metadata.mode : null;
+  const provider = typeof metadata.provider === "string" ? metadata.provider : null;
+  const deliveredTo =
+    typeof metadata.delivered_to === "string" && metadata.delivered_to !== event.email
+      ? metadata.delivered_to
+      : null;
+  const parts = [mode, provider].filter(Boolean);
+
+  if (deliveredTo) {
+    parts.push(`delivered to ${deliveredTo}`);
+  }
+
+  return parts.length ? parts.join(" · ") : null;
 }
 
 export default async function EditBlastPage({
@@ -200,6 +219,7 @@ export default async function EditBlastPage({
     })),
     getBlastEvents(blast.id).catch(() => [] as BlastEvent[]),
   ]);
+  const emailProviderMode = getEmailProviderMode();
 
   return (
     <>
@@ -221,8 +241,9 @@ export default async function EditBlastPage({
             <div>
               <h2 className="text-xl font-black">Send Test</h2>
               <p className="mt-2 text-sm leading-6 text-gray-400">
-                Sends a real test email through Resend when the provider
-                variables are configured.
+                {emailProviderMode === "smtp-demo"
+                  ? "Sends a demo-tagged test email through the configured SMTP server."
+                  : "Sends a real test email through Resend when the provider variables are configured."}
               </p>
             </div>
             <p className="text-sm font-bold text-gray-400">
@@ -232,7 +253,8 @@ export default async function EditBlastPage({
 
           {query.test_sent === "1" ? (
             <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
-              Test email sent and recorded.
+              Test email sent and recorded
+              {emailProviderMode === "smtp-demo" ? " in SMTP demo mode." : "."}
             </div>
           ) : null}
 
@@ -261,17 +283,24 @@ export default async function EditBlastPage({
           </form>
 
           <div className="mt-5 space-y-3">
-            {blastEvents.map((event) => (
-              <div
-                className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm"
-                key={event.id}
-              >
-                <p className="font-black text-white">{event.event_type}</p>
-                <p className="mt-1 text-gray-400">
-                  {event.email || "-"} · {new Date(event.created_at).toLocaleString()}
-                </p>
-              </div>
-            ))}
+            {blastEvents.map((event) => {
+              const providerDetail = getEventProviderDetail(event);
+
+              return (
+                <div
+                  className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm"
+                  key={event.id}
+                >
+                  <p className="font-black text-white">{event.event_type}</p>
+                  <p className="mt-1 text-gray-400">
+                    {event.email || "-"} · {new Date(event.created_at).toLocaleString()}
+                  </p>
+                  {providerDetail ? (
+                    <p className="mt-1 text-gray-500">{providerDetail}</p>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
         </section>
 

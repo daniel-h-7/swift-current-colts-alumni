@@ -1,3 +1,8 @@
+import "server-only";
+
+import net from "node:net";
+import tls from "node:tls";
+
 type SendEmailInput = {
   from: string;
   html: string;
@@ -17,11 +22,30 @@ type ResendError = {
 };
 
 export type SendEmailResult = {
-  provider: "resend";
+  deliveredTo?: string;
+  mode: EmailProviderMode;
+  provider: "resend" | "smtp";
   providerId?: string;
 };
 
-function getRequiredEmailEnv() {
+export type EmailProviderMode = "resend" | "smtp-demo";
+
+type SmtpConfig = {
+  host: string;
+  pass?: string;
+  port: number;
+  secure: boolean;
+  user?: string;
+};
+
+export function getEmailProviderMode(): EmailProviderMode {
+  return process.env.EMAIL_PROVIDER === "smtp-demo" ||
+    process.env.SMTP_DEMO_EMAIL_MODE === "true"
+    ? "smtp-demo"
+    : "resend";
+}
+
+function getRequiredResendEnv() {
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
@@ -32,6 +56,27 @@ function getRequiredEmailEnv() {
 
   return {
     apiKey,
+  };
+}
+
+function getRequiredSmtpEnv(): SmtpConfig {
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT ?? 587);
+
+  if (!host) {
+    throw new Error("Missing SMTP_HOST. Add it before using SMTP demo email mode.");
+  }
+
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error("SMTP_PORT must be a valid port number.");
+  }
+
+  return {
+    host,
+    pass: process.env.SMTP_PASS,
+    port,
+    secure: process.env.SMTP_SECURE === "true" || port === 465,
+    user: process.env.SMTP_USER,
   };
 }
 
@@ -57,8 +102,176 @@ function buildEmailHtml({ html, preheader }: Pick<SendEmailInput, "html" | "preh
 </html>`;
 }
 
-export async function sendCampaignTestEmail(input: SendEmailInput): Promise<SendEmailResult> {
-  const { apiKey } = getRequiredEmailEnv();
+function getEmailAddress(value: string) {
+  const match = value.match(/<([^>]+)>/);
+
+  return (match?.[1] ?? value).trim();
+}
+
+function formatSmtpDate(date = new Date()) {
+  return date.toUTCString().replace("GMT", "+0000");
+}
+
+function encodeHeader(value: string) {
+  return value.replace(/\r?\n/g, " ").trim();
+}
+
+function dotStuff(value: string) {
+  return value.replace(/\r?\n/g, "\r\n").replace(/^\./gm, "..");
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildSmtpMessage(input: SendEmailInput, deliveredTo: string) {
+  const html = buildEmailHtml({
+    html: `<p style="margin:0 0 18px;color:#374151;"><strong>SMTP demo mode:</strong> intended recipient ${escapeHtml(input.to)}</p>${input.html}`,
+    preheader: input.preheader,
+  });
+
+  return [
+    `From: ${encodeHeader(input.from)}`,
+    `To: ${encodeHeader(deliveredTo)}`,
+    `Reply-To: ${encodeHeader(input.replyTo || input.from)}`,
+    `Subject: ${encodeHeader(`[Demo] ${input.subject}`)}`,
+    `Date: ${formatSmtpDate()}`,
+    "MIME-Version: 1.0",
+    'Content-Type: text/html; charset="UTF-8"',
+    "Content-Transfer-Encoding: 8bit",
+    "",
+    html,
+  ].join("\r\n");
+}
+
+async function sendSmtpCommand(
+  socket: net.Socket | tls.TLSSocket,
+  command: string,
+  expectedCodes: number[],
+) {
+  socket.write(`${command}\r\n`);
+
+  return readSmtpResponse(socket, expectedCodes);
+}
+
+function readSmtpResponse(
+  socket: net.Socket | tls.TLSSocket,
+  expectedCodes: number[],
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let buffer = "";
+
+    const cleanup = () => {
+      socket.off("data", onData);
+      socket.off("error", onError);
+    };
+
+    const onError = (error: Error) => {
+      cleanup();
+      reject(error);
+    };
+
+    const onData = (chunk: Buffer) => {
+      buffer += chunk.toString("utf8");
+      const lines = buffer.split(/\r?\n/).filter(Boolean);
+      const lastLine = lines.at(-1);
+
+      if (!lastLine || !/^\d{3} /.test(lastLine)) {
+        return;
+      }
+
+      const code = Number(lastLine.slice(0, 3));
+      cleanup();
+
+      if (!expectedCodes.includes(code)) {
+        reject(new Error(`SMTP rejected command: ${buffer.trim()}`));
+        return;
+      }
+
+      resolve(buffer);
+    };
+
+    socket.on("data", onData);
+    socket.on("error", onError);
+  });
+}
+
+async function openSmtpSocket(config: SmtpConfig) {
+  const socket = config.secure
+    ? tls.connect({
+        host: config.host,
+        port: config.port,
+        servername: config.host,
+      })
+    : net.connect({
+        host: config.host,
+        port: config.port,
+      });
+
+  await new Promise<void>((resolve, reject) => {
+    socket.once(config.secure ? "secureConnect" : "connect", resolve);
+    socket.once("error", reject);
+  });
+  await readSmtpResponse(socket, [220]);
+
+  return socket;
+}
+
+async function upgradeSmtpSocket(socket: net.Socket, host: string) {
+  const secureSocket = tls.connect({
+    servername: host,
+    socket,
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    secureSocket.once("secureConnect", resolve);
+    secureSocket.once("error", reject);
+  });
+
+  return secureSocket;
+}
+
+async function sendSmtpDemoEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  const config = getRequiredSmtpEnv();
+  const deliveredTo = process.env.SMTP_DEMO_TO_EMAIL?.trim() || input.to;
+  const fromAddress = getEmailAddress(input.from);
+  let socket = await openSmtpSocket(config);
+  const ehloHost = process.env.SMTP_HELO_NAME || "gridiron-alumni.local";
+  const ehloResponse = await sendSmtpCommand(socket, `EHLO ${ehloHost}`, [250]);
+
+  if (!config.secure && ehloResponse.includes("STARTTLS")) {
+    await sendSmtpCommand(socket, "STARTTLS", [220]);
+    socket = await upgradeSmtpSocket(socket, config.host);
+    await sendSmtpCommand(socket, `EHLO ${ehloHost}`, [250]);
+  }
+
+  if (config.user && config.pass) {
+    await sendSmtpCommand(socket, "AUTH LOGIN", [334]);
+    await sendSmtpCommand(socket, Buffer.from(config.user).toString("base64"), [334]);
+    await sendSmtpCommand(socket, Buffer.from(config.pass).toString("base64"), [235]);
+  }
+
+  await sendSmtpCommand(socket, `MAIL FROM:<${fromAddress}>`, [250]);
+  await sendSmtpCommand(socket, `RCPT TO:<${deliveredTo}>`, [250, 251]);
+  await sendSmtpCommand(socket, "DATA", [354]);
+  socket.write(`${dotStuff(buildSmtpMessage(input, deliveredTo))}\r\n.\r\n`);
+  await readSmtpResponse(socket, [250]);
+  await sendSmtpCommand(socket, "QUIT", [221]).catch(() => undefined);
+  socket.end();
+
+  return {
+    deliveredTo,
+    mode: "smtp-demo",
+    provider: "smtp",
+  };
+}
+
+async function sendResendEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  const { apiKey } = getRequiredResendEnv();
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({
       from: input.from,
@@ -88,7 +301,17 @@ export async function sendCampaignTestEmail(input: SendEmailInput): Promise<Send
   }
 
   return {
+    deliveredTo: input.to,
+    mode: "resend",
     provider: "resend",
     providerId: payload && "id" in payload ? payload.id : undefined,
   };
+}
+
+export async function sendCampaignTestEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  if (getEmailProviderMode() === "smtp-demo") {
+    return sendSmtpDemoEmail(input);
+  }
+
+  return sendResendEmail(input);
 }
