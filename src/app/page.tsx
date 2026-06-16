@@ -154,20 +154,20 @@ export default function Home() {
       </section>
 
       <section id="alumni" className="relative isolate overflow-hidden px-6 py-20">
-        <div className="absolute left-6 top-14 hidden h-44 w-56 overflow-hidden rounded-2xl border border-white/10 bg-white/90 p-4 opacity-35 shadow-2xl md:block">
-          <Image
-            src="/images/scchs-colts-logo.jpg"
-            alt=""
-            fill
-            className="object-contain p-3"
-            sizes="25vw"
-          />
-        </div>
-        <div className="pointer-events-none absolute right-[-5vw] top-6 hidden text-[17rem] font-black leading-none text-red-600/10 md:block">
-          SC
-        </div>
+        <div
+          aria-hidden="true"
+          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-8 hidden h-72 w-72 bg-red-600/20 md:block"
+        />
+        <div
+          aria-hidden="true"
+          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-10 hidden h-72 w-72 bg-red-600/20 md:block"
+        />
 
-        <div className="relative mx-auto max-w-7xl md:pl-64">
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-red-950/20 to-transparent" />
+        <div className="absolute left-0 top-0 hidden h-full w-64 bg-gradient-to-r from-black via-black/80 to-transparent md:block" />
+        <div className="absolute right-0 top-0 hidden h-full w-64 bg-gradient-to-l from-black via-black/80 to-transparent md:block" />
+
+        <div className="relative mx-auto max-w-7xl">
           <p className="text-sm uppercase tracking-[5px] text-red-500">Colts Family</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
 
