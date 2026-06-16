@@ -33,15 +33,21 @@ export function EmailSettingsForm({
     const form = event.currentTarget;
     const response = await fetch(form.action, {
       body: new FormData(form),
+      credentials: "same-origin",
       headers: {
         Accept: "application/json",
       },
       method: "POST",
     }).catch(() => null);
+    const result = (await response?.json().catch(() => null)) as
+      | { error?: string; ok?: boolean }
+      | null;
 
     if (!response?.ok) {
       setStatus("error");
-      setMessage("Unable to save email settings. Please try again.");
+      setMessage(
+        result?.error || "Unable to save email settings. Please try again.",
+      );
       return;
     }
 
