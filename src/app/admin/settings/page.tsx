@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -18,72 +16,6 @@ type SettingsSearchParams = {
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
-
-async function saveSettings(formData: FormData) {
-  "use server";
-
-  if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
-  }
-
-  const amount = String(formData.get("annual_membership_amount") ?? "").trim();
-  const supabase = createServerSupabaseClient();
-  const { error } = await supabase.from("crm_settings").upsert({
-    annual_membership_amount_cents: amount
-      ? Math.round(Number.parseFloat(amount) * 100)
-      : 0,
-    id: "default",
-    join_body: String(formData.get("join_body") ?? "").trim(),
-    join_headline: String(formData.get("join_headline") ?? "").trim(),
-    join_is_open: formData.get("join_is_open") === "on",
-    membership_year_label: String(
-      formData.get("membership_year_label") ?? "",
-    ).trim(),
-    renewal_deadline:
-      String(formData.get("renewal_deadline") ?? "").trim() || null,
-    updated_at: new Date().toISOString(),
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  revalidatePath("/join");
-  revalidatePath("/admin/settings");
-  redirect("/admin/settings?saved=1");
-}
-
-async function saveEmailSettings(formData: FormData) {
-  "use server";
-
-  if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
-  }
-
-  const supabase = createServerSupabaseClient();
-  const { error } = await supabase.from("crm_settings").upsert({
-    email_from_address: String(formData.get("email_from_address") ?? "")
-      .trim()
-      .toLowerCase(),
-    email_from_name: String(formData.get("email_from_name") ?? "").trim(),
-    email_reply_to: String(formData.get("email_reply_to") ?? "")
-      .trim()
-      .toLowerCase(),
-    email_sending_domain: String(formData.get("email_sending_domain") ?? "")
-      .trim()
-      .toLowerCase(),
-    id: "default",
-    updated_at: new Date().toISOString(),
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  revalidatePath("/admin/settings");
-  revalidatePath("/admin/campaigns");
-  redirect("/admin/settings?email_saved=1");
-}
 
 export default async function AdminSettingsPage({
   searchParams,
@@ -143,7 +75,7 @@ export default async function AdminSettingsPage({
               </div>
             ) : null}
 
-            <form action={saveSettings} className="mt-6 space-y-5">
+            <form action="/admin/settings/membership" className="mt-6 space-y-5" method="post">
               <label className="block text-sm font-bold text-gray-200">
                 Annual membership amount
                 <input
@@ -227,7 +159,7 @@ export default async function AdminSettingsPage({
               </div>
             ) : null}
 
-            <form action={saveEmailSettings} className="mt-6 space-y-5">
+            <form action="/admin/settings/email" className="mt-6 space-y-5" method="post">
               <label className="block text-sm font-bold text-gray-200">
                 Sender name
                 <input
