@@ -338,7 +338,7 @@ Sender name, from email, reply-to email, and sending domain are managed inside `
 For demos, test emails can be sent through an SMTP inbox instead of Resend by enabling SMTP demo mode:
 
 ```bash
-EMAIL_PROVIDER=smtp-demo
+EMAIL_PROVIDER=smtp
 SMTP_HOST=your-smtp-host
 SMTP_PORT=587
 SMTP_USER=your-smtp-username

@@ -39,7 +39,10 @@ type SmtpConfig = {
 };
 
 export function getEmailProviderMode(): EmailProviderMode {
-  return process.env.EMAIL_PROVIDER === "smtp-demo" ||
+  const provider = process.env.EMAIL_PROVIDER;
+
+  return provider === "smtp" ||
+    provider === "smtp-demo" ||
     process.env.SMTP_DEMO_EMAIL_MODE === "true"
     ? "smtp-demo"
     : "resend";

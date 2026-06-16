@@ -10,7 +10,18 @@ const events = [
 const spotlights = [
   ["Tyler McLeod", "Class of 2009", "Former captain. Local business owner. Monthly donor."],
   ["Jordan Hayes", "Class of 2014", "Volunteer coach helping build the next generation."],
-  ["Ryan Campbell", "Class of 1998", "Hall of Fame nominee and longtime Colts supporter."],
+  ["Ryan Campbell", "Class of 1998", "Longtime Colts supporter helping keep game nights strong."],
+];
+
+const sponsors = [
+  "Pioneer Co-op",
+  "Innovation Credit Union",
+  "Great Plains College",
+  "Swift Current Broncos",
+  "S3 Group",
+  "Southwest Terminal",
+  "Standard Motors",
+  "RBC Swift Current",
 ];
 
 export default function Home() {
@@ -43,7 +54,7 @@ export default function Home() {
 
           <div className="hidden md:flex gap-8 text-sm uppercase tracking-widest text-gray-300">
             <a href="#impact">Impact</a>
-            <a href="#donate">Donate</a>
+            <a href="#sponsors">Sponsors</a>
             <a href="#alumni">Alumni</a>
             <a href="#events">Events</a>
             <Link href="/admin">Admin</Link>
@@ -66,12 +77,9 @@ export default function Home() {
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link href="/join" className="rounded-full bg-blue-700 px-8 py-4 font-bold hover:bg-blue-600">
-                Join the Alumni Network
+              <Link href="/join" className="rounded-full bg-red-600 px-8 py-4 font-bold uppercase tracking-[2px] shadow-[0_0_30px_rgba(220,38,38,0.45)] transition hover:bg-red-500">
+                Support the Legacy Today!
               </Link>
-              <a href="#donate" className="rounded-full bg-red-600 px-8 py-4 font-bold hover:bg-red-500">
-                Become a Monthly Booster
-              </a>
             </div>
           </div>
         </div>
@@ -91,6 +99,31 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        <section id="sponsors" className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[5px] text-red-500">Backed By Community</p>
+              <h2 className="mt-2 text-3xl font-black md:text-4xl">Legacy Sponsors</h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-gray-400">
+              Room for every business, family, and builder helping Colts football keep moving.
+            </p>
+          </div>
+
+          <div className="mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex w-max animate-[sponsor-scroll_28s_linear_infinite] gap-4">
+              {[...sponsors, ...sponsors].map((sponsor, index) => (
+                <div
+                  className="flex h-20 min-w-56 items-center justify-center rounded-xl border border-white/10 bg-black/35 px-6 text-center text-sm font-black uppercase tracking-[2px] text-gray-200"
+                  key={`${sponsor}-${index}`}
+                >
+                  {sponsor}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </section>
 
       <section id="donate" className="bg-gradient-to-r from-blue-950 via-black to-red-950 px-6 py-20">
@@ -120,37 +153,33 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="alumni" className="max-w-7xl mx-auto px-6 py-20">
-        <p className="text-sm uppercase tracking-[5px] text-red-500">Colts Family</p>
-        <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
-
-        <div className="mt-10 grid md:grid-cols-3 gap-6">
-          {spotlights.map(([name, year, bio]) => (
-            <div key={name} className="rounded-2xl bg-zinc-900 p-8 border border-white/10">
-              <div className="mb-6 h-32 rounded-xl bg-gradient-to-br from-blue-800 to-red-700" />
-              <h3 className="text-2xl font-black">{name}</h3>
-              <p className="text-red-500 font-bold">{year}</p>
-              <p className="mt-4 text-gray-400">{bio}</p>
-            </div>
-          ))}
+      <section id="alumni" className="relative isolate overflow-hidden px-6 py-20">
+        <div className="absolute left-6 top-14 hidden h-44 w-56 overflow-hidden rounded-2xl border border-white/10 bg-white/90 p-4 opacity-35 shadow-2xl md:block">
+          <Image
+            src="/images/scchs-colts-logo.jpg"
+            alt=""
+            fill
+            className="object-contain p-3"
+            sizes="25vw"
+          />
         </div>
-      </section>
+        <div className="pointer-events-none absolute right-[-5vw] top-6 hidden text-[17rem] font-black leading-none text-red-600/10 md:block">
+          SC
+        </div>
 
-      <section className="bg-zinc-950 px-6 py-20">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <p className="text-sm uppercase tracking-[5px] text-red-500">Hall of Fame</p>
-            <h2 className="mt-3 text-4xl md:text-5xl font-black">Honouring the Colts who built the standard.</h2>
-            <p className="mt-6 text-gray-400">
-              Celebrate former players, coaches, builders, and supporters who helped shape Colts football.
-            </p>
-          </div>
+        <div className="relative mx-auto max-w-7xl md:pl-64">
+          <p className="text-sm uppercase tracking-[5px] text-red-500">Colts Family</p>
+          <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
 
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-blue-950 to-red-950 p-8">
-            <p className="text-gray-300">Class of 2026 nominations opening soon.</p>
-            <button className="mt-6 rounded-full bg-red-600 px-6 py-3 font-bold hover:bg-red-500">
-              Nominate a Colt
-            </button>
+          <div className="mt-10 grid md:grid-cols-3 gap-6">
+            {spotlights.map(([name, year, bio]) => (
+              <div key={name} className="rounded-2xl bg-zinc-900/90 p-8 border border-white/10">
+                <div className="mb-6 h-32 rounded-xl bg-gradient-to-br from-blue-800 to-red-700" />
+                <h3 className="text-2xl font-black">{name}</h3>
+                <p className="text-red-500 font-bold">{year}</p>
+                <p className="mt-4 text-gray-400">{bio}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
