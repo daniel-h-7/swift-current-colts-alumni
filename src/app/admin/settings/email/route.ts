@@ -8,7 +8,13 @@ function redirectTo(request: Request, path: string) {
 }
 
 export async function POST(request: Request) {
+  const wantsJson = request.headers.get("accept")?.includes("application/json");
+
   if (!(await isAdminAuthenticated())) {
+    if (wantsJson) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     return redirectTo(request, "/admin/login");
   }
 
@@ -35,6 +41,10 @@ export async function POST(request: Request) {
 
   revalidatePath("/admin/settings");
   revalidatePath("/admin/campaigns");
+
+  if (wantsJson) {
+    return NextResponse.json({ ok: true });
+  }
 
   return redirectTo(request, "/admin/settings/?email_saved=1");
 }

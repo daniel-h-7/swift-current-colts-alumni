@@ -6,6 +6,7 @@ import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
+import { EmailSettingsForm } from "@/components/email-settings-form";
 
 export const dynamic = "force-dynamic";
 
@@ -153,70 +154,10 @@ export default async function AdminSettingsPage({
               stays hidden in Vercel.
             </p>
 
-            {params.email_saved === "1" ? (
-              <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
-                Email settings saved.
-              </div>
-            ) : null}
-
-            <form action="/admin/settings/email" className="mt-6 space-y-5" method="post">
-              <label className="block text-sm font-bold text-gray-200">
-                Sender name
-                <input
-                  className={fieldClass}
-                  defaultValue={emailSettings.email_from_name}
-                  name="email_from_name"
-                  placeholder="Colts Alumni"
-                  required
-                />
-              </label>
-
-              <label className="block text-sm font-bold text-gray-200">
-                From email
-                <input
-                  className={fieldClass}
-                  defaultValue={emailSettings.email_from_address}
-                  name="email_from_address"
-                  placeholder="updates@your-sending-domain.com"
-                  required
-                  type="email"
-                />
-              </label>
-
-              <label className="block text-sm font-bold text-gray-200">
-                Reply-to email
-                <input
-                  className={fieldClass}
-                  defaultValue={emailSettings.email_reply_to}
-                  name="email_reply_to"
-                  placeholder="alumni@coltsfootball.ca"
-                  type="email"
-                />
-              </label>
-
-              <label className="block text-sm font-bold text-gray-200">
-                Sending domain
-                <input
-                  className={fieldClass}
-                  defaultValue={emailSettings.email_sending_domain}
-                  name="email_sending_domain"
-                  placeholder="updates.yourdomain.com"
-                />
-              </label>
-
-              <div className="rounded-2xl border border-red-500/25 bg-red-950/25 p-4 text-sm leading-6 text-red-100">
-                The from email must belong to a domain verified with your email
-                provider. If Wix blocks DNS access, use a separate sending
-                domain with DNS you control.
-              </div>
-
-              <button
-                className="w-full rounded-full bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
-                type="submit"
-              >
-                Save Email Settings
-              </button>
-            </form>
+            <EmailSettingsForm
+              defaultSettings={emailSettings}
+              saved={params.email_saved === "1"}
+            />
           </section>
         </div>
 
