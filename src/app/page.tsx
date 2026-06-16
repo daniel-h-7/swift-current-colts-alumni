@@ -8,9 +8,8 @@ const events = [
 ];
 
 const spotlights = [
-  ["Tyler McLeod", "Class of 2009", "Former captain. Local business owner. Monthly donor."],
-  ["Jordan Hayes", "Class of 2014", "Volunteer coach helping build the next generation."],
-  ["Ryan Campbell", "Class of 1998", "Longtime Colts supporter helping keep game nights strong."],
+  ["Rhett Vavra", "Class of '21", ""],
+  ["Gerry Inglis", "", ""],
 ];
 
 const sponsors = [
@@ -171,13 +170,15 @@ export default function Home() {
           <p className="text-sm uppercase tracking-[5px] text-red-500">Colts Family</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
 
-          <div className="mt-10 grid md:grid-cols-3 gap-6">
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
             {spotlights.map(([name, year, bio]) => (
               <div key={name} className="rounded-2xl bg-zinc-900/90 p-8 border border-white/10">
                 <div className="mb-6 h-32 rounded-xl bg-gradient-to-br from-blue-800 to-red-700" />
                 <h3 className="text-2xl font-black">{name}</h3>
-                <p className="text-red-500 font-bold">{year}</p>
-                <p className="mt-4 text-gray-400">{bio}</p>
+                {year ? (
+                  <p className="mt-1 text-sm font-semibold italic text-red-400">{year}</p>
+                ) : null}
+                {bio ? <p className="mt-4 text-gray-400">{bio}</p> : null}
               </div>
             ))}
           </div>
