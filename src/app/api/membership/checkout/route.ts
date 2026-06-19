@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { logContactActivity } from "@/lib/contact-activity";
+import { ContactInsert } from "@/lib/contact-options";
 import { isValidContact } from "@/lib/contact-validation";
 import { getMembershipSettings } from "@/lib/membership-settings";
 import {
@@ -10,6 +11,10 @@ import {
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
+
+type CheckoutRequest = ContactInsert & {
+  additional_gift_amount_cents?: number;
+};
 
 function getOrigin(request: Request) {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -23,7 +28,13 @@ function getOrigin(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const contact = await request.json();
+    const payload = (await request.json()) as CheckoutRequest;
+    const additionalGiftAmountCents = Math.max(
+      0,
+      Math.round(Number(payload.additional_gift_amount_cents ?? 0)),
+    );
+    const contact = { ...payload };
+    delete contact.additional_gift_amount_cents;
 
     if (!isValidContact(contact)) {
       return NextResponse.json(
@@ -65,6 +76,10 @@ export async function POST(request: Request) {
         contactId: data.id,
         metadata: {
           amount_cents: settings.annual_membership_amount_cents,
+          additional_gift_amount_cents: additionalGiftAmountCents,
+          total_amount_cents:
+            settings.annual_membership_amount_cents +
+            additionalGiftAmountCents,
           mode: isStripeConfigured() ? getStripeMode() : "mock",
           source: "join",
         },
@@ -78,11 +93,12 @@ export async function POST(request: Request) {
     if (isStripeConfigured()) {
       const origin = getOrigin(request);
       const checkoutSession = await createStripeCheckoutSession({
-        amountCents: settings.annual_membership_amount_cents,
+        additionalGiftAmountCents,
         cancelUrl: `${origin}/join`,
         contactId: data.id,
         customerEmail: contact.email,
-        membershipLabel: settings.membership_year_label,
+        membershipAmountCents: settings.annual_membership_amount_cents,
+        membershipLabel: "Annual Membership",
         successUrl: `${origin}/membership/success?contact_id=${data.id}&session_id={CHECKOUT_SESSION_ID}`,
       });
 
@@ -102,7 +118,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      checkoutUrl: `/membership/mock-checkout?contact_id=${data.id}`,
+      checkoutUrl: `/membership/mock-checkout?contact_id=${data.id}&gift_cents=${additionalGiftAmountCents}`,
       contactId: data.id,
       mode: "mock",
       ok: true,

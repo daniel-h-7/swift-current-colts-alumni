@@ -19,9 +19,9 @@ export const defaultMembershipSettings: MembershipSettings = {
   membership_year_label: "2026 Colts Football Alumni & Booster Club",
   renewal_deadline: null,
   join_is_open: true,
-  join_headline: "Join the Colts network.",
+  join_headline: "Help build the legacy.",
   join_body:
-    "One clean contact record helps the club reach alumni, families, boosters, and community supporters when it matters.",
+    "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
 };
 
 export async function getMembershipSettings() {

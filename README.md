@@ -255,7 +255,7 @@ The `/join` page starts an annual membership checkout:
 
 - The contact is created or updated.
 - Membership status is set to `Pending Payment`.
-- When `STRIPE_SECRET_KEY` is configured, the user is sent to Stripe Checkout.
+- When `STRIPE_SECRET_KEY` is configured, the user is sent to Stripe Checkout for an annual subscription.
 - When Stripe is not configured, the user is sent to `/membership/mock-checkout`.
 - The Stripe webhook or mock completion button marks the contact as `Active Member`, sets `last_payment_at`, sets `paid_through`, and logs activity.
 
@@ -273,7 +273,14 @@ Create a local webhook endpoint with the Stripe CLI:
 stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 
-Use Stripe test card `4242 4242 4242 4242` with any future expiry date, any CVC, and any postal code.
+In Stripe, send these webhook events:
+
+```text
+checkout.session.completed
+invoice.paid
+```
+
+Use Stripe test card `4242 4242 4242 4242` with any future expiry date, any CVC, and any postal code. Stripe creates an annual subscription for the membership. Any optional one-time gift is added to the initial invoice only.
 
 For deployed Vercel previews, set `NEXT_PUBLIC_SITE_URL` to the preview URL and create a Stripe sandbox webhook endpoint that points to:
 
@@ -282,6 +289,14 @@ https://your-preview-url.vercel.app/api/stripe/webhook
 ```
 
 Store Stripe customer, checkout session, annual dues amount, last payment, and paid-through fields on the contact record. Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
+
+After a Stripe or mock payment completes, the app runs the New Signups automation:
+
+- It creates a `New Signups` campaign if one does not exist.
+- It creates a default thank-you blast if the campaign has no blasts yet.
+- Admins can edit that blast in the Campaigns section.
+- New paid signups with email opt-in receive that blast automatically.
+- SMS opt-ins are recorded as pending until an SMS provider is connected.
 
 ## Campaigns and blasts
 

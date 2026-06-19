@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { JoinForm } from "@/components/join-form";
@@ -7,9 +8,47 @@ import {
 } from "@/lib/membership-settings";
 import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
+const shareDescription =
+  "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
+const legacyJoinHeadline = "Help build the legacy.";
+const legacyJoinBody =
+  "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.";
+
+export const metadata: Metadata = {
+  description: shareDescription,
+  openGraph: {
+    description: shareDescription,
+    images: [
+      {
+        alt: "Support Swift Current Colts Football",
+        height: 630,
+        url: "/join/opengraph-image",
+        width: 1200,
+      },
+    ],
+    title: "Support Swift Current Colts Football",
+    type: "website",
+  },
+  title: "Support Swift Current Colts Football",
+  twitter: {
+    card: "summary_large_image",
+    description: shareDescription,
+    images: ["/join/opengraph-image"],
+    title: "Support Swift Current Colts Football",
+  },
+};
+
 export default async function JoinPage() {
   const settings = await getMembershipSettings();
   const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
+  const joinHeadline =
+    settings.join_headline === "Join the Colts network."
+      ? legacyJoinHeadline
+      : settings.join_headline;
+  const joinBody =
+    settings.join_body.startsWith("One clean contact record helps")
+      ? legacyJoinBody
+      : settings.join_body;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -50,10 +89,10 @@ export default async function JoinPage() {
                 {settings.membership_year_label}
               </p>
               <h1 className="mt-4 text-5xl font-black leading-none md:text-7xl">
-                {settings.join_headline}
+                {joinHeadline}
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-300">
-                {settings.join_body}
+                {joinBody}
               </p>
               <div className="mt-6 rounded-3xl border border-white/10 bg-zinc-950/80 p-5">
                 <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
@@ -66,8 +105,11 @@ export default async function JoinPage() {
                   {checkoutMode === "mock"
                     ? "This demo captures the CRM record and uses a mock checkout until Stripe keys are configured."
                     : checkoutMode === "sandbox"
-                      ? "Stripe sandbox checkout is connected for demos and test payments."
+                      ? "Stripe sandbox checkout is connected for annual membership demos."
                       : "Secure Stripe checkout is connected for annual memberships."}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-gray-500">
+                  Renews each year on the subscription date until opted out.
                 </p>
                 {!settings.join_is_open ? (
                   <p className="mt-4 rounded-2xl border border-red-500/30 bg-red-950/40 p-3 text-sm font-bold text-red-200">

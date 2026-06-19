@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 type MockCheckoutSearchParams = {
   contact_id?: string;
+  gift_cents?: string;
 };
 
 async function getContact(contactId: string) {
@@ -31,7 +32,9 @@ export default async function MockCheckoutPage({
 }: {
   searchParams: Promise<MockCheckoutSearchParams>;
 }) {
-  const { contact_id: contactId } = await searchParams;
+  const { contact_id: contactId, gift_cents: giftCentsValue } =
+    await searchParams;
+  const giftCents = Math.max(0, Number.parseInt(giftCentsValue ?? "0", 10) || 0);
 
   if (!contactId) {
     redirect("/join");
@@ -96,12 +99,35 @@ export default async function MockCheckoutPage({
             </p>
           </div>
 
+          {giftCents > 0 ? (
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+              <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+                Additional one-time gift
+              </p>
+              <p className="mt-2 text-3xl font-black">
+                {formatCurrencyFromCents(giftCents)}
+              </p>
+            </div>
+          ) : null}
+
+          <div className="mt-5 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-5">
+            <p className="text-xs font-black uppercase tracking-[3px] text-blue-200">
+              Total test payment
+            </p>
+            <p className="mt-2 text-4xl font-black">
+              {formatCurrencyFromCents(
+                settings.annual_membership_amount_cents + giftCents,
+              )}
+            </p>
+          </div>
+
           <form
             action="/api/membership/mock-complete"
             className="mt-8"
             method="post"
           >
             <input name="contact_id" type="hidden" value={contact.id} />
+            <input name="gift_cents" type="hidden" value={giftCents} />
             <button
               className="w-full rounded-full bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
               type="submit"

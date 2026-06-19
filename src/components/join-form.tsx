@@ -10,15 +10,37 @@ import {
 } from "@/lib/contact-options";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
+type GiftOption = "none" | "100" | "200" | "other";
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 
 const labelClass = "text-sm font-bold text-gray-200";
 
+function getGiftAmountCents(formData: FormData) {
+  const giftOption = String(formData.get("additional_gift_option") ?? "none");
+
+  if (giftOption === "100" || giftOption === "200") {
+    return Number(giftOption) * 100;
+  }
+
+  if (giftOption !== "other") {
+    return 0;
+  }
+
+  const customAmount = Number.parseFloat(
+    String(formData.get("additional_gift_amount") ?? "0"),
+  );
+
+  return Number.isFinite(customAmount)
+    ? Math.max(0, Math.round(customAmount * 100))
+    : 0;
+}
+
 export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [giftOption, setGiftOption] = useState<GiftOption>("none");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,10 +76,14 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
       sms_opt_in: formData.get("sms_opt_in") === "on",
       notes: String(formData.get("notes") ?? "").trim() || null,
     };
+    const checkoutPayload = {
+      ...contact,
+      additional_gift_amount_cents: getGiftAmountCents(formData),
+    };
 
     try {
       const response = await fetch("/api/membership/checkout", {
-        body: JSON.stringify(contact),
+        body: JSON.stringify(checkoutPayload),
         headers: {
           "Content-Type": "application/json",
         },
@@ -105,14 +131,14 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
     >
       <div>
         <p className="text-sm uppercase tracking-[5px] text-red-500">
-          Join the Network
+          Help Build the Legacy
         </p>
         <h2 className="mt-3 text-4xl font-black text-white">
-          Stay connected to Colts football.
+          Support Colts Football.
         </h2>
         <p className="mt-4 text-gray-400">
-          Add yourself to the alumni and booster CRM for events, game-night
-          updates, volunteer calls, and club news.
+          Your gift today helps ensure our student-athletes have the necessary
+          tools to succeed on and off the football field.
         </p>
       </div>
 
@@ -202,6 +228,54 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
           placeholder="Tell us how you want to reconnect, volunteer, sponsor, or support."
         />
       </label>
+
+      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+        <p className="text-lg font-black text-white">
+          Looking to support in a bigger way?
+        </p>
+        <p className="mt-2 text-sm leading-6 text-gray-400">
+          Support the Colts with an additional one-time gift. This will be
+          added to the first annual membership checkout.
+        </p>
+
+        <input name="additional_gift_option" type="hidden" value={giftOption} />
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {[
+            ["100", "$100"],
+            ["200", "$200"],
+            ["other", "Other"],
+          ].map(([value, label]) => (
+            <button
+              className={`rounded-xl border px-4 py-4 font-black transition ${
+                giftOption === value
+                  ? "border-red-500 bg-red-600 text-white"
+                  : "border-white/10 bg-black/35 text-gray-200 hover:border-red-500/60"
+              }`}
+              key={value}
+              onClick={() =>
+                setGiftOption(giftOption === value ? "none" : (value as GiftOption))
+              }
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {giftOption === "other" ? (
+          <label className={`mt-4 block ${labelClass}`}>
+            One-time gift amount
+            <input
+              className={fieldClass}
+              min="1"
+              name="additional_gift_amount"
+              placeholder="Enter amount"
+              step="1"
+              type="number"
+            />
+          </label>
+        ) : null}
+      </div>
 
       {message ? (
         <p

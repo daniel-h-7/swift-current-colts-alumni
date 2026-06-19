@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { logContactActivity } from "@/lib/contact-activity";
 import { getMembershipSettings } from "@/lib/membership-settings";
+import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -14,6 +15,10 @@ function getPaidThroughDate() {
 export async function POST(request: Request) {
   const formData = await request.formData();
   const contactId = String(formData.get("contact_id") ?? "");
+  const giftCents = Math.max(
+    0,
+    Number.parseInt(String(formData.get("gift_cents") ?? "0"), 10) || 0,
+  );
 
   if (!contactId) {
     redirect("/join");
@@ -41,6 +46,9 @@ export async function POST(request: Request) {
         contactId,
         metadata: {
           amount_cents: settings.annual_membership_amount_cents,
+          additional_gift_amount_cents: giftCents,
+          total_amount_cents:
+            settings.annual_membership_amount_cents + giftCents,
           mode: "mock",
           paid_through: paidThrough,
         },
@@ -50,6 +58,11 @@ export async function POST(request: Request) {
     } catch {
       // Activity logging should not block the test payment flow.
     }
+
+    await runNewSignupAutomation({
+      contactId,
+      source: "mock",
+    }).catch(() => undefined);
   }
 
   redirect(`/membership/success?contact_id=${contactId}`);
