@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Campaign } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { formatDate } from "@/lib/contact-format";
+import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,7 @@ export default async function CampaignsPage() {
   let errorMessage = "";
 
   try {
+    await ensureNewSignupAutomationCampaign();
     campaigns = await getCampaigns();
   } catch (error) {
     errorMessage =

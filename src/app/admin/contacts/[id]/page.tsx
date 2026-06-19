@@ -103,11 +103,17 @@ async function updateContact(formData: FormData) {
     .map((tag) => tag.trim())
     .filter(Boolean);
   const annualDues = String(formData.get("annual_dues_amount") ?? "").trim();
+  const giftDonations = String(
+    formData.get("gift_donation_amount") ?? "",
+  ).trim();
   const updates = {
     admin_notes: String(formData.get("admin_notes") ?? "").trim() || null,
     annual_dues_amount_cents: annualDues
       ? Math.round(Number.parseFloat(annualDues) * 100)
       : null,
+    gift_donation_amount_cents: giftDonations
+      ? Math.round(Number.parseFloat(giftDonations) * 100)
+      : 0,
     last_payment_at:
       String(formData.get("last_payment_at") ?? "").trim() || null,
     membership_status: String(formData.get("membership_status") ?? ""),
@@ -274,6 +280,12 @@ export default async function ContactDetailPage({
               value={formatCurrencyFromCents(contact.annual_dues_amount_cents)}
             />
             <DetailItem
+              label="Gift Donations"
+              value={formatCurrencyFromCents(
+                contact.gift_donation_amount_cents,
+              )}
+            />
+            <DetailItem
               label="Paid Through"
               value={formatOptionalDate(contact.paid_through)}
             />
@@ -412,6 +424,23 @@ export default async function ContactDetailPage({
                   min="0"
                   name="annual_dues_amount"
                   placeholder="100.00"
+                  step="0.01"
+                  type="number"
+                />
+              </label>
+
+              <label className="block text-sm font-bold text-gray-200">
+                Gift donations total
+                <input
+                  className={fieldClass}
+                  defaultValue={
+                    typeof contact.gift_donation_amount_cents === "number"
+                      ? (contact.gift_donation_amount_cents / 100).toFixed(2)
+                      : ""
+                  }
+                  min="0"
+                  name="gift_donation_amount"
+                  placeholder="0.00"
                   step="0.01"
                   type="number"
                 />

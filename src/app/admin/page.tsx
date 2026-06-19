@@ -48,6 +48,7 @@ const sortableColumns = [
   { key: "status", label: "Status" },
   { key: "membership_status", label: "Membership" },
   { key: "annual_dues_amount_cents", label: "Dues" },
+  { key: "gift_donation_amount_cents", label: "Gifts" },
   { key: "paid_through", label: "Paid Through" },
   { key: "last_payment_at", label: "Last Payment" },
   { key: "tags", label: "Tags" },
@@ -668,6 +669,11 @@ export default async function AdminPage({
                       )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatCurrencyFromCents(
+                        contact.gift_donation_amount_cents,
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
                       {formatOptionalDate(contact.paid_through)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
@@ -720,7 +726,7 @@ export default async function AdminPage({
                   <tr>
                     <td
                       className="px-4 py-12 text-center font-bold text-gray-400"
-                      colSpan={17}
+                      colSpan={18}
                     >
                       No contacts match the current filters.
                     </td>

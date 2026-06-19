@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { logContactActivity } from "@/lib/contact-activity";
+import { formatCurrencyFromCents } from "@/lib/contact-format";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import {
   constructStripeWebhookEvent,
@@ -65,16 +66,27 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
   );
   const totalAmountCents = session.amount_total ?? membershipAmountCents;
   const supabase = createServerSupabaseClient();
+  const { data: contact } = await supabase
+    .from("contacts")
+    .select("gift_donation_amount_cents")
+    .eq("id", contactId)
+    .maybeSingle();
+  const contactUpdates = {
+    annual_dues_amount_cents: membershipAmountCents,
+    gift_donation_amount_cents:
+      additionalGiftAmountCents > 0
+        ? Number(contact?.gift_donation_amount_cents ?? 0) +
+          additionalGiftAmountCents
+        : Number(contact?.gift_donation_amount_cents ?? 0),
+    last_payment_at: now.slice(0, 10),
+    membership_status: "Active Member",
+    paid_through: paidThrough,
+    stripe_checkout_session_id: session.id,
+    stripe_customer_id: session.customer ?? null,
+  };
   const { error } = await supabase
     .from("contacts")
-    .update({
-      annual_dues_amount_cents: membershipAmountCents,
-      last_payment_at: now.slice(0, 10),
-      membership_status: "Active Member",
-      paid_through: paidThrough,
-      stripe_checkout_session_id: session.id,
-      stripe_customer_id: session.customer ?? null,
-    })
+    .update(contactUpdates)
     .eq("id", contactId);
 
   if (error) {
@@ -83,7 +95,10 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
 
   try {
     await logContactActivity({
-      body: `Stripe payment completed. Paid through ${paidThrough}.`,
+      body:
+        additionalGiftAmountCents > 0
+          ? `Stripe membership completed. One-time gift ${formatCurrencyFromCents(additionalGiftAmountCents)}. Paid through ${paidThrough}.`
+          : `Stripe membership completed. Paid through ${paidThrough}.`,
       contactId,
       metadata: {
         amount_cents: totalAmountCents,
@@ -101,6 +116,23 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
     });
   } catch {
     // Activity logging should not block webhook acknowledgement.
+  }
+
+  if (additionalGiftAmountCents > 0) {
+    await logContactActivity({
+      body: `One-time gift ${formatCurrencyFromCents(additionalGiftAmountCents)}.`,
+      contactId,
+      metadata: {
+        amount_cents: additionalGiftAmountCents,
+        mode: "stripe",
+        stripe_checkout_session_id: session.id,
+        stripe_customer_id: session.customer ?? null,
+        stripe_livemode: session.livemode ?? false,
+        stripe_subscription_id: session.subscription ?? null,
+      },
+      title: "One-time gift received",
+      type: "gift_donation_received",
+    }).catch(() => undefined);
   }
 
   await runNewSignupAutomation({

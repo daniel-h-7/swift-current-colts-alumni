@@ -137,6 +137,16 @@ async function getOrCreateBlast(campaignId: string) {
   };
 }
 
+export async function ensureNewSignupAutomationCampaign() {
+  const campaignId = await getOrCreateCampaign();
+  const blast = await getOrCreateBlast(campaignId);
+
+  return {
+    blastId: blast.id,
+    campaignId,
+  };
+}
+
 async function hasAlreadySent(blastId: string, contactId: string, eventType: string) {
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
@@ -188,13 +198,13 @@ export async function runNewSignupAutomation({
     return;
   }
 
-  const campaignId = await getOrCreateCampaign();
+  const { campaignId, blastId } = await ensureNewSignupAutomationCampaign();
   const blast = await getOrCreateBlast(campaignId);
 
   if (contact.email_opt_in && contact.email) {
     const eventType = "new_signup_email_sent";
 
-    if (!(await hasAlreadySent(blast.id, contact.id, eventType))) {
+    if (!(await hasAlreadySent(blastId, contact.id, eventType))) {
       const emailSettings = await getEmailSettings();
       const result = await sendCampaignTestEmail({
         from: formatFromEmail(emailSettings),
@@ -206,7 +216,7 @@ export async function runNewSignupAutomation({
       });
 
       await recordBlastEvent({
-        blastId: blast.id,
+        blastId,
         email: contact.email,
         eventType,
         metadata: {
@@ -223,9 +233,9 @@ export async function runNewSignupAutomation({
   if (contact.sms_opt_in) {
     const eventType = "new_signup_sms_pending";
 
-    if (!(await hasAlreadySent(blast.id, contact.id, eventType))) {
+    if (!(await hasAlreadySent(blastId, contact.id, eventType))) {
       await recordBlastEvent({
-        blastId: blast.id,
+        blastId,
         email: contact.email,
         eventType,
         metadata: {
@@ -242,7 +252,7 @@ export async function runNewSignupAutomation({
     body: "New signup automation processed.",
     contactId: contact.id,
     metadata: {
-      blast_id: blast.id,
+      blast_id: blastId,
       campaign_id: campaignId,
       email_opt_in: contact.email_opt_in,
       sms_opt_in: contact.sms_opt_in,

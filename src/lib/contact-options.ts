@@ -51,6 +51,7 @@ export type Contact = {
   tags?: string[] | null;
   admin_notes?: string | null;
   annual_dues_amount_cents?: number | null;
+  gift_donation_amount_cents?: number | null;
   paid_through?: string | null;
   last_payment_at?: string | null;
   stripe_customer_id?: string | null;

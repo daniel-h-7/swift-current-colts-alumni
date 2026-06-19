@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { logContactActivity } from "@/lib/contact-activity";
+import { formatCurrencyFromCents } from "@/lib/contact-format";
 import { getMembershipSettings } from "@/lib/membership-settings";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -28,10 +29,17 @@ export async function POST(request: Request) {
   const now = new Date().toISOString();
   const paidThrough = getPaidThroughDate();
   const supabase = createServerSupabaseClient();
+  const { data: contact } = await supabase
+    .from("contacts")
+    .select("gift_donation_amount_cents")
+    .eq("id", contactId)
+    .maybeSingle();
   const { error } = await supabase
     .from("contacts")
     .update({
       annual_dues_amount_cents: settings.annual_membership_amount_cents,
+      gift_donation_amount_cents:
+        Number(contact?.gift_donation_amount_cents ?? 0) + giftCents,
       last_payment_at: now.slice(0, 10),
       membership_status: "Active Member",
       paid_through: paidThrough,
@@ -42,7 +50,10 @@ export async function POST(request: Request) {
   if (!error) {
     try {
       await logContactActivity({
-        body: `Mock payment completed. Paid through ${paidThrough}.`,
+        body:
+          giftCents > 0
+            ? `Mock membership completed. One-time gift ${formatCurrencyFromCents(giftCents)}. Paid through ${paidThrough}.`
+            : `Mock membership completed. Paid through ${paidThrough}.`,
         contactId,
         metadata: {
           amount_cents: settings.annual_membership_amount_cents,
@@ -57,6 +68,19 @@ export async function POST(request: Request) {
       });
     } catch {
       // Activity logging should not block the test payment flow.
+    }
+
+    if (giftCents > 0) {
+      await logContactActivity({
+        body: `One-time gift ${formatCurrencyFromCents(giftCents)}.`,
+        contactId,
+        metadata: {
+          amount_cents: giftCents,
+          mode: "mock",
+        },
+        title: "One-time gift received",
+        type: "gift_donation_received",
+      }).catch(() => undefined);
     }
 
     await runNewSignupAutomation({
