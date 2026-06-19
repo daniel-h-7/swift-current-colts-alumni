@@ -5,9 +5,11 @@ import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
+import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
 export default async function JoinPage() {
   const settings = await getMembershipSettings();
+  const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -61,9 +63,11 @@ export default async function JoinPage() {
                   {formatMembershipAmount(settings)}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-gray-400">
-                  Stripe checkout will be connected later. For now, this page
-                  captures the CRM record and prepares the annual membership
-                  flow.
+                  {checkoutMode === "mock"
+                    ? "This demo captures the CRM record and uses a mock checkout until Stripe keys are configured."
+                    : checkoutMode === "sandbox"
+                      ? "Stripe sandbox checkout is connected for demos and test payments."
+                      : "Secure Stripe checkout is connected for annual memberships."}
                 </p>
                 {!settings.join_is_open ? (
                   <p className="mt-4 rounded-2xl border border-red-500/30 bg-red-950/40 p-3 text-sm font-bold text-red-200">

@@ -22,7 +22,8 @@ export default function MembershipSuccessPage() {
             Welcome to the Colts network.
           </h1>
           <p className="mt-4 text-gray-400">
-            Your test annual membership has been marked active in the CRM.
+            Your payment was received. The CRM will update as soon as Stripe
+            confirms the checkout session.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link

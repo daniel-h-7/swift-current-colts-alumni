@@ -251,21 +251,37 @@ create index if not exists contacts_status_idx
 
 ## Paid membership direction
 
-The current `/join` page starts a mock annual membership checkout:
+The `/join` page starts an annual membership checkout:
 
 - The contact is created or updated.
 - Membership status is set to `Pending Payment`.
-- The user is sent to `/membership/mock-checkout`.
-- The mock completion button marks the contact as `Active Member`, sets `last_payment_at`, sets `paid_through`, and logs activity.
+- When `STRIPE_SECRET_KEY` is configured, the user is sent to Stripe Checkout.
+- When Stripe is not configured, the user is sent to `/membership/mock-checkout`.
+- The Stripe webhook or mock completion button marks the contact as `Active Member`, sets `last_payment_at`, sets `paid_through`, and logs activity.
 
-When Stripe is connected, replace the mock checkout destination with a real Stripe Checkout session:
+For Stripe sandbox demos:
 
-- Show fixed annual membership donation tiers.
-- Send users through Stripe Checkout before creating or activating a membership.
-- Store Stripe customer, checkout session, annual dues amount, last payment, and paid-through fields on the contact record.
-- Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
+```bash
+STRIPE_SECRET_KEY=sk_test_your_sandbox_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_sandbox_webhook_secret
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
 
-The placeholder webhook route lives at `/api/stripe/webhook`.
+Create a local webhook endpoint with the Stripe CLI:
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+Use Stripe test card `4242 4242 4242 4242` with any future expiry date, any CVC, and any postal code.
+
+For deployed Vercel previews, set `NEXT_PUBLIC_SITE_URL` to the preview URL and create a Stripe sandbox webhook endpoint that points to:
+
+```text
+https://your-preview-url.vercel.app/api/stripe/webhook
+```
+
+Store Stripe customer, checkout session, annual dues amount, last payment, and paid-through fields on the contact record. Keep the contact dashboard as the club CRM for alumni, boosters, donors, and sponsors.
 
 ## Campaigns and blasts
 
