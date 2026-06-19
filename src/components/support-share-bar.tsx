@@ -7,6 +7,8 @@ const shareText =
 
 const iconButtonClass =
   "flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white transition hover:-translate-y-0.5 hover:border-red-500 hover:bg-red-950/40 focus:outline-none focus:ring-2 focus:ring-red-500/50";
+const copyButtonClass =
+  "shrink-0 rounded-full bg-red-600 px-4 py-2 text-xs font-black uppercase tracking-[2px] text-white transition hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/50";
 
 type SharePlatform = {
   icon: React.ReactNode;
@@ -77,14 +79,14 @@ export function SupportShareBar({ shareUrl }: { shareUrl?: string }) {
   }, [shareUrl]);
   const caption = `${shareText} ${resolvedShareUrl}`;
 
-  async function copyCaption() {
-    await navigator.clipboard.writeText(caption);
-    setCopyMessage("Caption copied.");
+  async function copyText(text: string, message: string) {
+    await navigator.clipboard.writeText(text);
+    setCopyMessage(message);
     window.setTimeout(() => setCopyMessage(""), 2400);
   }
 
   async function openInstagram() {
-    await copyCaption();
+    await copyText(caption, "Caption copied for Instagram.");
     window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
   }
 
@@ -96,6 +98,24 @@ export function SupportShareBar({ shareUrl }: { shareUrl?: string }) {
       <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-gray-400">
         Invite another alumni, family member, or supporter to join you.
       </p>
+
+      <div className="mx-auto mt-5 flex max-w-xl flex-col gap-3 rounded-2xl border border-white/10 bg-black/35 p-3 text-left sm:flex-row sm:items-center">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-black uppercase tracking-[2px] text-gray-500">
+            Share Link
+          </p>
+          <p className="mt-1 truncate text-sm font-bold text-gray-200">
+            {resolvedShareUrl}
+          </p>
+        </div>
+        <button
+          className={copyButtonClass}
+          onClick={() => copyText(resolvedShareUrl, "Share link copied.")}
+          type="button"
+        >
+          Copy Link
+        </button>
+      </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
         {sharePlatforms.map((platform) => (
