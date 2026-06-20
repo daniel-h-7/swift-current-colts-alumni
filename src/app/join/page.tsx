@@ -10,8 +10,6 @@ import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
 const shareDescription =
   "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
-const legacyJoinBody =
-  "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.";
 
 export const metadata: Metadata = {
   description: shareDescription,
@@ -40,10 +38,6 @@ export const metadata: Metadata = {
 export default async function JoinPage() {
   const settings = await getMembershipSettings();
   const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
-  const joinBody =
-    settings.join_body.startsWith("One clean contact record helps")
-      ? legacyJoinBody
-      : settings.join_body;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -66,7 +60,7 @@ export default async function JoinPage() {
                 Swift Current
               </p>
               <p className="mt-1 text-xl font-black text-white group-hover:text-blue-400">
-                Colts Alumni
+                Colts Football
               </p>
             </Link>
 
@@ -82,9 +76,6 @@ export default async function JoinPage() {
             <div className="lg:pt-10">
               <p className="text-sm uppercase tracking-[6px] text-red-500">
                 {settings.membership_year_label}
-              </p>
-              <p className="mt-5 text-xl font-semibold leading-8 text-gray-200">
-                {joinBody}
               </p>
               <div className="mt-6 rounded-3xl border border-white/10 bg-zinc-950/80 p-5">
                 <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">

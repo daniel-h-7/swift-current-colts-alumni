@@ -3,11 +3,16 @@ import { revalidatePath } from "next/cache";
 import {
   Blast,
   BlastEvent,
+  BlastStatus,
   serializeAudienceFilter,
   summarizeAudienceFilter,
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getAudiencePreview } from "@/lib/campaign-audience";
+import {
+  getAudienceContacts,
+  getAudiencePreview,
+  getEmailAudiencePreview,
+} from "@/lib/campaign-audience";
 import { formatContactName } from "@/lib/contact-format";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { getEmailProviderMode, sendCampaignTestEmail } from "@/lib/email-provider";
@@ -172,6 +177,149 @@ async function recordTestSend(formData: FormData) {
   redirect(`/admin/campaigns/${campaignId}/blasts/${blastId}?test_sent=1`);
 }
 
+async function sendBlast(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const campaignId = String(formData.get("campaign_id") ?? "");
+  const blastId = String(formData.get("blast_id") ?? "");
+  const supabase = createServerSupabaseClient();
+  const { data: blast, error: blastError } = await supabase
+    .from("campaign_blasts")
+    .select("audience_filter, html_content, preheader, status, subject")
+    .eq("id", blastId)
+    .maybeSingle();
+
+  if (blastError || !blast) {
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+        blastError?.message ?? "Unable to load this blast before sending.",
+      )}`,
+    );
+  }
+
+  if (blast.status === "Sent") {
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+        "This blast has already been sent.",
+      )}`,
+    );
+  }
+
+  let contacts = [];
+
+  try {
+    contacts = await getAudienceContacts(blast.audience_filter);
+  } catch (error) {
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+        error instanceof Error ? error.message : "Unable to load the audience.",
+      )}`,
+    );
+  }
+
+  if (!contacts.length) {
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+        "This saved audience has no email opt-in recipients.",
+      )}`,
+    );
+  }
+
+  const emailSettings = await getEmailSettings();
+  const sender = formatFromEmail(emailSettings);
+  const emailProviderMode = getEmailProviderMode();
+  let sentCount = 0;
+  let failedCount = 0;
+
+  for (const contact of contacts) {
+    const result = await sendCampaignTestEmail({
+      from: sender,
+      html: blast.html_content,
+      preheader: blast.preheader,
+      replyTo: emailSettings.email_reply_to,
+      subject: blast.subject,
+      to: contact.email,
+    }).catch((error: unknown) => {
+      failedCount += 1;
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to send this blast email.",
+      };
+    });
+
+    if ("error" in result) {
+      await supabase.from("campaign_blast_events").insert({
+        blast_id: blastId,
+        email: contact.email,
+        event_type: "blast_send_failed",
+        metadata: {
+          contact_id: contact.id,
+          message: result.error,
+          mode: emailProviderMode,
+          provider: emailProviderMode === "smtp-demo" ? "smtp" : "resend",
+          sender,
+        },
+      });
+      continue;
+    }
+
+    sentCount += 1;
+    await supabase.from("campaign_blast_events").insert({
+      blast_id: blastId,
+      email: contact.email,
+      event_type: "blast_send_sent",
+      metadata: {
+        contact_id: contact.id,
+        delivered_to: result.deliveredTo,
+        mode: result.mode,
+        provider: result.provider,
+        provider_id: result.providerId,
+        reply_to: emailSettings.email_reply_to || null,
+        sender,
+      },
+    });
+  }
+
+  if (!sentCount) {
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+        `No emails were sent. ${failedCount} failed.`,
+      )}`,
+    );
+  }
+
+  const now = new Date().toISOString();
+  const { error: updateError } = await supabase
+    .from("campaign_blasts")
+    .update({
+      recipient_count: sentCount,
+      sent_at: now,
+      status: "Sent" satisfies BlastStatus,
+      updated_at: now,
+    })
+    .eq("id", blastId);
+
+  if (updateError) {
+    redirect(
+      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+        updateError.message,
+      )}`,
+    );
+  }
+
+  revalidatePath(`/admin/campaigns/${campaignId}`);
+  revalidatePath(`/admin/campaigns/${campaignId}/blasts/${blastId}`);
+  redirect(
+    `/admin/campaigns/${campaignId}/blasts/${blastId}?send_sent=${sentCount}&send_failed=${failedCount}`,
+  );
+}
+
 function getEventProviderDetail(event: BlastEvent) {
   const metadata = event.metadata ?? {};
   const mode = typeof metadata.mode === "string" ? metadata.mode : null;
@@ -194,7 +342,13 @@ export default async function EditBlastPage({
   searchParams,
 }: {
   params: Promise<BlastParams>;
-  searchParams: Promise<{ test_error?: string; test_sent?: string }>;
+  searchParams: Promise<{
+    send_error?: string;
+    send_failed?: string;
+    send_sent?: string;
+    test_error?: string;
+    test_sent?: string;
+  }>;
 }) {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin/login");
@@ -208,7 +362,7 @@ export default async function EditBlastPage({
     notFound();
   }
 
-  const [audiencePreview, blastEvents] = await Promise.all([
+  const [audiencePreview, emailAudiencePreview, blastEvents] = await Promise.all([
     getAudiencePreview(blast.audience_filter).catch((error: unknown) => ({
       contacts: [],
       count: 0,
@@ -217,9 +371,16 @@ export default async function EditBlastPage({
           ? error.message
           : "Unable to preview this audience.",
     })),
+    getEmailAudiencePreview(blast.audience_filter).catch(() => ({
+      count: 0,
+      filter: { email_opt_in: true },
+    })),
     getBlastEvents(blast.id).catch(() => [] as BlastEvent[]),
   ]);
   const emailProviderMode = getEmailProviderMode();
+  const sendSentCount = Number.parseInt(query.send_sent ?? "0", 10) || 0;
+  const sendFailedCount = Number.parseInt(query.send_failed ?? "0", 10) || 0;
+  const isSent = blast.status === "Sent";
 
   return (
     <>
@@ -236,6 +397,55 @@ export default async function EditBlastPage({
         heading="Edit Blast"
         submitLabel="Save Blast"
       >
+        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-xl font-black">Send Blast</h2>
+              <p className="mt-2 text-sm leading-6 text-gray-400">
+                Sends the saved blast to email opt-ins in the saved audience.
+                Save changes before sending.
+              </p>
+            </div>
+            <p className="text-sm font-bold text-gray-400">
+              {summarizeAudienceFilter(blast.audience_filter)}
+            </p>
+          </div>
+
+          {sendSentCount > 0 ? (
+            <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
+              Sent to {sendSentCount} recipient{sendSentCount === 1 ? "" : "s"}
+              {sendFailedCount
+                ? `; ${sendFailedCount} failed and were recorded.`
+                : "."}
+            </div>
+          ) : null}
+
+          {query.send_error ? (
+            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+              {query.send_error}
+            </div>
+          ) : null}
+
+          {isSent ? (
+            <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm font-bold text-gray-300">
+              This blast has already been sent.
+            </div>
+          ) : (
+            <form action={sendBlast} className="mt-5">
+              <input name="campaign_id" type="hidden" value={id} />
+              <input name="blast_id" type="hidden" value={blast.id} />
+              <button
+                className="w-full rounded-full bg-red-600 px-6 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!emailAudiencePreview.count}
+                type="submit"
+              >
+                Send Blast to {emailAudiencePreview.count} Email Recipient
+                {emailAudiencePreview.count === 1 ? "" : "s"}
+              </button>
+            </form>
+          )}
+        </section>
+
         <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>

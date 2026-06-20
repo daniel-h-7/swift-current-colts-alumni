@@ -77,3 +77,34 @@ export async function getAudiencePreview(audienceFilter: string | null | undefin
     filter,
   };
 }
+
+export async function getEmailAudiencePreview(audienceFilter: string | null | undefined) {
+  const filter = {
+    ...parseAudienceFilter(audienceFilter),
+    email_opt_in: true,
+  };
+  const { count, error } = await applyAudienceFilter(filter).limit(1);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return {
+    count: count ?? 0,
+    filter,
+  };
+}
+
+export async function getAudienceContacts(audienceFilter: string | null | undefined) {
+  const filter = {
+    ...parseAudienceFilter(audienceFilter),
+    email_opt_in: true,
+  };
+  const { data, error } = await applyAudienceFilter(filter);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as Contact[];
+}
