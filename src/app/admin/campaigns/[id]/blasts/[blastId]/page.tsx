@@ -8,6 +8,7 @@ import {
   summarizeAudienceFilter,
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { duplicateBlast } from "@/lib/campaign-duplication";
 import {
   getAudienceContacts,
   getAudiencePreview,
@@ -320,6 +321,20 @@ async function sendBlast(formData: FormData) {
   );
 }
 
+async function duplicateBlastAction(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const blastId = String(formData.get("blast_id") ?? "");
+  const { campaignId, blastId: newBlastId } = await duplicateBlast(blastId);
+
+  revalidatePath(`/admin/campaigns/${campaignId}`);
+  redirect(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`);
+}
+
 function getEventProviderDetail(event: BlastEvent) {
   const metadata = event.metadata ?? {};
   const mode = typeof metadata.mode === "string" ? metadata.mode : null;
@@ -397,6 +412,26 @@ export default async function EditBlastPage({
         heading="Edit Blast"
         submitLabel="Save Blast"
       >
+        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-black">Reuse This Blast</h2>
+              <p className="mt-2 text-sm leading-6 text-gray-400">
+                Create a fresh draft copy with the same content and audience.
+              </p>
+            </div>
+            <form action={duplicateBlastAction}>
+              <input name="blast_id" type="hidden" value={blast.id} />
+              <button
+                className="rounded-full border border-white/15 px-5 py-3 text-sm font-black uppercase tracking-[2px] text-gray-200 transition hover:border-blue-500 hover:text-white"
+                type="submit"
+              >
+                Duplicate Blast
+              </button>
+            </form>
+          </div>
+        </section>
+
         <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>

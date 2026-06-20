@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import {
   Blast,
   Campaign,
@@ -8,6 +9,10 @@ import {
   summarizeAudienceFilter,
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import {
+  duplicateBlast,
+  duplicateCampaignWithBlasts,
+} from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -45,6 +50,34 @@ async function getBlasts(campaignId: string) {
   }
 
   return (data ?? []) as Blast[];
+}
+
+async function duplicateCampaign(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const campaignId = String(formData.get("campaign_id") ?? "");
+  const newCampaignId = await duplicateCampaignWithBlasts(campaignId);
+
+  revalidatePath("/admin/campaigns");
+  redirect(`/admin/campaigns/${newCampaignId}`);
+}
+
+async function duplicateBlastAction(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const blastId = String(formData.get("blast_id") ?? "");
+  const { campaignId, blastId: newBlastId } = await duplicateBlast(blastId);
+
+  revalidatePath(`/admin/campaigns/${campaignId}`);
+  redirect(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`);
 }
 
 export default async function CampaignDetailPage({
@@ -90,6 +123,15 @@ export default async function CampaignDetailPage({
             >
               Campaigns
             </Link>
+            <form action={duplicateCampaign}>
+              <input name="campaign_id" type="hidden" value={campaign.id} />
+              <button
+                className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+                type="submit"
+              >
+                Duplicate Campaign
+              </button>
+            </form>
             <Link
               className="rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-600"
               href={`/admin/campaigns/${campaign.id}/blasts/new`}
@@ -155,9 +197,20 @@ export default async function CampaignDetailPage({
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getClickRate(blast)}%</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatDate(blast.updated_at)}</td>
                     <td className="whitespace-nowrap px-4 py-4">
-                      <Link className="font-black text-blue-400 hover:text-blue-300" href={`/admin/campaigns/${campaign.id}/blasts/${blast.id}`}>
-                        Edit
-                      </Link>
+                      <div className="flex items-center gap-3">
+                        <Link className="font-black text-blue-400 hover:text-blue-300" href={`/admin/campaigns/${campaign.id}/blasts/${blast.id}`}>
+                          Edit
+                        </Link>
+                        <form action={duplicateBlastAction}>
+                          <input name="blast_id" type="hidden" value={blast.id} />
+                          <button
+                            className="font-black text-gray-400 hover:text-white"
+                            type="submit"
+                          >
+                            Duplicate
+                          </button>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}

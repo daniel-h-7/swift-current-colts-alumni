@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { Campaign } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { duplicateCampaignWithBlasts } from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -20,6 +22,20 @@ async function getCampaigns() {
   }
 
   return (data ?? []) as Campaign[];
+}
+
+async function duplicateCampaign(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const campaignId = String(formData.get("campaign_id") ?? "");
+  const newCampaignId = await duplicateCampaignWithBlasts(campaignId);
+
+  revalidatePath("/admin/campaigns");
+  redirect(`/admin/campaigns/${newCampaignId}`);
 }
 
 export default async function CampaignsPage() {
@@ -74,22 +90,32 @@ export default async function CampaignsPage() {
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {campaigns.map((campaign) => (
-            <Link
+            <div
               className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl hover:border-blue-500/60"
-              href={`/admin/campaigns/${campaign.id}`}
               key={campaign.id}
             >
-              <p className="text-xs font-black uppercase tracking-[3px] text-red-400">
-                {campaign.status}
-              </p>
-              <h2 className="mt-3 text-2xl font-black">{campaign.title}</h2>
-              <p className="mt-3 min-h-12 text-sm leading-6 text-gray-400">
-                {campaign.description || "No description yet."}
-              </p>
-              <p className="mt-6 text-xs font-bold uppercase tracking-[2px] text-gray-500">
-                Updated {formatDate(campaign.updated_at)}
-              </p>
-            </Link>
+              <Link href={`/admin/campaigns/${campaign.id}`}>
+                <p className="text-xs font-black uppercase tracking-[3px] text-red-400">
+                  {campaign.status}
+                </p>
+                <h2 className="mt-3 text-2xl font-black">{campaign.title}</h2>
+                <p className="mt-3 min-h-12 text-sm leading-6 text-gray-400">
+                  {campaign.description || "No description yet."}
+                </p>
+                <p className="mt-6 text-xs font-bold uppercase tracking-[2px] text-gray-500">
+                  Updated {formatDate(campaign.updated_at)}
+                </p>
+              </Link>
+              <form action={duplicateCampaign} className="mt-5">
+                <input name="campaign_id" type="hidden" value={campaign.id} />
+                <button
+                  className="rounded-full border border-white/15 px-4 py-2 text-xs font-black uppercase tracking-[2px] text-gray-200 transition hover:border-blue-500 hover:text-white"
+                  type="submit"
+                >
+                  Duplicate Campaign
+                </button>
+              </form>
+            </div>
           ))}
 
           {!campaigns.length && !errorMessage ? (
