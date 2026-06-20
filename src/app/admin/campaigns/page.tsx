@@ -7,6 +7,7 @@ import { duplicateCampaignWithBlasts } from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 
 export const dynamic = "force-dynamic";
 
@@ -121,6 +122,12 @@ export default async function CampaignsPage() {
                   ...
                 </summary>
                 <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 p-2 shadow-2xl">
+                  <Link
+                    className="block rounded-xl px-3 py-2 text-sm font-bold text-gray-200 hover:bg-white/10 hover:text-white"
+                    href={`/admin/campaigns/${campaign.id}/edit`}
+                  >
+                    Edit Campaign
+                  </Link>
                   <form action={duplicateCampaign}>
                     <input name="campaign_id" type="hidden" value={campaign.id} />
                     <button
@@ -132,12 +139,12 @@ export default async function CampaignsPage() {
                   </form>
                   <form action={deleteCampaign}>
                     <input name="campaign_id" type="hidden" value={campaign.id} />
-                    <button
+                    <ConfirmSubmitButton
                       className="w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-red-300 hover:bg-red-950/50 hover:text-red-100"
-                      type="submit"
+                      message={`Delete campaign "${campaign.title}" and all of its blasts?`}
                     >
                       Delete Campaign
-                    </button>
+                    </ConfirmSubmitButton>
                   </form>
                 </div>
               </details>

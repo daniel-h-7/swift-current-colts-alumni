@@ -12,6 +12,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateBlast } from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 
 export const dynamic = "force-dynamic";
 
@@ -211,12 +212,12 @@ export default async function CampaignDetailPage({
                         <form action={deleteBlastAction}>
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <input name="blast_id" type="hidden" value={blast.id} />
-                          <button
+                          <ConfirmSubmitButton
                             className="font-black text-red-400 hover:text-red-300"
-                            type="submit"
+                            message={`Delete blast "${blast.title}"?`}
                           >
                             Delete
-                          </button>
+                          </ConfirmSubmitButton>
                         </form>
                       </div>
                     </td>
