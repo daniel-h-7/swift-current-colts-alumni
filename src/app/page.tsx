@@ -8,8 +8,18 @@ const events = [
 ];
 
 const spotlights = [
-  ["Rhett Vavra", "Class of '21", ""],
-  ["Gerry Inglis", "", ""],
+  {
+    image: "/images/rhett-vavra.webp",
+    name: "Rhett Vavra",
+    source: "University of Saskatchewan Huskies",
+    year: "Class of '21",
+  },
+  {
+    image: "/images/gerry-inglis.webp",
+    name: "Gerry Inglis",
+    source: "University of Alberta Golden Bears",
+    year: "",
+  },
 ];
 
 const sponsors = [
@@ -32,11 +42,11 @@ export default function Home() {
           alt="Football stadium under Friday night lights"
           fill
           priority
-          className="object-cover object-center opacity-85 saturate-125 contrast-110 md:scale-110 md:object-[center_42%]"
+          className="object-cover object-center opacity-95 saturate-125 contrast-110 md:scale-110 md:object-[center_42%]"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-blue-950/28 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.64)_0%,rgba(0,0,0,0.36)_36%,rgba(0,0,0,0.18)_62%,rgba(0,0,0,0.34)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.28)_34%,rgba(0,0,0,0.08)_62%,rgba(0,0,0,0.18)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-blue-950/18 to-black/90" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.25)_36%,rgba(0,0,0,0.1)_62%,rgba(0,0,0,0.24)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.04)_62%,rgba(0,0,0,0.14)_100%)]" />
         <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]" />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_42%,rgba(37,99,235,0.24),transparent_24%),radial-gradient(circle_at_78%_43%,rgba(220,38,38,0.22),transparent_26%)]" />
@@ -47,7 +57,7 @@ export default function Home() {
               Swift Current
             </p>
             <h1 className="text-xl font-black">
-              Colts Alumni
+              Colts Football
             </h1>
           </div>
 
@@ -77,7 +87,7 @@ export default function Home() {
 
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link href="/join" className="rounded-full bg-red-600 px-8 py-4 font-bold uppercase tracking-[2px] shadow-[0_0_30px_rgba(220,38,38,0.45)] transition hover:bg-red-500">
-                Support the Legacy Today!
+                Support the Program Today!
               </Link>
             </div>
           </div>
@@ -171,14 +181,25 @@ export default function Home() {
           <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
 
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {spotlights.map(([name, year, bio]) => (
-              <div key={name} className="rounded-2xl bg-zinc-900/90 p-8 border border-white/10">
-                <div className="mb-6 h-32 rounded-xl bg-gradient-to-br from-blue-800 to-red-700" />
-                <h3 className="text-2xl font-black">{name}</h3>
-                {year ? (
-                  <p className="mt-1 text-sm font-semibold italic text-red-400">{year}</p>
+            {spotlights.map((spotlight) => (
+              <div key={spotlight.name} className="rounded-2xl bg-zinc-900/90 p-8 border border-white/10">
+                <div className="relative mb-6 h-56 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-blue-950 to-red-950">
+                  <Image
+                    src={spotlight.image}
+                    alt={`${spotlight.name} headshot`}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover object-top grayscale-[25%]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+                  <p className="absolute bottom-3 left-4 text-xs font-bold uppercase tracking-[2px] text-gray-300">
+                    {spotlight.source}
+                  </p>
+                </div>
+                <h3 className="text-2xl font-black">{spotlight.name}</h3>
+                {spotlight.year ? (
+                  <p className="mt-1 text-sm font-semibold italic text-red-400">{spotlight.year}</p>
                 ) : null}
-                {bio ? <p className="mt-4 text-gray-400">{bio}</p> : null}
               </div>
             ))}
           </div>

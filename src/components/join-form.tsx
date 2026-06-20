@@ -133,8 +133,8 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
         <p className="text-sm uppercase tracking-[5px] text-red-500">
           Help Build the Legacy
         </p>
-        <h2 className="mt-3 text-4xl font-black text-white">
-          Support Colts Football.
+        <h2 className="mt-3 text-4xl font-black text-blue-400">
+          Support Colts Football
         </h2>
         <p className="mt-4 text-gray-400">
           Your gift today helps ensure our student-athletes have the necessary

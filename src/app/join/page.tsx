@@ -10,7 +10,6 @@ import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
 const shareDescription =
   "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
-const legacyJoinHeadline = "Help build the legacy.";
 const legacyJoinBody =
   "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.";
 
@@ -41,10 +40,6 @@ export const metadata: Metadata = {
 export default async function JoinPage() {
   const settings = await getMembershipSettings();
   const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
-  const joinHeadline =
-    settings.join_headline === "Join the Colts network."
-      ? legacyJoinHeadline
-      : settings.join_headline;
   const joinBody =
     settings.join_body.startsWith("One clean contact record helps")
       ? legacyJoinBody
@@ -58,11 +53,11 @@ export default async function JoinPage() {
           alt="Football stadium under Friday night lights"
           fill
           priority
-          className="object-cover opacity-35"
+          className="object-cover object-center opacity-50 grayscale"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/80 via-black/85 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.18),transparent_42%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/65 via-black/75 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_34%,rgba(37,99,235,0.2),transparent_36%),radial-gradient(circle_at_75%_45%,rgba(220,38,38,0.16),transparent_38%)]" />
 
         <div className="relative z-10 mx-auto flex max-w-5xl flex-col">
           <nav className="flex items-center justify-between py-2">
@@ -83,15 +78,12 @@ export default async function JoinPage() {
             </Link>
           </nav>
 
-          <div className="grid flex-1 gap-10 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-            <div>
+          <div className="grid flex-1 gap-10 py-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+            <div className="lg:pt-10">
               <p className="text-sm uppercase tracking-[6px] text-red-500">
                 {settings.membership_year_label}
               </p>
-              <h1 className="mt-4 text-5xl font-black leading-none md:text-7xl">
-                {joinHeadline}
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
+              <p className="mt-5 text-xl font-semibold leading-8 text-gray-200">
                 {joinBody}
               </p>
               <div className="mt-6 rounded-3xl border border-white/10 bg-zinc-950/80 p-5">
