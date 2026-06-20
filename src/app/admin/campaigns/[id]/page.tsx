@@ -9,10 +9,7 @@ import {
   summarizeAudienceFilter,
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import {
-  duplicateBlast,
-  duplicateCampaignWithBlasts,
-} from "@/lib/campaign-duplication";
+import { duplicateBlast } from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -52,20 +49,6 @@ async function getBlasts(campaignId: string) {
   return (data ?? []) as Blast[];
 }
 
-async function duplicateCampaign(formData: FormData) {
-  "use server";
-
-  if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
-  }
-
-  const campaignId = String(formData.get("campaign_id") ?? "");
-  const newCampaignId = await duplicateCampaignWithBlasts(campaignId);
-
-  revalidatePath("/admin/campaigns");
-  redirect(`/admin/campaigns/${newCampaignId}`);
-}
-
 async function duplicateBlastAction(formData: FormData) {
   "use server";
 
@@ -78,6 +61,30 @@ async function duplicateBlastAction(formData: FormData) {
 
   revalidatePath(`/admin/campaigns/${campaignId}`);
   redirect(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`);
+}
+
+async function deleteBlastAction(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const campaignId = String(formData.get("campaign_id") ?? "");
+  const blastId = String(formData.get("blast_id") ?? "");
+  const supabase = createServerSupabaseClient();
+  const { error } = await supabase
+    .from("campaign_blasts")
+    .delete()
+    .eq("id", blastId)
+    .eq("campaign_id", campaignId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/admin/campaigns/${campaignId}`);
+  redirect(`/admin/campaigns/${campaignId}`);
 }
 
 export default async function CampaignDetailPage({
@@ -123,15 +130,6 @@ export default async function CampaignDetailPage({
             >
               Campaigns
             </Link>
-            <form action={duplicateCampaign}>
-              <input name="campaign_id" type="hidden" value={campaign.id} />
-              <button
-                className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
-                type="submit"
-              >
-                Duplicate Campaign
-              </button>
-            </form>
             <Link
               className="rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-600"
               href={`/admin/campaigns/${campaign.id}/blasts/new`}
@@ -208,6 +206,16 @@ export default async function CampaignDetailPage({
                             type="submit"
                           >
                             Duplicate
+                          </button>
+                        </form>
+                        <form action={deleteBlastAction}>
+                          <input name="campaign_id" type="hidden" value={campaign.id} />
+                          <input name="blast_id" type="hidden" value={blast.id} />
+                          <button
+                            className="font-black text-red-400 hover:text-red-300"
+                            type="submit"
+                          >
+                            Delete
                           </button>
                         </form>
                       </div>

@@ -38,6 +38,28 @@ async function duplicateCampaign(formData: FormData) {
   redirect(`/admin/campaigns/${newCampaignId}`);
 }
 
+async function deleteCampaign(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const campaignId = String(formData.get("campaign_id") ?? "");
+  const supabase = createServerSupabaseClient();
+  const { error } = await supabase
+    .from("campaigns")
+    .delete()
+    .eq("id", campaignId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin/campaigns");
+  redirect("/admin/campaigns");
+}
+
 export default async function CampaignsPage() {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin/login");
@@ -91,9 +113,34 @@ export default async function CampaignsPage() {
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {campaigns.map((campaign) => (
             <div
-              className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl hover:border-blue-500/60"
+              className="relative rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl hover:border-blue-500/60"
               key={campaign.id}
             >
+              <details className="group absolute right-4 top-4">
+                <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full border border-white/10 bg-black/40 text-xl font-black text-gray-300 transition hover:border-blue-500 hover:text-white [&::-webkit-details-marker]:hidden">
+                  ...
+                </summary>
+                <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 p-2 shadow-2xl">
+                  <form action={duplicateCampaign}>
+                    <input name="campaign_id" type="hidden" value={campaign.id} />
+                    <button
+                      className="w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-gray-200 hover:bg-white/10 hover:text-white"
+                      type="submit"
+                    >
+                      Duplicate Campaign
+                    </button>
+                  </form>
+                  <form action={deleteCampaign}>
+                    <input name="campaign_id" type="hidden" value={campaign.id} />
+                    <button
+                      className="w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-red-300 hover:bg-red-950/50 hover:text-red-100"
+                      type="submit"
+                    >
+                      Delete Campaign
+                    </button>
+                  </form>
+                </div>
+              </details>
               <Link href={`/admin/campaigns/${campaign.id}`}>
                 <p className="text-xs font-black uppercase tracking-[3px] text-red-400">
                   {campaign.status}
@@ -106,15 +153,6 @@ export default async function CampaignsPage() {
                   Updated {formatDate(campaign.updated_at)}
                 </p>
               </Link>
-              <form action={duplicateCampaign} className="mt-5">
-                <input name="campaign_id" type="hidden" value={campaign.id} />
-                <button
-                  className="rounded-full border border-white/15 px-4 py-2 text-xs font-black uppercase tracking-[2px] text-gray-200 transition hover:border-blue-500 hover:text-white"
-                  type="submit"
-                >
-                  Duplicate Campaign
-                </button>
-              </form>
             </div>
           ))}
 

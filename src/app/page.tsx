@@ -10,12 +10,14 @@ const events = [
 const spotlights = [
   {
     image: "/images/rhett-vavra.webp",
+    imagePosition: "object-[center_28%]",
     name: "Rhett Vavra",
     source: "University of Saskatchewan Huskies",
     year: "Class of '21",
   },
   {
     image: "/images/gerry-inglis.webp",
+    imagePosition: "object-[center_32%]",
     name: "Gerry Inglis",
     source: "University of Alberta Golden Bears",
     year: "",
@@ -189,7 +191,7 @@ export default function Home() {
                     alt={`${spotlight.name} headshot`}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover object-top grayscale-[25%]"
+                    className={`object-cover ${spotlight.imagePosition} grayscale-[25%]`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                   <p className="absolute bottom-3 left-4 text-xs font-bold uppercase tracking-[2px] text-gray-300">
