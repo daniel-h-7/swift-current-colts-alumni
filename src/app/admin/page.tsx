@@ -374,6 +374,12 @@ export default async function AdminPage({
             </Link>
             <Link
               className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
+              href="/admin/import"
+            >
+              Import CSV
+            </Link>
+            <Link
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href="/admin/campaigns"
             >
               Campaigns

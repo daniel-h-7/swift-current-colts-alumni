@@ -18,6 +18,7 @@ import { formatContactName } from "@/lib/contact-format";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { getEmailProviderMode, sendCampaignTestEmail } from "@/lib/email-provider";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createUnsubscribeUrl } from "@/lib/unsubscribe";
 import { BlastEditorForm } from "@/components/blast-editor-form";
 
 type BlastParams = {
@@ -244,6 +245,7 @@ async function sendBlast(formData: FormData) {
       replyTo: emailSettings.email_reply_to,
       subject: blast.subject,
       to: contact.email,
+      unsubscribeUrl: createUnsubscribeUrl(contact.id),
     }).catch((error: unknown) => {
       failedCount += 1;
       return {

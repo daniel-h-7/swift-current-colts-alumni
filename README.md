@@ -31,6 +31,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-key
 SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
 ADMIN_PASSWORD=choose-a-strong-admin-password
 ADMIN_SESSION_SECRET=choose-a-long-random-session-secret
+UNSUBSCRIBE_SECRET=choose-a-long-random-unsubscribe-secret
+NEXT_PUBLIC_SITE_URL=https://your-live-domain.com
 DEMO_PASSWORD=choose-a-demo-viewer-password
 DEMO_SESSION_SECRET=choose-a-long-random-demo-session-secret
 ```
@@ -40,6 +42,8 @@ Add those same variables in Vercel under Project Settings, Environment Variables
 Use the Supabase publishable key for `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Use the Supabase service role key for `SUPABASE_SERVICE_ROLE_KEY`, and keep that key server-only. Do not expose the service role key in browser code.
 
 Set `DEMO_PASSWORD` only when the public site should be password-protected for demos. When it is set, public pages redirect to `/demo`; `/admin` still uses the separate `ADMIN_PASSWORD`. Remove `DEMO_PASSWORD` or leave it blank to make the public site open again.
+
+Set `NEXT_PUBLIC_SITE_URL` to the live site URL so Stripe redirects and email unsubscribe links point at the correct domain. `UNSUBSCRIBE_SECRET` signs unsubscribe links; if it is not set, the app falls back to `ADMIN_SESSION_SECRET`.
 
 ## Supabase SQL table setup
 

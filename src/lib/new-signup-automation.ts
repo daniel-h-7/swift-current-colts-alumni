@@ -5,6 +5,7 @@ import { Contact } from "@/lib/contact-options";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createUnsubscribeUrl } from "@/lib/unsubscribe";
 
 const campaignTitle = "New Signups";
 const blastTitle = "Thank You for Your Support";
@@ -213,6 +214,7 @@ export async function runNewSignupAutomation({
         replyTo: emailSettings.email_reply_to,
         subject: blast.subject,
         to: contact.email,
+        unsubscribeUrl: createUnsubscribeUrl(contact.id),
       });
 
       await recordBlastEvent({

@@ -10,6 +10,7 @@ type SendEmailInput = {
   replyTo?: string | null;
   subject: string;
   to: string;
+  unsubscribeUrl?: string | null;
 };
 
 type ResendSuccess = {
@@ -83,9 +84,20 @@ function getRequiredSmtpEnv(): SmtpConfig {
   };
 }
 
-function buildEmailHtml({ html, preheader }: Pick<SendEmailInput, "html" | "preheader">) {
+function buildEmailHtml({
+  html,
+  preheader,
+  unsubscribeUrl,
+}: Pick<SendEmailInput, "html" | "preheader" | "unsubscribeUrl">) {
   const hiddenPreheader = preheader
     ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${preheader}</div>`
+    : "";
+  const unsubscribeFooter = unsubscribeUrl
+    ? `<div style="margin-top:14px;">
+          <a href="${escapeHtml(unsubscribeUrl)}" style="display:inline-block;border:1px solid #d4d4d8;padding:8px 12px;color:#52525b;text-decoration:none;font-weight:bold;">
+            Unsubscribe from emails
+          </a>
+        </div>`
     : "";
 
   return `<!doctype html>
@@ -99,6 +111,7 @@ function buildEmailHtml({ html, preheader }: Pick<SendEmailInput, "html" | "preh
       </div>
       <div style="border-top:1px solid #e4e4e7;padding:18px 28px;color:#6b7280;font-size:12px;">
         Swift Current Colts Football Alumni and Booster Club
+        ${unsubscribeFooter}
       </div>
     </div>
   </body>
@@ -143,6 +156,12 @@ function buildSmtpMessage(input: SendEmailInput, deliveredTo: string) {
     `Reply-To: ${encodeHeader(input.replyTo || input.from)}`,
     `Subject: ${encodeHeader(`[Demo] ${input.subject}`)}`,
     `Date: ${formatSmtpDate()}`,
+    ...(input.unsubscribeUrl
+      ? [
+          `List-Unsubscribe: <${encodeHeader(input.unsubscribeUrl)}>`,
+          "List-Unsubscribe-Post: List-Unsubscribe=One-Click",
+        ]
+      : []),
     "MIME-Version: 1.0",
     'Content-Type: text/html; charset="UTF-8"',
     "Content-Transfer-Encoding: 8bit",
@@ -279,6 +298,12 @@ async function sendResendEmail(input: SendEmailInput): Promise<SendEmailResult> 
     body: JSON.stringify({
       from: input.from,
       html: buildEmailHtml(input),
+      headers: input.unsubscribeUrl
+        ? {
+            "List-Unsubscribe": `<${input.unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          }
+        : undefined,
       reply_to: input.replyTo || undefined,
       subject: input.subject,
       to: [input.to],
