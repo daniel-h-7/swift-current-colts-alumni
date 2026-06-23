@@ -53,7 +53,7 @@ export default function Home() {
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_42%,rgba(37,99,235,0.24),transparent_24%),radial-gradient(circle_at_78%_43%,rgba(220,38,38,0.22),transparent_26%)]" />
 
-        <nav className="relative z-10 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
+        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
           <div>
             <p className="text-xs tracking-[4px] uppercase text-red-500">
               Swift Current
@@ -63,12 +63,12 @@ export default function Home() {
             </h1>
           </div>
 
-          <div className="hidden md:flex gap-8 text-sm uppercase tracking-widest text-gray-300">
-            <a href="#impact">Impact</a>
-            <a href="#sponsors">Sponsors</a>
-            <a href="#alumni">Alumni</a>
-            <a href="#events">Events</a>
-            <Link href="/admin">Admin</Link>
+          <div className="hidden items-center overflow-hidden rounded-lg border border-white/10 bg-black/35 text-xs font-black uppercase tracking-[2px] text-gray-300 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur md:flex">
+            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#impact">Impact</a>
+            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#sponsors">Sponsors</a>
+            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#alumni">Alumni</a>
+            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#events">Events</a>
+            <Link className="px-4 py-3 transition hover:bg-blue-950/50 hover:text-white" href="/admin">Admin</Link>
           </div>
         </nav>
 
@@ -88,7 +88,7 @@ export default function Home() {
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link href="/join" className="rounded-full bg-red-600 px-8 py-4 font-bold uppercase tracking-[2px] shadow-[0_0_30px_rgba(220,38,38,0.45)] transition hover:bg-red-500">
+              <Link href="/join" className="rounded-md bg-red-600 px-8 py-4 font-bold uppercase tracking-[2px] shadow-[0_16px_44px_rgba(220,38,38,0.32)] transition hover:bg-red-500">
                 Support the Program Today!
               </Link>
             </div>

@@ -98,7 +98,7 @@ export default async function DemoAccessPage({
             </label>
 
             <button
-              className="mt-6 w-full rounded-full bg-red-600 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 w-full rounded-md bg-red-600 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={!isConfigured}
               type="submit"
             >

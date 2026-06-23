@@ -423,7 +423,7 @@ export default async function EditBlastPage({
             <form action={duplicateBlastAction}>
               <input name="blast_id" type="hidden" value={blast.id} />
               <button
-                className="rounded-full border border-white/15 px-5 py-3 text-sm font-black uppercase tracking-[2px] text-gray-200 transition hover:border-blue-500 hover:text-white"
+                className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-black uppercase tracking-[2px] text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
                 type="submit"
               >
                 Duplicate Blast
@@ -470,7 +470,7 @@ export default async function EditBlastPage({
               <input name="campaign_id" type="hidden" value={id} />
               <input name="blast_id" type="hidden" value={blast.id} />
               <button
-                className="w-full rounded-full bg-red-600 px-6 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-md bg-red-600 px-6 py-4 font-black uppercase tracking-[3px] text-white shadow-[0_12px_34px_rgba(220,38,38,0.22)] transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={!emailAudiencePreview.count}
                 type="submit"
               >
@@ -520,7 +520,7 @@ export default async function EditBlastPage({
               type="email"
             />
             <button
-              className="rounded-full bg-blue-700 px-6 py-3 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
+              className="rounded-md bg-blue-700 px-6 py-3 font-black uppercase tracking-[3px] text-white shadow-[0_10px_30px_rgba(29,78,216,0.22)] transition hover:bg-blue-600"
               type="submit"
             >
               Send Test

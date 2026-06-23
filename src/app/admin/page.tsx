@@ -341,37 +341,37 @@ export default async function AdminPage({
 
           <div className="flex flex-wrap gap-3">
             <Link
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href="/"
             >
               Home
             </Link>
             <Link
-              className="rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-600"
+              className="rounded-md bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(29,78,216,0.22)] transition hover:bg-blue-600"
               href="/join"
             >
               Join Form
             </Link>
             <Link
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href={getExportHref(filters)}
             >
               Export CSV
             </Link>
             <Link
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href="/admin/campaigns"
             >
               Campaigns
             </Link>
             <Link
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href="/admin/settings"
             >
               Settings
             </Link>
             <Link
-              className="rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-500"
+              className="rounded-md bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(220,38,38,0.22)] transition hover:bg-red-500"
               href="/admin/logout"
             >
               Log Out
@@ -589,13 +589,13 @@ export default async function AdminPage({
 
             <div className="flex flex-wrap gap-3 md:col-span-6">
               <button
-                className="rounded-full bg-red-600 px-6 py-3 font-black uppercase tracking-[3px] text-white hover:bg-red-500"
+                className="rounded-md bg-red-600 px-6 py-3 font-black uppercase tracking-[3px] text-white hover:bg-red-500"
                 type="submit"
               >
                 Apply
               </button>
               <Link
-                className="rounded-full border border-white/15 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+                className="rounded-md border border-white/15 bg-black/25 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
                 href="/admin"
               >
                 Clear

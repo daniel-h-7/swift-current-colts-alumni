@@ -275,7 +275,7 @@ export function BlastEditorForm({
             </div>
 
             <button
-              className="w-full rounded-full bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
+              className="w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
               type="submit"
             >
               {submitLabel}

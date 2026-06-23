@@ -89,13 +89,13 @@ export default async function CampaignsPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/30 hover:text-white"
               href="/admin"
             >
               Dashboard
             </Link>
             <Link
-              className="rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-600"
+              className="rounded-md bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(29,78,216,0.28)] transition hover:bg-blue-600"
               href="/admin/campaigns/new"
             >
               New Campaign
@@ -114,16 +114,33 @@ export default async function CampaignsPage() {
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {campaigns.map((campaign) => (
             <div
-              className="relative rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl hover:border-blue-500/60"
+              className="relative overflow-visible rounded-xl border border-white/10 bg-zinc-950 p-6 pr-16 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition hover:border-blue-500/60 hover:bg-zinc-900/80"
               key={campaign.id}
             >
-              <details className="group absolute right-4 top-4">
-                <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full border border-white/10 bg-black/40 text-xl font-black text-gray-300 transition hover:border-blue-500 hover:text-white [&::-webkit-details-marker]:hidden">
-                  ...
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-zinc-800 to-red-600" />
+              <details className="group absolute right-3 top-3">
+                <summary
+                  aria-label="Campaign actions"
+                  className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-white/10 bg-black/45 text-gray-300 transition hover:border-blue-500/70 hover:bg-blue-950/40 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 [&::-webkit-details-marker]:hidden"
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 7.25h.01M12 12h.01M12 16.75h.01"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                    />
+                  </svg>
                 </summary>
-                <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 p-2 shadow-2xl">
+                <div className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-white/10 bg-zinc-950/98 p-1.5 shadow-[0_22px_80px_rgba(0,0,0,0.65)] ring-1 ring-black/60">
                   <Link
-                    className="block rounded-xl px-3 py-2 text-sm font-bold text-gray-200 hover:bg-white/10 hover:text-white"
+                    className="block rounded-md px-3 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white"
                     href={`/admin/campaigns/${campaign.id}/edit`}
                   >
                     Edit Campaign
@@ -131,7 +148,7 @@ export default async function CampaignsPage() {
                   <form action={duplicateCampaign}>
                     <input name="campaign_id" type="hidden" value={campaign.id} />
                     <button
-                      className="w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-gray-200 hover:bg-white/10 hover:text-white"
+                      className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white"
                       type="submit"
                     >
                       Duplicate Campaign
@@ -140,7 +157,7 @@ export default async function CampaignsPage() {
                   <form action={deleteCampaign}>
                     <input name="campaign_id" type="hidden" value={campaign.id} />
                     <ConfirmSubmitButton
-                      className="w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-red-300 hover:bg-red-950/50 hover:text-red-100"
+                      className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-red-300 transition hover:bg-red-950/55 hover:text-red-100"
                       message={`Delete campaign "${campaign.title}" and all of its blasts?`}
                     >
                       Delete Campaign

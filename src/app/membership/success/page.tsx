@@ -31,13 +31,13 @@ export default function MembershipSuccessPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
-              className="rounded-full bg-blue-700 px-6 py-3 font-bold text-white hover:bg-blue-600"
+              className="rounded-md bg-blue-700 px-6 py-3 font-bold text-white hover:bg-blue-600"
               href="/"
             >
               Home
             </Link>
             <Link
-              className="rounded-full border border-white/15 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/25 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
               href="/admin"
             >
               Admin

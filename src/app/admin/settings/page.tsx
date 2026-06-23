@@ -46,13 +46,13 @@ export default async function AdminSettingsPage({
 
           <div className="flex flex-wrap gap-3">
             <Link
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href="/admin"
             >
               Dashboard
             </Link>
             <Link
-              className="rounded-full bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-500"
+              className="rounded-md bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(220,38,38,0.22)] transition hover:bg-red-500"
               href="/admin/logout"
             >
               Log Out
@@ -139,7 +139,7 @@ export default async function AdminSettingsPage({
               </label>
 
               <button
-                className="w-full rounded-full bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
+                className="w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
                 type="submit"
               >
                 Save Settings

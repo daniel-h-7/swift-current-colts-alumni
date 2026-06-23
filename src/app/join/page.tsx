@@ -66,7 +66,7 @@ export default async function JoinPage() {
 
             <Link
               href="/admin"
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold uppercase tracking-widest text-gray-200 hover:border-blue-500 hover:text-white"
+              className="rounded-md border border-white/15 bg-black/35 px-5 py-3 text-sm font-bold uppercase tracking-widest text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/40 hover:text-white"
             >
               Admin
             </Link>
@@ -100,7 +100,7 @@ export default async function JoinPage() {
                   </p>
                 ) : null}
               </div>
-              <div className="mt-8 h-1 w-40 rounded-full bg-gradient-to-r from-blue-600 via-white to-red-600" />
+              <div className="mt-8 h-1 w-40 bg-gradient-to-r from-blue-600 via-white to-red-600" />
             </div>
 
             <JoinForm isOpen={settings.join_is_open} />
