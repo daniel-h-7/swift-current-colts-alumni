@@ -178,7 +178,15 @@ function normalizeRow(row: CsvRow, index: number, optInMode: string) {
 
 export async function importContactsFromCsv(csvText: string, optInMode: string) {
   const rows = parseCsv(csvText);
-  const contacts = rows.map((row, index) => normalizeRow(row, index, optInMode));
+  const contactsByEmail = new Map<string, ReturnType<typeof normalizeRow>>();
+
+  rows.forEach((row, index) => {
+    const contact = normalizeRow(row, index, optInMode);
+
+    contactsByEmail.set(contact.email, contact);
+  });
+
+  const contacts = Array.from(contactsByEmail.values());
   const supabase = createServerSupabaseClient();
   const { error } = await supabase
     .from("contacts")
