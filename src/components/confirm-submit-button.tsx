@@ -3,17 +3,20 @@
 type ConfirmSubmitButtonProps = {
   children: React.ReactNode;
   className: string;
+  disabled?: boolean;
   message: string;
 };
 
 export function ConfirmSubmitButton({
   children,
   className,
+  disabled = false,
   message,
 }: ConfirmSubmitButtonProps) {
   return (
     <button
       className={className}
+      disabled={disabled}
       onClick={(event) => {
         if (!window.confirm(message)) {
           event.preventDefault();

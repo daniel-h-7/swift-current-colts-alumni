@@ -6,6 +6,8 @@ import {
   ContactActivity,
   contactStatuses,
   membershipStatuses,
+  relationshipTypes,
+  sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { logContactActivity } from "@/lib/contact-activity";
@@ -106,18 +108,34 @@ async function updateContact(formData: FormData) {
   const giftDonations = String(
     formData.get("gift_donation_amount") ?? "",
   ).trim();
+  const graduationYear = String(formData.get("graduation_year") ?? "").trim();
   const updates = {
     admin_notes: String(formData.get("admin_notes") ?? "").trim() || null,
+    alternate_email:
+      String(formData.get("alternate_email") ?? "").trim().toLowerCase() ||
+      null,
     annual_dues_amount_cents: annualDues
       ? Math.round(Number.parseFloat(annualDues) * 100)
       : null,
+    email: String(formData.get("email") ?? "").trim().toLowerCase(),
+    email_opt_in: formData.get("email_opt_in") === "on",
+    first_name: String(formData.get("first_name") ?? "").trim(),
     gift_donation_amount_cents: giftDonations
       ? Math.round(Number.parseFloat(giftDonations) * 100)
       : 0,
+    graduation_year: graduationYear
+      ? Number.parseInt(graduationYear, 10)
+      : null,
     last_payment_at:
       String(formData.get("last_payment_at") ?? "").trim() || null,
+    last_name: String(formData.get("last_name") ?? "").trim(),
     membership_status: String(formData.get("membership_status") ?? ""),
+    notes: String(formData.get("notes") ?? "").trim() || null,
     paid_through: String(formData.get("paid_through") ?? "").trim() || null,
+    phone: String(formData.get("phone") ?? "").trim() || null,
+    relationship_type: String(formData.get("relationship_type") ?? ""),
+    sms_opt_in: formData.get("sms_opt_in") === "on",
+    sport: String(formData.get("sport") ?? ""),
     status: String(formData.get("status") ?? ""),
     stripe_checkout_session_id:
       String(formData.get("stripe_checkout_session_id") ?? "").trim() || null,
@@ -245,6 +263,11 @@ export default async function ContactDetailPage({
               <p className="text-sm font-bold text-blue-300">
                 {contact.email}
               </p>
+              {contact.alternate_email ? (
+                <p className="mt-1 text-sm font-bold text-gray-400">
+                  {contact.alternate_email}
+                </p>
+              ) : null}
               <p className="mt-2 text-gray-400">
                 Added {formatDate(contact.created_at)}
               </p>
@@ -260,6 +283,11 @@ export default async function ContactDetailPage({
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <DetailItem label="Primary Email" value={contact.email} />
+            <DetailItem
+              label="Additional Email"
+              value={contact.alternate_email}
+            />
             <DetailItem label="Phone" value={contact.phone} />
             <DetailItem
               label="Graduation Year"
@@ -381,6 +409,129 @@ export default async function ContactDetailPage({
           <form action={updateContact} className="mt-6 space-y-5">
             <input name="id" type="hidden" value={contact.id} />
 
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="block text-sm font-bold text-gray-200">
+                First name
+                <input
+                  className={fieldClass}
+                  defaultValue={contact.first_name}
+                  name="first_name"
+                  required
+                />
+              </label>
+
+              <label className="block text-sm font-bold text-gray-200">
+                Last name
+                <input
+                  className={fieldClass}
+                  defaultValue={contact.last_name}
+                  name="last_name"
+                  required
+                />
+              </label>
+            </div>
+
+            <label className="block text-sm font-bold text-gray-200">
+              Primary email
+              <input
+                className={fieldClass}
+                defaultValue={contact.email}
+                name="email"
+                required
+                type="email"
+              />
+            </label>
+
+            <label className="block text-sm font-bold text-gray-200">
+              Additional email
+              <input
+                className={fieldClass}
+                defaultValue={contact.alternate_email ?? ""}
+                name="alternate_email"
+                placeholder="second-contact@example.com"
+                type="email"
+              />
+            </label>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="block text-sm font-bold text-gray-200">
+                Phone
+                <input
+                  className={fieldClass}
+                  defaultValue={contact.phone ?? ""}
+                  name="phone"
+                  type="tel"
+                />
+              </label>
+
+              <label className="block text-sm font-bold text-gray-200">
+                Graduation year
+                <input
+                  className={fieldClass}
+                  defaultValue={contact.graduation_year ?? ""}
+                  inputMode="numeric"
+                  max="2100"
+                  min="1940"
+                  name="graduation_year"
+                  type="number"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="block text-sm font-bold text-gray-200">
+                Relationship
+                <select
+                  className={fieldClass}
+                  defaultValue={contact.relationship_type}
+                  name="relationship_type"
+                >
+                  {relationshipTypes.map((type) => (
+                    <option className="bg-zinc-950" key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block text-sm font-bold text-gray-200">
+                Sport / program
+                <select
+                  className={fieldClass}
+                  defaultValue={contact.sport}
+                  name="sport"
+                >
+                  {sports.map((sport) => (
+                    <option className="bg-zinc-950" key={sport} value={sport}>
+                      {sport}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 md:grid-cols-2">
+              <label className="flex items-start gap-3 text-sm font-bold text-gray-200">
+                <input
+                  className="mt-1 h-4 w-4 rounded border-white/20 accent-blue-600"
+                  defaultChecked={contact.email_opt_in}
+                  name="email_opt_in"
+                  type="checkbox"
+                />
+                Email opt-in
+              </label>
+
+              <label className="flex items-start gap-3 text-sm font-bold text-gray-200">
+                <input
+                  className="mt-1 h-4 w-4 rounded border-white/20 accent-red-600"
+                  defaultChecked={contact.sms_opt_in}
+                  name="sms_opt_in"
+                  type="checkbox"
+                />
+                SMS opt-in
+              </label>
+            </div>
+
             <label className="block text-sm font-bold text-gray-200">
               Status
               <select
@@ -484,6 +635,16 @@ export default async function ContactDetailPage({
                 defaultValue={contact.stripe_checkout_session_id ?? ""}
                 name="stripe_checkout_session_id"
                 placeholder="cs_..."
+              />
+            </label>
+
+            <label className="block text-sm font-bold text-gray-200">
+              Public notes
+              <textarea
+                className={`${fieldClass} min-h-28 resize-y`}
+                defaultValue={contact.notes ?? ""}
+                name="notes"
+                placeholder="Public notes from signup."
               />
             </label>
 

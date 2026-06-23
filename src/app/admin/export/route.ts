@@ -27,6 +27,7 @@ type ExportFilters = {
 
 const sortableColumns = [
   "email",
+  "alternate_email",
   "phone",
   "graduation_year",
   "relationship_type",
@@ -76,7 +77,7 @@ function applyFilters(filters: ExportFilters) {
 
   if (searchTerm) {
     query = query.or(
-      `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`,
+      `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,alternate_email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`,
     );
   }
 
@@ -155,6 +156,7 @@ export async function GET(request: Request) {
     "first_name",
     "last_name",
     "email",
+    "alternate_email",
     "phone",
     "graduation_year",
     "relationship_type",
@@ -182,6 +184,7 @@ export async function GET(request: Request) {
         contact.first_name,
         contact.last_name,
         contact.email,
+        contact.alternate_email,
         contact.phone,
         contact.graduation_year,
         contact.relationship_type,

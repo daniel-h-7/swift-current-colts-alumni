@@ -51,6 +51,7 @@ create table if not exists public.contacts (
   first_name text not null,
   last_name text not null,
   email text not null,
+  alternate_email text,
   phone text,
   graduation_year integer,
   relationship_type text not null check (
@@ -213,6 +214,7 @@ alter table public.contacts
   add column if not exists membership_status text not null default 'Not Started',
   add column if not exists tags text[] not null default '{}',
   add column if not exists admin_notes text,
+  add column if not exists alternate_email text,
   add column if not exists annual_dues_amount_cents integer,
   add column if not exists gift_donation_amount_cents integer not null default 0,
   add column if not exists paid_through date,

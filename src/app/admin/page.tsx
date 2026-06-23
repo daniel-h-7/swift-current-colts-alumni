@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import {
   Contact,
   contactStatuses,
@@ -8,16 +9,8 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import {
-  formatCurrencyFromCents,
-  formatContactName,
-  formatDate,
-  formatOptionalDate,
-  getContactStatus,
-  getContactTags,
-  getMembershipStatus,
-} from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { AdminContactsTable } from "@/components/admin-contacts-table";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +34,7 @@ const filterClass =
 const sortableColumns = [
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
+  { key: "alternate_email", label: "Alt Email" },
   { key: "phone", label: "Phone" },
   { key: "graduation_year", label: "Grad Year" },
   { key: "relationship_type", label: "Relationship" },
@@ -74,27 +68,6 @@ function getSort(filters: SearchParams): {
   return { sortBy, sortDir };
 }
 
-function getSortHref(filters: SearchParams, sortBy: SortKey) {
-  const currentSort = getSort(filters);
-  const params = new URLSearchParams();
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value && key !== "sort_by" && key !== "sort_dir") {
-      params.set(key, value);
-    }
-  });
-
-  params.set("sort_by", sortBy);
-  params.set(
-    "sort_dir",
-    currentSort.sortBy === sortBy && currentSort.sortDir === "asc"
-      ? "desc"
-      : "asc",
-  );
-
-  return `/admin?${params.toString()}`;
-}
-
 function getExportHref(filters: SearchParams) {
   const params = new URLSearchParams();
 
@@ -126,33 +99,6 @@ function getErrorMessage(error: unknown, fallback: string) {
   }
 
   return fallback;
-}
-
-function SortHeader({
-  filters,
-  label,
-  sortBy,
-}: {
-  filters: SearchParams;
-  label: string;
-  sortBy: SortKey;
-}) {
-  const currentSort = getSort(filters);
-  const isActive = currentSort.sortBy === sortBy;
-
-  return (
-    <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
-      <Link
-        className="inline-flex items-center gap-2 text-white hover:text-blue-300"
-        href={getSortHref(filters, sortBy)}
-      >
-        {label}
-        <span className={isActive ? "text-blue-300" : "text-white/35"}>
-          {isActive && currentSort.sortDir === "asc" ? "^" : "v"}
-        </span>
-      </Link>
-    </th>
-  );
 }
 
 async function getCount(
@@ -231,7 +177,7 @@ async function getContacts(filters: SearchParams) {
 
   if (searchTerm) {
     query = query.or(
-      `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`,
+      `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,alternate_email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`,
     );
   }
 
@@ -293,6 +239,74 @@ async function getContacts(filters: SearchParams) {
   }
 
   return (data ?? []) as Contact[];
+}
+
+async function bulkContactAction(formData: FormData) {
+  "use server";
+
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login");
+  }
+
+  const contactIds = String(formData.get("contact_ids") ?? "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const bulkAction = String(formData.get("bulk_action") ?? "");
+
+  if (!contactIds.length) {
+    redirect("/admin");
+  }
+
+  const supabase = createServerSupabaseClient();
+
+  if (bulkAction === "delete") {
+    const { error } = await supabase
+      .from("contacts")
+      .delete()
+      .in("id", contactIds);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  if (bulkAction === "status") {
+    const status = String(formData.get("status") ?? "");
+
+    if (!contactStatuses.includes(status as never)) {
+      throw new Error("Invalid contact status.");
+    }
+
+    const { error } = await supabase
+      .from("contacts")
+      .update({ status })
+      .in("id", contactIds);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  if (bulkAction === "membership_status") {
+    const membershipStatus = String(formData.get("membership_status") ?? "");
+
+    if (!membershipStatuses.includes(membershipStatus as never)) {
+      throw new Error("Invalid membership status.");
+    }
+
+    const { error } = await supabase
+      .from("contacts")
+      .update({ membership_status: membershipStatus })
+      .in("id", contactIds);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  revalidatePath("/admin");
+  redirect("/admin");
 }
 
 export default async function AdminPage({
@@ -610,132 +624,12 @@ export default async function AdminPage({
           </section>
         ) : null}
 
-        <section className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10 text-left text-sm">
-              <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
-                <tr>
-                  {sortableColumns.map((column) => (
-                    <SortHeader
-                      filters={filters}
-                      key={column.key}
-                      label={column.label}
-                      sortBy={column.key}
-                    />
-                  ))}
-                  <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]" />
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-white/10">
-                {contacts.map((contact) => (
-                  <tr className="align-top hover:bg-white/[0.04]" key={contact.id}>
-                    <td className="whitespace-nowrap px-4 py-4 font-black text-white">
-                      <Link
-                        className="hover:text-blue-300"
-                        href={`/admin/contacts/${contact.id}`}
-                      >
-                        {formatContactName(contact)}
-                      </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {contact.email}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {contact.phone || "-"}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {contact.graduation_year || "-"}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {contact.relationship_type}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {contact.sport}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-gray-200">
-                        {getContactStatus(contact)}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <span className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
-                        {getMembershipStatus(contact)}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatCurrencyFromCents(
-                        contact.annual_dues_amount_cents,
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatCurrencyFromCents(
-                        contact.gift_donation_amount_cents,
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatOptionalDate(contact.paid_through)}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatOptionalDate(contact.last_payment_at)}
-                    </td>
-                    <td className="min-w-48 px-4 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        {getContactTags(contact).length ? (
-                          getContactTags(contact).map((tag) => (
-                            <span
-                              className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300"
-                              key={tag}
-                            >
-                              {tag}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <span className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300">
-                        {contact.email_opt_in ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <span className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
-                        {contact.sms_opt_in ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td className="max-w-sm px-4 py-4 text-gray-300">
-                      {contact.notes || "-"}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatDate(contact.created_at)}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <Link
-                        className="font-black text-blue-400 hover:text-blue-300"
-                        href={`/admin/contacts/${contact.id}`}
-                      >
-                        View
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-
-                {!contacts.length && !errorMessage ? (
-                  <tr>
-                    <td
-                      className="px-4 py-12 text-center font-bold text-gray-400"
-                      colSpan={18}
-                    >
-                      No contacts match the current filters.
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <AdminContactsTable
+          bulkAction={bulkContactAction}
+          contacts={contacts}
+          errorMessage={errorMessage}
+          filters={filters}
+        />
       </div>
     </main>
   );

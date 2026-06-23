@@ -39,6 +39,7 @@ export type Contact = {
   first_name: string;
   last_name: string;
   email: string;
+  alternate_email?: string | null;
   phone: string | null;
   graduation_year: number | null;
   relationship_type: RelationshipType;
