@@ -99,7 +99,7 @@ function SortHeader({
   const isActive = currentSort.sortBy === sortBy;
 
   return (
-    <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
+    <th className="sticky top-0 z-20 whitespace-nowrap bg-zinc-950 px-4 py-4 font-black uppercase tracking-[3px] shadow-[inset_0_-1px_0_rgba(255,255,255,0.12)]">
       <Link
         className="inline-flex items-center gap-2 text-white hover:text-blue-300"
         href={getSortHref(filters, sortBy)}
@@ -253,7 +253,7 @@ export function AdminContactsTable({
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/10 text-left text-sm">
-          <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
+          <thead className="text-white">
             <tr>
               {sortableColumns.map((column) => (
                 <SortHeader
@@ -263,7 +263,7 @@ export function AdminContactsTable({
                   sortBy={column.key}
                 />
               ))}
-              <th className="whitespace-nowrap px-4 py-4 text-right font-black uppercase tracking-[3px]">
+              <th className="sticky top-0 z-20 whitespace-nowrap bg-zinc-950 px-4 py-4 text-right font-black uppercase tracking-[3px] shadow-[inset_0_-1px_0_rgba(255,255,255,0.12)]">
                 Select
               </th>
             </tr>
