@@ -21,7 +21,7 @@ const defaultHtml = `
 
 type AutomationContext = {
   contactId: string;
-  source: "mock" | "stripe";
+  source: "admin" | "mock" | "stripe";
 };
 
 async function getContact(contactId: string) {
@@ -207,28 +207,60 @@ export async function runNewSignupAutomation({
 
     if (!(await hasAlreadySent(blastId, contact.id, eventType))) {
       const emailSettings = await getEmailSettings();
-      const result = await sendCampaignTestEmail({
-        from: formatFromEmail(emailSettings),
-        html: blast.html_content,
-        preheader: blast.preheader,
-        replyTo: emailSettings.email_reply_to,
-        subject: blast.subject,
-        to: contact.email,
-        unsubscribeUrl: createUnsubscribeUrl(contact.id),
-      });
 
-      await recordBlastEvent({
-        blastId,
-        email: contact.email,
-        eventType,
-        metadata: {
-          contact_id: contact.id,
-          mode: result.mode,
-          provider: result.provider,
-          provider_id: result.providerId,
-          source,
-        },
-      });
+      try {
+        const result = await sendCampaignTestEmail({
+          from: formatFromEmail(emailSettings),
+          html: blast.html_content,
+          preheader: blast.preheader,
+          replyTo: emailSettings.email_reply_to,
+          subject: blast.subject,
+          to: contact.email,
+          unsubscribeUrl: createUnsubscribeUrl(contact.id),
+        });
+
+        await recordBlastEvent({
+          blastId,
+          email: contact.email,
+          eventType,
+          metadata: {
+            contact_id: contact.id,
+            mode: result.mode,
+            provider: result.provider,
+            provider_id: result.providerId,
+            source,
+          },
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Unable to send the new signup welcome email.";
+
+        await recordBlastEvent({
+          blastId,
+          email: contact.email,
+          eventType: "new_signup_email_failed",
+          metadata: {
+            contact_id: contact.id,
+            message,
+            source,
+          },
+        }).catch(() => undefined);
+
+        await logContactActivity({
+          body: message,
+          contactId: contact.id,
+          metadata: {
+            blast_id: blastId,
+            campaign_id: campaignId,
+            email: contact.email,
+            source,
+          },
+          title: "Welcome email failed",
+          type: "new_signup_email_failed",
+        }).catch(() => undefined);
+      }
     }
   }
 

@@ -9,6 +9,7 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminContactsTable } from "@/components/admin-contacts-table";
 
@@ -302,6 +303,19 @@ async function bulkContactAction(formData: FormData) {
 
     if (error) {
       throw new Error(error.message);
+    }
+
+    if (membershipStatus === "Active Member") {
+      await Promise.all(
+        contactIds.map((contactId) =>
+          runNewSignupAutomation({
+            contactId,
+            source: "admin",
+          }).catch((error: unknown) => {
+            console.error("Unable to run new signup automation", error);
+          }),
+        ),
+      );
     }
   }
 

@@ -11,6 +11,7 @@ import {
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { logContactActivity } from "@/lib/contact-activity";
+import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import {
   formatCurrencyFromCents,
   formatContactName,
@@ -152,6 +153,15 @@ async function updateContact(formData: FormData) {
 
   if (error) {
     redirect(getErrorRedirect(id, error));
+  }
+
+  if (updates.membership_status === "Active Member" && updates.email_opt_in) {
+    await runNewSignupAutomation({
+      contactId: id,
+      source: "admin",
+    }).catch((error: unknown) => {
+      console.error("Unable to run new signup automation", error);
+    });
   }
 
   try {

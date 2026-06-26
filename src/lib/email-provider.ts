@@ -148,6 +148,7 @@ function buildSmtpMessage(input: SendEmailInput, deliveredTo: string) {
   const html = buildEmailHtml({
     html: `<p style="margin:0 0 18px;color:#374151;"><strong>SMTP demo mode:</strong> intended recipient ${escapeHtml(input.to)}</p>${input.html}`,
     preheader: input.preheader,
+    unsubscribeUrl: input.unsubscribeUrl,
   });
 
   return [
