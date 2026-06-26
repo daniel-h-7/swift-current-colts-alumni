@@ -251,7 +251,7 @@ export function AdminContactsTable({
           </div>
         </details>
       </div>
-      <div className="overflow-x-auto">
+      <div className="max-h-[72vh] overflow-auto">
         <table className="min-w-full divide-y divide-white/10 text-left text-sm">
           <thead className="text-white">
             <tr>
