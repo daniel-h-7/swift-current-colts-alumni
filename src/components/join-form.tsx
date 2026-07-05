@@ -6,7 +6,6 @@ import {
   RelationshipType,
   relationshipTypes,
   Sport,
-  sports,
 } from "@/lib/contact-options";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -190,11 +189,9 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
         <label className={labelClass}>
           Sport / program
           <select className={fieldClass} name="sport" required>
-            {sports.map((sport) => (
-              <option className="bg-zinc-950" key={sport} value={sport}>
-                {sport}
-              </option>
-            ))}
+            <option className="bg-zinc-950" value="Football">
+              Football
+            </option>
           </select>
         </label>
       </div>

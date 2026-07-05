@@ -10,14 +10,14 @@ const events = [
 const spotlights = [
   {
     image: "/images/rhett-vavra.webp",
-    imagePosition: "object-[center_28%]",
+    imageClass: "object-[center_28%]",
     name: "Rhett Vavra",
     source: "University of Saskatchewan Huskies",
     year: "Class of '21",
   },
   {
     image: "/images/gerry-inglis.webp",
-    imagePosition: "object-[center_32%]",
+    imageClass: "origin-left object-[18%_center] scale-[1.85]",
     name: "Gerry Inglis",
     source: "University of Alberta Golden Bears",
     year: "",
@@ -64,7 +64,6 @@ export default function Home() {
           </div>
 
           <div className="hidden items-center overflow-hidden rounded-lg border border-white/10 bg-black/35 text-xs font-black uppercase tracking-[2px] text-gray-300 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur md:flex">
-            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#impact">Impact</a>
             <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#sponsors">Sponsors</a>
             <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#alumni">Alumni</a>
             <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#events">Events</a>
@@ -96,29 +95,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="impact" className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            ["847", "Alumni Reconnected"],
-            ["$48K", "Raised This Year"],
-            ["224", "Monthly Boosters"],
-            ["42", "Years of Colts Tradition"],
-          ].map(([number, label]) => (
-            <div key={label} className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center shadow-2xl">
-              <h3 className="text-5xl font-black text-white">{number}</h3>
-              <p className="mt-3 text-gray-400">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        <section id="sponsors" className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl">
+      <section id="sponsors" className="max-w-7xl mx-auto px-6 py-20">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[5px] text-red-500">Backed By Community</p>
               <h2 className="mt-2 text-3xl font-black md:text-4xl">Legacy Sponsors</h2>
             </div>
             <p className="max-w-xl text-sm leading-6 text-gray-400">
-              Room for every business, family, and builder helping Colts football keep moving.
+              Thank you to our amazing sponsors for your continued support of Swift Current Colts Football!
             </p>
           </div>
 
@@ -133,33 +118,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      </section>
-
-      <section id="donate" className="bg-gradient-to-r from-blue-950 via-black to-red-950 px-6 py-20">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-black/50 p-8 md:p-12">
-          <p className="text-sm uppercase tracking-[5px] text-red-500">Current Campaign</p>
-          <h2 className="mt-3 text-4xl md:text-5xl font-black">2026 Equipment Fund</h2>
-          <p className="mt-4 text-gray-300">
-            Help fund helmets, pads, travel, training equipment, and player development.
-          </p>
-
-          <div className="mt-8 h-8 overflow-hidden rounded-full bg-zinc-800">
-            <div className="h-full w-[72%] rounded-full bg-red-600 shadow-[0_0_30px_rgba(220,38,38,0.7)]" />
-          </div>
-
-          <div className="mt-4 flex justify-between text-gray-300">
-            <span>$36,000 raised</span>
-            <span>$50,000 goal</span>
-          </div>
-
-          <div className="mt-8 grid md:grid-cols-3 gap-4">
-            {["$10/month", "$25/month", "$50/month"].map((tier) => (
-              <button key={tier} className="rounded-xl border border-blue-500/40 bg-blue-950/60 p-5 font-bold hover:bg-blue-800">
-                {tier}
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -191,7 +149,7 @@ export default function Home() {
                     alt={`${spotlight.name} headshot`}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className={`object-cover ${spotlight.imagePosition} grayscale-[25%]`}
+                    className={`object-cover ${spotlight.imageClass} grayscale-[25%]`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                   <p className="absolute bottom-3 left-4 text-xs font-bold uppercase tracking-[2px] text-gray-300">
