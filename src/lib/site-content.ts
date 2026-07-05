@@ -18,8 +18,15 @@ export type SiteEvent = {
   title: string;
 };
 
+export type SiteSponsor = {
+  imageUrl: string;
+  linkUrl: string;
+  name: string;
+};
+
 export type SiteContent = {
   events: SiteEvent[];
+  sponsors: SiteSponsor[];
   spotlights: SiteSpotlight[];
 };
 
@@ -46,6 +53,16 @@ export const defaultSiteContent: SiteContent = {
       notes: "",
       title: "Hall of Fame Banquet",
     },
+  ],
+  sponsors: [
+    { imageUrl: "", linkUrl: "", name: "Pioneer Co-op" },
+    { imageUrl: "", linkUrl: "", name: "Innovation Credit Union" },
+    { imageUrl: "", linkUrl: "", name: "Great Plains College" },
+    { imageUrl: "", linkUrl: "", name: "Swift Current Broncos" },
+    { imageUrl: "", linkUrl: "", name: "S3 Group" },
+    { imageUrl: "", linkUrl: "", name: "Southwest Terminal" },
+    { imageUrl: "", linkUrl: "", name: "Standard Motors" },
+    { imageUrl: "", linkUrl: "", name: "RBC Swift Current" },
   ],
   spotlights: [
     {
@@ -111,6 +128,20 @@ function normalizeEvent(value: unknown): SiteEvent | null {
   };
 }
 
+function normalizeSponsor(value: unknown): SiteSponsor | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const item = value as Partial<SiteSponsor>;
+
+  return {
+    imageUrl: cleanText(item.imageUrl),
+    linkUrl: cleanText(item.linkUrl),
+    name: cleanText(item.name),
+  };
+}
+
 export function normalizeSiteContent(value: unknown): SiteContent {
   if (!value || typeof value !== "object") {
     return defaultSiteContent;
@@ -123,9 +154,15 @@ export function normalizeSiteContent(value: unknown): SiteContent {
   const events = Array.isArray(content.events)
     ? content.events.map(normalizeEvent).filter(Boolean)
     : [];
+  const sponsors = Array.isArray(content.sponsors)
+    ? content.sponsors.map(normalizeSponsor).filter(Boolean)
+    : [];
 
   return {
     events: events.length ? (events as SiteEvent[]) : defaultSiteContent.events,
+    sponsors: sponsors.length
+      ? (sponsors as SiteSponsor[])
+      : defaultSiteContent.sponsors,
     spotlights: spotlights.length
       ? (spotlights as SiteSpotlight[])
       : defaultSiteContent.spotlights,

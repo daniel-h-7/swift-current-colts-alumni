@@ -1,18 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { EventsSlider } from "@/components/events-slider";
+import { SponsorScroll } from "@/components/sponsor-scroll";
 import { getSiteContent } from "@/lib/site-content";
-
-const sponsors = [
-  "Pioneer Co-op",
-  "Innovation Credit Union",
-  "Great Plains College",
-  "Swift Current Broncos",
-  "S3 Group",
-  "Southwest Terminal",
-  "Standard Motors",
-  "RBC Swift Current",
-];
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +11,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative min-h-[88vh] overflow-hidden">
         <Image
           src="/images/stadium.jpg"
           alt="Football stadium under Friday night lights"
@@ -54,7 +44,7 @@ export default async function Home() {
           </div>
         </nav>
 
-        <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 text-center">
+        <div className="relative z-10 flex min-h-[68vh] items-center justify-center px-6 text-center">
           <div className="max-w-5xl">
             <p className="mb-5 text-sm font-black uppercase tracking-[8px] text-red-400 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               Colts Football Alumni and Booster Club
@@ -78,7 +68,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="sponsors" className="max-w-7xl mx-auto px-6 py-20">
+      <section id="sponsors" className="max-w-7xl mx-auto px-6 pb-20 pt-6">
         <div className="overflow-hidden rounded-2xl border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.96)_0%,rgba(30,64,175,0.82)_34%,rgba(10,15,28,0.96)_72%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -90,18 +80,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="flex w-max animate-[sponsor-scroll_28s_linear_infinite] gap-4">
-              {[...sponsors, ...sponsors].map((sponsor, index) => (
-                <div
-                  className="flex h-20 min-w-56 items-center justify-center rounded-lg border border-blue-100/20 bg-black/40 px-6 text-center text-sm font-black uppercase tracking-[2px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                  key={`${sponsor}-${index}`}
-                >
-                  {sponsor}
-                </div>
-              ))}
-            </div>
-          </div>
+          <SponsorScroll sponsors={siteContent.sponsors} />
         </div>
       </section>
 

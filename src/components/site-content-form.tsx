@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SiteContent, SiteEvent, SiteSpotlight } from "@/lib/site-content";
+import {
+  SiteContent,
+  SiteEvent,
+  SiteSponsor,
+  SiteSpotlight,
+} from "@/lib/site-content";
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
@@ -26,6 +31,14 @@ function blankSpotlight(): SiteSpotlight {
   };
 }
 
+function blankSponsor(): SiteSponsor {
+  return {
+    imageUrl: "",
+    linkUrl: "",
+    name: "",
+  };
+}
+
 export function SiteContentForm({
   content,
   saved,
@@ -34,10 +47,11 @@ export function SiteContentForm({
   saved: boolean;
 }) {
   const [spotlights, setSpotlights] = useState(content.spotlights);
+  const [sponsors, setSponsors] = useState(content.sponsors);
   const [events, setEvents] = useState(content.events);
   const serializedContent = useMemo(
-    () => JSON.stringify({ events, spotlights }),
-    [events, spotlights],
+    () => JSON.stringify({ events, sponsors, spotlights }),
+    [events, sponsors, spotlights],
   );
 
   function updateSpotlight(index: number, updates: Partial<SiteSpotlight>) {
@@ -54,6 +68,28 @@ export function SiteContentForm({
         currentIndex === index ? { ...event, ...updates } : event,
       ),
     );
+  }
+
+  function updateSponsor(index: number, updates: Partial<SiteSponsor>) {
+    setSponsors((current) =>
+      current.map((sponsor, currentIndex) =>
+        currentIndex === index ? { ...sponsor, ...updates } : sponsor,
+      ),
+    );
+  }
+
+  function moveSponsor(index: number, direction: -1 | 1) {
+    setSponsors((current) => {
+      const next = [...current];
+      const targetIndex = index + direction;
+
+      if (targetIndex < 0 || targetIndex >= next.length) {
+        return current;
+      }
+
+      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+      return next;
+    });
   }
 
   function moveEvent(index: number, direction: -1 | 1) {
@@ -164,6 +200,94 @@ export function SiteContentForm({
                       updateSpotlight(index, { descriptor: event.target.value })
                     }
                     value={spotlight.descriptor}
+                  />
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-2xl font-black">Sponsor Scroll</h2>
+            <p className="mt-2 text-gray-400">
+              Edit the sponsor labels and optional click-through links shown on
+              the homepage.
+            </p>
+          </div>
+          <button
+            className="rounded-md bg-blue-700 px-4 py-3 text-sm font-black text-white hover:bg-blue-600"
+            onClick={() => setSponsors((current) => [...current, blankSponsor()])}
+            type="button"
+          >
+            Add Sponsor
+          </button>
+        </div>
+
+        <div className="mt-6 space-y-5">
+          {sponsors.map((sponsor, index) => (
+            <div
+              className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+              key={index}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+                  Sponsor {index + 1}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className="rounded-md border border-white/10 px-3 py-2 text-sm font-bold text-gray-200 hover:border-blue-500 disabled:opacity-40"
+                    disabled={index === 0}
+                    onClick={() => moveSponsor(index, -1)}
+                    type="button"
+                  >
+                    Move Up
+                  </button>
+                  <button
+                    className="rounded-md border border-white/10 px-3 py-2 text-sm font-bold text-gray-200 hover:border-blue-500 disabled:opacity-40"
+                    disabled={index === sponsors.length - 1}
+                    onClick={() => moveSponsor(index, 1)}
+                    type="button"
+                  >
+                    Move Down
+                  </button>
+                  <button
+                    className="rounded-md px-3 py-2 text-sm font-bold text-red-300 hover:bg-red-950/40"
+                    onClick={() =>
+                      setSponsors((current) =>
+                        current.filter((_, currentIndex) => currentIndex !== index),
+                      )
+                    }
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label className="block text-sm font-bold text-gray-200">
+                  Sponsor text
+                  <input
+                    className={fieldClass}
+                    onChange={(event) =>
+                      updateSponsor(index, { name: event.target.value })
+                    }
+                    placeholder="Leave blank if needed"
+                    value={sponsor.name}
+                  />
+                </label>
+                <label className="block text-sm font-bold text-gray-200">
+                  Link URL
+                  <input
+                    className={fieldClass}
+                    onChange={(event) =>
+                      updateSponsor(index, { linkUrl: event.target.value })
+                    }
+                    placeholder="https://..."
+                    value={sponsor.linkUrl}
                   />
                 </label>
               </div>
