@@ -17,7 +17,7 @@ const spotlights = [
   },
   {
     image: "/images/gerry-inglis.webp",
-    imageClass: "origin-left object-[18%_center] scale-[1.85]",
+    imageClass: "origin-[18%_24%] object-[18%_24%] scale-[2.15]",
     name: "Gerry Inglis",
     source: "University of Alberta Golden Bears",
     year: "",
@@ -96,13 +96,13 @@ export default function Home() {
       </section>
 
       <section id="sponsors" className="max-w-7xl mx-auto px-6 py-20">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl">
+        <div className="overflow-hidden rounded-2xl border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.96)_0%,rgba(30,64,175,0.82)_34%,rgba(10,15,28,0.96)_72%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[5px] text-red-500">Backed By Community</p>
-              <h2 className="mt-2 text-3xl font-black md:text-4xl">Legacy Sponsors</h2>
+              <p className="text-sm font-black uppercase tracking-[5px] text-blue-100/80">Backed By Community</p>
+              <h2 className="mt-2 text-3xl font-black text-white md:text-4xl">Legacy Sponsors</h2>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-gray-400">
+            <p className="max-w-xl text-sm font-semibold leading-6 text-blue-50/85">
               Thank you to our amazing sponsors for your continued support of Swift Current Colts Football!
             </p>
           </div>
@@ -111,7 +111,7 @@ export default function Home() {
             <div className="flex w-max animate-[sponsor-scroll_28s_linear_infinite] gap-4">
               {[...sponsors, ...sponsors].map((sponsor, index) => (
                 <div
-                  className="flex h-20 min-w-56 items-center justify-center rounded-xl border border-white/10 bg-black/35 px-6 text-center text-sm font-black uppercase tracking-[2px] text-gray-200"
+                  className="flex h-20 min-w-56 items-center justify-center rounded-lg border border-blue-100/20 bg-black/40 px-6 text-center text-sm font-black uppercase tracking-[2px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                   key={`${sponsor}-${index}`}
                 >
                   {sponsor}
@@ -125,11 +125,11 @@ export default function Home() {
       <section id="alumni" className="relative isolate overflow-hidden px-6 py-20">
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-8 hidden h-72 w-72 bg-red-600/20 md:block"
+          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-8 hidden h-72 w-72 bg-red-600/30 md:block"
         />
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-10 hidden h-72 w-72 bg-red-600/20 md:block"
+          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-10 hidden h-72 w-72 bg-red-600/30 md:block"
         />
 
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-red-950/20 to-transparent" />
