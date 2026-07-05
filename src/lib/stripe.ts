@@ -46,6 +46,16 @@ export type StripeInvoicePaid = {
   subscription?: string | null;
 };
 
+export type StripeSubscription = {
+  cancel_at_period_end?: boolean;
+  canceled_at?: number | null;
+  customer?: string | null;
+  current_period_end?: number | null;
+  id: string;
+  livemode?: boolean;
+  status?: string | null;
+};
+
 export function getStripeSecretKey() {
   return getServerEnvValue("STRIPE_SECRET_KEY");
 }
@@ -145,6 +155,52 @@ export async function createStripeCheckoutSession({
 
   if (!payload?.id || !payload.url) {
     throw new Error("Stripe did not return a Checkout URL.");
+  }
+
+  return {
+    id: payload.id,
+    url: payload.url,
+  };
+}
+
+export async function createStripeCustomerPortalSession({
+  customerId,
+  returnUrl,
+}: {
+  customerId: string;
+  returnUrl: string;
+}) {
+  const secretKey = getStripeSecretKey();
+
+  if (!secretKey) {
+    throw new Error("Missing STRIPE_SECRET_KEY.");
+  }
+
+  const body = new URLSearchParams();
+  body.set("customer", customerId);
+  body.set("return_url", returnUrl);
+
+  const response = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
+    body,
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    method: "POST",
+  });
+  const payload = (await response.json().catch(() => null)) as
+    | { error?: { message?: string }; id?: string; url?: string | null }
+    | null;
+
+  if (!response.ok) {
+    throw new Error(
+      payload?.error?.message ||
+        `Stripe rejected the Customer Portal Session with status ${response.status}.`,
+    );
+  }
+
+  if (!payload?.url) {
+    throw new Error("Stripe did not return a Customer Portal URL.");
   }
 
   return {

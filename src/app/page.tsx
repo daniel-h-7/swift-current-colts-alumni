@@ -1,28 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-
-const events = [
-  ["Alumni Golf Classic", "June 21, 2026"],
-  ["Friday Night Homecoming", "September 18, 2026"],
-  ["Hall of Fame Banquet", "November 7, 2026"],
-];
-
-const spotlights = [
-  {
-    image: "/images/rhett-vavra.webp",
-    imageClass: "object-[center_28%]",
-    name: "Rhett Vavra",
-    source: "University of Saskatchewan Huskies",
-    year: "Class of '21",
-  },
-  {
-    image: "/images/gerry-inglis.webp",
-    imageClass: "origin-[18%_24%] object-[18%_24%] scale-[2.15]",
-    name: "Gerry Inglis",
-    source: "University of Alberta Golden Bears",
-    year: "",
-  },
-];
+import { EventsSlider } from "@/components/events-slider";
+import { getSiteContent } from "@/lib/site-content";
 
 const sponsors = [
   "Pioneer Co-op",
@@ -35,7 +14,9 @@ const sponsors = [
   "RBC Swift Current",
 ];
 
-export default function Home() {
+export default async function Home() {
+  const siteContent = await getSiteContent();
+
   return (
     <main className="min-h-screen bg-black text-white">
       <section className="relative min-h-screen overflow-hidden">
@@ -141,11 +122,11 @@ export default function Home() {
           <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
 
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {spotlights.map((spotlight) => (
+            {siteContent.spotlights.map((spotlight) => (
               <div key={spotlight.name} className="rounded-2xl bg-zinc-900/90 p-8 border border-white/10">
                 <div className="relative mb-6 h-56 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-blue-950 to-red-950">
                   <Image
-                    src={spotlight.image}
+                    src={spotlight.imageUrl}
                     alt={`${spotlight.name} headshot`}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
@@ -153,12 +134,12 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                   <p className="absolute bottom-3 left-4 text-xs font-bold uppercase tracking-[2px] text-gray-300">
-                    {spotlight.source}
+                    {spotlight.descriptor}
                   </p>
                 </div>
                 <h3 className="text-2xl font-black">{spotlight.name}</h3>
-                {spotlight.year ? (
-                  <p className="mt-1 text-sm font-semibold italic text-red-400">{spotlight.year}</p>
+                {spotlight.classYear ? (
+                  <p className="mt-1 text-sm font-semibold italic text-red-400">{spotlight.classYear}</p>
                 ) : null}
               </div>
             ))}
@@ -170,14 +151,7 @@ export default function Home() {
         <p className="text-sm uppercase tracking-[5px] text-red-500">Gather Again</p>
         <h2 className="mt-3 text-4xl md:text-5xl font-black">Upcoming Events</h2>
 
-        <div className="mt-10 grid md:grid-cols-3 gap-6">
-          {events.map(([title, date]) => (
-            <div key={title} className="rounded-2xl border border-white/10 bg-white/5 p-8">
-              <h3 className="text-2xl font-black">{title}</h3>
-              <p className="mt-3 text-gray-400">{date}</p>
-            </div>
-          ))}
-        </div>
+        <EventsSlider events={siteContent.events} />
       </section>
 
       <footer className="border-t border-white/10 px-6 py-12 text-center text-gray-500">

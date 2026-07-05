@@ -32,6 +32,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
 ADMIN_PASSWORD=choose-a-strong-admin-password
 ADMIN_SESSION_SECRET=choose-a-long-random-session-secret
 UNSUBSCRIBE_SECRET=choose-a-long-random-unsubscribe-secret
+CRON_SECRET=choose-a-long-random-cron-secret
 NEXT_PUBLIC_SITE_URL=https://your-live-domain.com
 DEMO_PASSWORD=choose-a-demo-viewer-password
 DEMO_SESSION_SECRET=choose-a-long-random-demo-session-secret
@@ -44,6 +45,8 @@ Use the Supabase publishable key for `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Use the Su
 Set `DEMO_PASSWORD` only when the public site should be password-protected for demos. When it is set, public pages redirect to `/demo`; `/admin` still uses the separate `ADMIN_PASSWORD`. Remove `DEMO_PASSWORD` or leave it blank to make the public site open again.
 
 Set `NEXT_PUBLIC_SITE_URL` to the live site URL so Stripe redirects and email unsubscribe links point at the correct domain. `UNSUBSCRIBE_SECRET` signs unsubscribe links; if it is not set, the app falls back to `ADMIN_SESSION_SECRET`.
+
+`CRON_SECRET` protects scheduled automation routes such as `/api/cron/renewal-reminders`. Configure a daily Vercel Cron job to call that route with `Authorization: Bearer <CRON_SECRET>`.
 
 ## Supabase SQL table setup
 
@@ -161,6 +164,7 @@ create table if not exists public.crm_settings (
   email_sending_domain text not null default '',
   membership_year_label text not null default '2026 Colts Football Alumni & Booster Club',
   renewal_deadline date,
+  site_content jsonb,
   join_is_open boolean not null default true,
   join_headline text not null default 'Join the Colts network.',
   join_body text not null default 'One clean contact record helps the club reach alumni, families, boosters, and community supporters when it matters.',
@@ -184,7 +188,8 @@ alter table public.crm_settings
   add column if not exists email_from_address text not null default 'onboarding@resend.dev',
   add column if not exists email_from_name text not null default 'Colts Alumni',
   add column if not exists email_reply_to text not null default '',
-  add column if not exists email_sending_domain text not null default '';
+  add column if not exists email_sending_domain text not null default '',
+  add column if not exists site_content jsonb;
 
 notify pgrst, 'reload schema';
 ```
@@ -290,6 +295,9 @@ In Stripe, send these webhook events:
 ```text
 checkout.session.completed
 invoice.paid
+invoice.payment_succeeded
+customer.subscription.updated
+customer.subscription.deleted
 ```
 
 Use Stripe test card `4242 4242 4242 4242` with any future expiry date, any CVC, and any postal code. Stripe creates an annual subscription for the membership. Any optional one-time gift is added to the initial invoice only.

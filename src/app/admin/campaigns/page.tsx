@@ -6,6 +6,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateCampaignWithBlasts } from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
+import { ensureRenewalReminderCampaign } from "@/lib/renewal-reminder-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 
@@ -71,6 +72,7 @@ export default async function CampaignsPage() {
 
   try {
     await ensureNewSignupAutomationCampaign();
+    await ensureRenewalReminderCampaign();
     campaigns = await getCampaigns();
   } catch (error) {
     errorMessage =

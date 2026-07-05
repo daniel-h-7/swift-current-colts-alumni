@@ -36,6 +36,12 @@ export default function MembershipSuccessPage() {
             >
               Home
             </Link>
+            <Link
+              className="rounded-md border border-white/15 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+              href="/membership/manage"
+            >
+              Manage Membership
+            </Link>
           </div>
 
           <SupportShareBar shareUrl={shareUrl} />

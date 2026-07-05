@@ -47,6 +47,12 @@ export default async function AdminSettingsPage({
           <div className="flex flex-wrap gap-3">
             <Link
               className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
+              href="/admin/settings/site-content"
+            >
+              Site Content
+            </Link>
+            <Link
+              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
               href="/admin"
             >
               Dashboard

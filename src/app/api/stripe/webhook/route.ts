@@ -7,6 +7,7 @@ import {
   getStripeWebhookSecret,
   StripeCheckoutSessionCompleted,
   StripeInvoicePaid,
+  StripeSubscription,
 } from "@/lib/stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -41,6 +42,15 @@ function isCheckoutSessionCompleted(
 }
 
 function isInvoicePaid(value: unknown): value is StripeInvoicePaid {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "id" in value &&
+      typeof value.id === "string",
+  );
+}
+
+function isStripeSubscription(value: unknown): value is StripeSubscription {
   return Boolean(
     value &&
       typeof value === "object" &&
@@ -211,6 +221,101 @@ async function renewMembership(invoice: StripeInvoicePaid) {
   }).catch(() => undefined);
 }
 
+function getDateFromStripeTimestamp(value?: number | null) {
+  if (!value) {
+    return null;
+  }
+
+  return new Date(value * 1000).toISOString().slice(0, 10);
+}
+
+async function recordSubscriptionUpdated(subscription: StripeSubscription) {
+  if (!subscription.customer) {
+    return;
+  }
+
+  const supabase = createServerSupabaseClient();
+  const { data: contact, error: contactError } = await supabase
+    .from("contacts")
+    .select("id")
+    .eq("stripe_customer_id", subscription.customer)
+    .maybeSingle();
+
+  if (contactError) {
+    throw new Error(contactError.message);
+  }
+
+  if (!contact?.id || !subscription.cancel_at_period_end) {
+    return;
+  }
+
+  await logContactActivity({
+    body: "Stripe subscription is set to cancel at the end of the current paid period.",
+    contactId: contact.id,
+    metadata: {
+      cancel_at_period_end: true,
+      current_period_end: getDateFromStripeTimestamp(
+        subscription.current_period_end,
+      ),
+      stripe_customer_id: subscription.customer,
+      stripe_livemode: subscription.livemode ?? false,
+      stripe_subscription_id: subscription.id,
+      stripe_subscription_status: subscription.status ?? null,
+    },
+    title: "Membership cancellation scheduled",
+    type: "membership_cancellation_scheduled",
+  }).catch(() => undefined);
+}
+
+async function cancelMembership(subscription: StripeSubscription) {
+  if (!subscription.customer) {
+    return;
+  }
+
+  const supabase = createServerSupabaseClient();
+  const { data: contact, error: contactError } = await supabase
+    .from("contacts")
+    .select("id")
+    .eq("stripe_customer_id", subscription.customer)
+    .maybeSingle();
+
+  if (contactError) {
+    throw new Error(contactError.message);
+  }
+
+  if (!contact?.id) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("contacts")
+    .update({
+      membership_status: "Expired",
+    })
+    .eq("id", contact.id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await logContactActivity({
+    body: "Stripe subscription was canceled. Membership status set to Expired.",
+    contactId: contact.id,
+    metadata: {
+      canceled_at: getDateFromStripeTimestamp(subscription.canceled_at),
+      current_period_end: getDateFromStripeTimestamp(
+        subscription.current_period_end,
+      ),
+      stripe_customer_id: subscription.customer,
+      stripe_livemode: subscription.livemode ?? false,
+      stripe_subscription_id: subscription.id,
+      stripe_subscription_status: subscription.status ?? null,
+    },
+    title: "Membership canceled",
+    type: "membership_subscription_canceled",
+  }).catch(() => undefined);
+}
+
 export async function POST(request: Request) {
   const webhookSecret = getStripeWebhookSecret();
 
@@ -251,6 +356,26 @@ export async function POST(request: Request) {
       }
 
       await renewMembership(invoice);
+    }
+
+    if (event.type === "customer.subscription.updated") {
+      const subscription = event.data?.object;
+
+      if (!isStripeSubscription(subscription)) {
+        throw new Error("Invalid Stripe subscription payload.");
+      }
+
+      await recordSubscriptionUpdated(subscription);
+    }
+
+    if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data?.object;
+
+      if (!isStripeSubscription(subscription)) {
+        throw new Error("Invalid Stripe subscription payload.");
+      }
+
+      await cancelMembership(subscription);
     }
 
     return NextResponse.json({ ok: true });

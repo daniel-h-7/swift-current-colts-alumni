@@ -94,6 +94,12 @@ export default async function JoinPage() {
                 <p className="mt-3 text-xs leading-5 text-gray-500">
                   Renews each year on the subscription date until opted out.
                 </p>
+                <Link
+                  className="mt-3 inline-flex text-xs font-bold text-blue-300 hover:text-blue-200"
+                  href="/membership/manage"
+                >
+                  Manage or cancel an existing membership
+                </Link>
                 {!settings.join_is_open ? (
                   <p className="mt-4 rounded-2xl border border-red-500/30 bg-red-950/40 p-3 text-sm font-bold text-red-200">
                     Membership signups are currently closed.
