@@ -14,6 +14,8 @@ const sponsors = [
   "RBC Swift Current",
 ];
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const siteContent = await getSiteContent();
 

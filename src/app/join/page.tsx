@@ -35,6 +35,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function JoinPage() {
   const settings = await getMembershipSettings();
   const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";

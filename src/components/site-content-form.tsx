@@ -71,7 +71,7 @@ export function SiteContentForm({
   }
 
   return (
-    <form action="/admin/settings/site-content" className="space-y-6" method="post">
+    <form action="/admin/settings/site-content/save" className="space-y-6" method="post">
       <input name="site_content" type="hidden" value={serializedContent} />
 
       {saved ? (
