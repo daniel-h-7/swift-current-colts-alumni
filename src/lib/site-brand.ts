@@ -54,30 +54,30 @@ const coltsBrand: SiteBrand = {
 
 const demoBrand: SiteBrand = {
   alumniSectionCopy:
-    "A premium preview of how TeamAlum can turn a program's history, supporters, and fundraising into one polished home base.",
-  ctaLabel: "Launch the Demo Experience",
-  footerLocation: "Demo Program",
+    "A premium preview of how Team Gridiron can showcase legendary alumni, supporters, and the next generation of athletes.",
+  ctaLabel: "Support Team Gridiron",
+  footerLocation: "Friday Night Lights Demo",
   heroBody:
-    "A Friday night lights command center for alumni, boosters, sponsors, memberships, campaigns, and program momentum.",
-  heroKicker: "TeamAlum Demo Experience",
+    "A black-and-white Friday night lights demo for alumni, boosters, sponsors, memberships, campaigns, and program momentum.",
+  heroKicker: "Team Gridiron Alumni and Booster Club",
   heroLineOne: "FRIDAY NIGHT",
   heroLineTwo: "READY.",
-  initials: "TA",
+  initials: "TG",
   isDemo: true,
-  joinHeadline: "Support the Program",
+  joinHeadline: "Support Team Gridiron",
   joinSubtext:
     "Demo a clean supporter signup flow built for memberships, one-time gifts, alumni engagement, and future campaign follow-up.",
-  logoEyebrow: "TeamAlum",
-  logoTitle: "Demo Football",
+  logoEyebrow: "Team",
+  logoTitle: "Gridiron",
   metaDescription:
-    "A polished TeamAlum demo site for football alumni, booster, sponsor, and membership management.",
-  metaTitle: "TeamAlum Friday Night Lights Demo",
-  programName: "Demo Football",
+    "A polished Team Gridiron demo site for football alumni, booster, sponsor, and membership management.",
+  metaTitle: "Team Gridiron Alumni and Booster Club",
+  programName: "Team Gridiron",
   sponsorCopy:
     "Showcase sponsors, partners, and community champions in a polished scrolling sponsor rail.",
   sponsorEyebrow: "Partner Ready",
   sponsorTitle: "Sponsor Showcase",
-  successHeading: "Thank you for supporting the program!",
+  successHeading: "Thank you for supporting Team Gridiron!",
   successProgramLine:
     "This is where supporters can share the campaign and stay connected with future updates and events.",
 };

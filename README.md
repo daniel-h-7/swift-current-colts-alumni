@@ -35,6 +35,7 @@ UNSUBSCRIBE_SECRET=choose-a-long-random-unsubscribe-secret
 CRON_SECRET=choose-a-long-random-cron-secret
 NEXT_PUBLIC_SITE_URL=https://your-live-domain.com
 NEXT_PUBLIC_SITE_VARIANT=
+DEMO_USE_DATABASE_SITE_CONTENT=
 DEMO_PASSWORD=choose-a-demo-viewer-password
 DEMO_SESSION_SECRET=choose-a-long-random-demo-session-secret
 ```
@@ -48,6 +49,8 @@ Set `DEMO_PASSWORD` only when the public site should be password-protected for d
 Set `NEXT_PUBLIC_SITE_URL` to the live site URL so Stripe redirects and email unsubscribe links point at the correct domain. `UNSUBSCRIBE_SECRET` signs unsubscribe links; if it is not set, the app falls back to `ADMIN_SESSION_SECRET`.
 
 Set `NEXT_PUBLIC_SITE_VARIANT=demo` on a separate Vercel project to turn on the generic black-and-white Friday night lights TeamAlum demo branding. Leave it blank for the Colts/default site.
+
+Demo mode uses built-in generic Team Gridiron homepage content by default so it will not accidentally display Colts data. Set `DEMO_USE_DATABASE_SITE_CONTENT=true` only if you want the demo project's Site Content admin screen to control the demo homepage.
 
 `CRON_SECRET` protects scheduled automation routes such as `/api/cron/renewal-reminders`. Configure a daily Vercel Cron job to call that route with `Authorization: Bearer <CRON_SECRET>`.
 

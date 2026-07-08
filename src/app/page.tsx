@@ -16,6 +16,14 @@ function getSpotlightImageClass(name: string, savedClass: string) {
   return savedClass;
 }
 
+function getAlumniLogoClass(brandIsDemo: boolean, side: "left" | "right") {
+  if (!brandIsDemo) {
+    return side === "left" ? "alumni-logo-sc" : "alumni-logo-horseshoe";
+  }
+
+  return side === "left" ? "alumni-logo-tg" : "alumni-logo-shield";
+}
+
 export default async function Home() {
   const brand = getSiteBrand();
   const siteContent = await getSiteContent();
@@ -87,11 +95,11 @@ export default async function Home() {
       <section id="alumni" className="section-rule relative isolate overflow-hidden px-6 py-24">
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/24 md:block"
+          className={`alumni-logo-mask ${getAlumniLogoClass(brand.isDemo, "left")} absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/24 md:block`}
         />
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/24 md:block"
+          className={`alumni-logo-mask ${getAlumniLogoClass(brand.isDemo, "right")} absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/24 md:block`}
         />
 
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-red-950/20 to-transparent" />
@@ -100,7 +108,7 @@ export default async function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="program-kicker">Colts Family</p>
+              <p className="program-kicker">{brand.isDemo ? "Gridiron Legends" : "Colts Family"}</p>
               <h2 className="mt-3 text-4xl font-black md:text-5xl">Alumni Spotlights</h2>
             </div>
             <p className="max-w-lg text-sm font-semibold leading-6 text-gray-400">

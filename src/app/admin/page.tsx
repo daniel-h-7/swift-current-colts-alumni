@@ -10,6 +10,7 @@ import {
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
+import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin-header";
 import { AdminContactsTable } from "@/components/admin-contacts-table";
@@ -357,6 +358,8 @@ export default async function AdminPage({
     );
   }
 
+  const brand = getSiteBrand();
+
   return (
     <main className="min-h-screen bg-black text-white">
       <AdminHeader
@@ -369,7 +372,7 @@ export default async function AdminPage({
           { href: "/admin/settings", label: "Settings" },
           { href: "/admin/logout", label: "Log Out", tone: "danger" },
         ]}
-        eyebrow="Colts CRM"
+        eyebrow={brand.isDemo ? "Team Gridiron CRM" : "Colts CRM"}
         subtitle="Manage contacts, membership status, opt-ins, donations, and campaign audiences from one working console."
         title="Contacts Dashboard"
       />

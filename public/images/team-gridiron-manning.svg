@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-label="Generic Team Gridiron alumni portrait">
+  <defs>
+    <linearGradient id="bg" x1="1" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#27272a"/>
+      <stop offset=".55" stop-color="#050505"/>
+      <stop offset="1" stop-color="#71717a"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="560" fill="url(#bg)"/>
+  <path d="M0 0h900v560H0Z" fill="#fff" opacity=".03"/>
+  <g opacity=".18" fill="none" stroke="#fff" stroke-width="3">
+    <path d="M90 88c170 46 286 42 432-18 116-48 218-52 318-18"/>
+    <path d="M80 470c144-54 300-62 468-22 118 28 220 23 306-16"/>
+    <path d="M118 54v460M236 54v460M354 54v460M472 54v460M590 54v460M708 54v460"/>
+  </g>
+  <g transform="translate(292 64)">
+    <path d="M164 72c-72 0-124 55-124 126 0 56 31 95 73 113v42h102v-42c42-18 73-57 73-113 0-71-52-126-124-126Z" fill="#e4e4e7"/>
+    <path d="M54 178c29-78 86-112 170-100 41 19 70 55 78 103-36-43-84-60-145-52-47 6-81 22-103 49Z" fill="#111"/>
+    <path d="M77 355h174c76 0 138 62 138 138v1H-61v-1c0-76 62-138 138-138Z" fill="#f4f4f5"/>
+    <path d="M-10 494c12-82 78-128 160-128h28c82 0 148 46 160 128Z" fill="#18181b"/>
+    <path d="M111 368h106l-53 86Z" fill="#fafafa"/>
+    <path d="M64 438h200" stroke="#fff" stroke-opacity=".16" stroke-width="12"/>
+  </g>
+  <rect x="486" y="392" width="370" height="88" fill="#000" opacity=".74"/>
+  <path d="M486 392h370v4H486Z" fill="#fff" opacity=".3"/>
+  <text x="510" y="432" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="900" letter-spacing="4">PEYTON MANNING</text>
+  <text x="512" y="462" fill="#d4d4d8" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" letter-spacing="3">CHAMPIONSHIP ALUMNI FEATURE</text>
+</svg>

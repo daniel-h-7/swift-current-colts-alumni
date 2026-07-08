@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-label="Generic Team Gridiron alumni portrait">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1f2937"/>
+      <stop offset=".52" stop-color="#050505"/>
+      <stop offset="1" stop-color="#52525b"/>
+    </linearGradient>
+    <linearGradient id="light" x1="0" x2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="560" fill="url(#bg)"/>
+  <path d="M0 432c145-70 260-104 408-98 166 7 266 63 492-36v262H0Z" fill="#0a0a0a"/>
+  <g opacity=".25" fill="none" stroke="#fff" stroke-width="2">
+    <path d="M90 80h720M90 150h720M90 220h720M90 290h720"/>
+    <path d="M150 45v470M300 45v470M450 45v470M600 45v470M750 45v470"/>
+  </g>
+  <circle cx="670" cy="105" r="56" fill="#fff" opacity=".08"/>
+  <circle cx="190" cy="118" r="42" fill="#fff" opacity=".1"/>
+  <g transform="translate(282 70)">
+    <path d="M172 78c-68 0-116 51-116 121 0 54 28 91 65 109v44h102v-44c38-18 65-55 65-109 0-70-48-121-116-121Z" fill="#d4d4d8"/>
+    <path d="M88 184c35-58 87-79 164-64 37 31 53 72 45 124-7-80-51-119-135-118-39 0-67 22-74 58Z" fill="#171717"/>
+    <path d="M92 354h160c74 0 132 60 132 134v2H-40v-2c0-74 58-134 132-134Z" fill="#e5e7eb"/>
+    <path d="M10 490c10-80 72-124 150-124h24c78 0 140 44 150 124Z" fill="#27272a"/>
+    <path d="M119 366h106l-53 90Z" fill="#f5f5f5"/>
+    <path d="M90 446h164" stroke="#fff" stroke-opacity=".14" stroke-width="12"/>
+  </g>
+  <rect x="42" y="394" width="330" height="86" fill="#000" opacity=".72"/>
+  <path d="M42 394h330v4H42Z" fill="#fff" opacity=".28"/>
+  <text x="66" y="433" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="900" letter-spacing="4">JOHN ELWAY</text>
+  <text x="68" y="462" fill="#d4d4d8" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" letter-spacing="3">LEGENDARY QUARTERBACK</text>
+  <rect width="900" height="560" fill="url(#light)"/>
+</svg>

@@ -90,54 +90,54 @@ const demoDefaultSiteContent: SiteContent = {
       linkLabel: "Preview",
       linkUrl: "",
       notes: "Kick off the season with alumni, sponsors, and supporters under the lights.",
-      title: "Friday Night Alumni Kickoff",
+      title: "Team Gridiron Kickoff",
     },
     {
       date: "September 19, 2026",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "A demo event built for ticket links, registration pages, or external event details.",
-      title: "Homecoming Showcase",
+      title: "Legends Homecoming",
     },
     {
       date: "November 14, 2026",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "Recognize legacy players, volunteers, sponsors, and the people behind the program.",
-      title: "Legacy Banquet",
+      title: "Gridiron Legacy Banquet",
     },
     {
       date: "January 16, 2027",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "A clean offseason touchpoint for fundraising, alumni updates, and campaign follow-up.",
-      title: "Winter Booster Social",
+      title: "Booster Club Social",
     },
   ],
   sponsors: [
-    { imageUrl: "", linkUrl: "", name: "Stadium Partner" },
-    { imageUrl: "", linkUrl: "", name: "Platinum Sponsor" },
-    { imageUrl: "", linkUrl: "", name: "Community Bank" },
-    { imageUrl: "", linkUrl: "", name: "Equipment Partner" },
-    { imageUrl: "", linkUrl: "", name: "Training Sponsor" },
-    { imageUrl: "", linkUrl: "", name: "Game Day Partner" },
+    { imageUrl: "", linkUrl: "", name: "Gridiron Trust" },
+    { imageUrl: "", linkUrl: "", name: "Stadium Supply Co." },
+    { imageUrl: "", linkUrl: "", name: "Fourth Quarter Finance" },
+    { imageUrl: "", linkUrl: "", name: "Victory Rehab" },
+    { imageUrl: "", linkUrl: "", name: "Legacy Equipment" },
+    { imageUrl: "", linkUrl: "", name: "End Zone Energy" },
     { imageUrl: "", linkUrl: "", name: "Booster Club" },
-    { imageUrl: "", linkUrl: "", name: "Legacy Donor" },
+    { imageUrl: "", linkUrl: "", name: "Hometown Auto" },
   ],
   spotlights: [
     {
       classYear: "Class of '14",
-      descriptor: "Former captain and program mentor",
-      imageClass: "object-[center_28%]",
-      imageUrl: "/images/stadium.jpg",
-      name: "Jordan Hayes",
+      descriptor: "Legendary quarterback and alumni ambassador",
+      imageClass: "object-center",
+      imageUrl: "/images/team-gridiron-elway.svg",
+      name: "John Elway",
     },
     {
       classYear: "Class of '03",
-      descriptor: "Alumni sponsor and community builder",
-      imageClass: "object-[center_42%]",
-      imageUrl: "/images/stadium.jpg",
-      name: "Marcus Reid",
+      descriptor: "Championship quarterback and program supporter",
+      imageClass: "object-center",
+      imageUrl: "/images/team-gridiron-manning.svg",
+      name: "Peyton Manning",
     },
   ],
 };
@@ -236,7 +236,15 @@ export function normalizeSiteContent(value: unknown): SiteContent {
 }
 
 export async function getSiteContent() {
+  const brand = getSiteBrand();
   const defaultSiteContent = getDefaultSiteContent();
+
+  if (
+    brand.isDemo &&
+    process.env.DEMO_USE_DATABASE_SITE_CONTENT?.toLowerCase() !== "true"
+  ) {
+    return defaultSiteContent;
+  }
 
   try {
     const supabase = createServerSupabaseClient();
