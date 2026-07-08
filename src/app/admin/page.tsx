@@ -88,8 +88,16 @@ function getTodayDate() {
 }
 
 function getErrorMessage(error: unknown, fallback: string) {
+  const formatMessage = (message: string) => {
+    if (message.includes("Missing NEXT_PUBLIC_SUPABASE_URL")) {
+      return "Supabase is not connected for this deployment yet. Add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy.";
+    }
+
+    return message;
+  };
+
   if (error instanceof Error) {
-    return error.message;
+    return formatMessage(error.message);
   }
 
   if (
@@ -98,7 +106,7 @@ function getErrorMessage(error: unknown, fallback: string) {
     "message" in error &&
     typeof error.message === "string"
   ) {
-    return error.message;
+    return formatMessage(error.message);
   }
 
   return fallback;
@@ -359,6 +367,10 @@ export default async function AdminPage({
   }
 
   const brand = getSiteBrand();
+  const backendSetupMessage =
+    summaryStats.find((stat) => stat.error)?.error ||
+    errorMessage ||
+    summaryErrorMessage;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -378,6 +390,12 @@ export default async function AdminPage({
       />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
+        {backendSetupMessage ? (
+          <section className="mb-6 border border-amber-400/30 bg-amber-950/25 p-5 text-sm font-bold leading-6 text-amber-100 shadow-[0_20px_70px_rgba(0,0,0,0.25)]">
+            {backendSetupMessage}
+          </section>
+        ) : null}
+
         <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
           {summaryStats.length
             ? summaryStats.map((stat) => (
@@ -393,7 +411,7 @@ export default async function AdminPage({
                   </p>
                   {stat.error ? (
                     <p className="mt-3 text-xs font-bold leading-5 text-red-300">
-                      {stat.error}
+                      Backend setup needed.
                     </p>
                   ) : null}
                 </div>

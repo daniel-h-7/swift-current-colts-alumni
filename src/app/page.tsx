@@ -32,8 +32,12 @@ export default async function Home() {
     <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
       <section className="relative min-h-[88vh] overflow-hidden">
         <Image
-          src="/images/stadium.jpg"
-          alt="Football stadium under Friday night lights"
+          src={brand.isDemo ? "/images/demo-friday-night-stadium.png" : "/images/stadium.jpg"}
+          alt={
+            brand.isDemo
+              ? "Generic high school football stadium under Friday night lights"
+              : "Football stadium under Friday night lights"
+          }
           fill
           priority
           className={`object-cover object-center opacity-95 contrast-110 md:scale-110 md:object-[center_42%] ${
