@@ -4,7 +4,7 @@ export function SponsorScroll({ sponsors }: { sponsors: SiteSponsor[] }) {
   const sponsorItems = sponsors.length ? sponsors : [];
 
   return (
-    <div className="mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+    <div className="mb-2 mt-11 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
       <div className="flex w-max animate-[sponsor-scroll_28s_linear_infinite] gap-4">
         {[...sponsorItems, ...sponsorItems].map((sponsor, index) => {
           const card = (

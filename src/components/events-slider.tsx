@@ -36,28 +36,29 @@ export function EventsSlider({ events }: { events: SiteEvent[] }) {
   return (
     <div className="mt-10">
       <div className="grid gap-6 md:grid-cols-3">
-        {visibleEvents.map((event, index) => (
+        {visibleEvents.map((event) => (
           <div
             className="flex min-h-64 flex-col border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.86),rgba(9,9,11,0.96))] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.28)]"
             key={`${event.title}-${event.date}`}
           >
             <div>
-              <p className="mb-5 text-xs font-black uppercase tracking-[4px] text-blue-400">
-                0{index + 1}
-              </p>
               <h3 className="text-2xl font-black leading-tight">{event.title}</h3>
               {event.date ? (
-                <p className="mt-3 border-l-2 border-red-500 pl-3 text-sm font-bold uppercase tracking-[2px] text-gray-300">{event.date}</p>
+                <p className="mt-4 border-l-2 border-red-500 pl-3 text-sm font-bold uppercase tracking-[2px] text-gray-300">
+                  {event.date}
+                </p>
               ) : null}
             </div>
 
-            <div className="mt-auto flex items-end justify-between gap-4 pt-8">
-              <p className="text-sm leading-6 text-gray-400">
-                {event.notes || ""}
-              </p>
+            <div className="mt-auto grid gap-5 pt-8">
+              {event.notes ? (
+                <p className="text-sm leading-6 text-gray-400">
+                  {event.notes}
+                </p>
+              ) : null}
               {event.linkUrl ? (
                 <a
-                  className="shrink-0 border border-blue-400/40 bg-blue-700 px-4 py-2 text-sm font-black text-white transition hover:bg-blue-600"
+                  className="justify-self-start border border-blue-400/40 bg-blue-700 px-4 py-2 text-sm font-black text-white transition hover:bg-blue-600 md:justify-self-end"
                   href={event.linkUrl}
                   rel="noreferrer"
                   target="_blank"

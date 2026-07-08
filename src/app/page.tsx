@@ -7,6 +7,14 @@ import { getSiteContent } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
 
+function getSpotlightImageClass(name: string, savedClass: string) {
+  if (name.trim().toLowerCase() === "gerry inglis") {
+    return "origin-[23%_23%] object-[23%_23%] scale-[2.75]";
+  }
+
+  return savedClass;
+}
+
 export default async function Home() {
   const siteContent = await getSiteContent();
 
@@ -73,11 +81,11 @@ export default async function Home() {
       <section id="alumni" className="section-rule relative isolate overflow-hidden px-6 py-24">
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/35 md:block"
+          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/24 md:block"
         />
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/35 md:block"
+          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/24 md:block"
         />
 
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-red-950/20 to-transparent" />
@@ -104,7 +112,7 @@ export default async function Home() {
                     alt={`${spotlight.name} headshot`}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className={`object-cover ${spotlight.imageClass} grayscale-[18%] transition duration-500 group-hover:scale-[1.03]`}
+                    className={`object-cover ${getSpotlightImageClass(spotlight.name, spotlight.imageClass)} grayscale-[18%] transition duration-300`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-transparent" />
                 </div>

@@ -11,11 +11,11 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
         <span className="flex h-11 w-11 items-center justify-center border border-red-500/45 bg-red-600 text-sm font-black text-white shadow-[0_12px_34px_rgba(220,38,38,0.24)]">
           SC
         </span>
-        <span>
-          <span className="block text-[11px] font-black uppercase tracking-[4px] text-red-400">
+        <span className="leading-none">
+          <span className="block text-[10px] font-black uppercase tracking-[3px] text-red-400">
             Swift Current
           </span>
-          <span className="mt-1 block text-lg font-black tracking-wide text-white transition group-hover:text-blue-300">
+          <span className="mt-0.5 block text-lg font-black tracking-wide text-white transition group-hover:text-blue-300">
             Colts Football
           </span>
         </span>

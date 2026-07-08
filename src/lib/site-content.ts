@@ -75,7 +75,7 @@ export const defaultSiteContent: SiteContent = {
     {
       classYear: "",
       descriptor: "University of Alberta Golden Bears",
-      imageClass: "origin-[18%_24%] object-[18%_24%] scale-[2.15]",
+      imageClass: "origin-[23%_23%] object-[23%_23%] scale-[2.75]",
       imageUrl: "/images/gerry-inglis.webp",
       name: "Gerry Inglis",
     },
