@@ -3,14 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { JoinForm } from "@/components/join-form";
 import { PublicNav } from "@/components/public-nav";
+import { getSiteBrand } from "@/lib/site-brand";
 import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
 import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
-const shareDescription =
-  "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
+const brand = getSiteBrand();
+const shareDescription = brand.isDemo
+  ? "Preview a polished TeamAlum supporter signup flow for alumni, boosters, sponsors, and football programs."
+  : "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
 
 export const metadata: Metadata = {
   description: shareDescription,
@@ -18,32 +21,33 @@ export const metadata: Metadata = {
     description: shareDescription,
     images: [
       {
-        alt: "Support Swift Current Colts Football",
+        alt: `Support ${brand.programName}`,
         height: 630,
         url: "/join/opengraph-image",
         width: 1200,
       },
     ],
-    title: "Support Swift Current Colts Football",
+    title: `Support ${brand.programName}`,
     type: "website",
   },
-  title: "Support Swift Current Colts Football",
+  title: `Support ${brand.programName}`,
   twitter: {
     card: "summary_large_image",
     description: shareDescription,
     images: ["/join/opengraph-image"],
-    title: "Support Swift Current Colts Football",
+    title: `Support ${brand.programName}`,
   },
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function JoinPage() {
+  const brand = getSiteBrand();
   const settings = await getMembershipSettings();
   const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
       <section className="relative min-h-screen overflow-hidden">
         <Image
           src="/images/stadium.jpg"
@@ -97,7 +101,12 @@ export default async function JoinPage() {
               <div className="mt-8 h-px w-56 bg-gradient-to-r from-blue-600 via-white to-red-600" />
             </div>
 
-            <JoinForm isOpen={settings.join_is_open} />
+            <JoinForm
+              headline={brand.joinHeadline}
+              isOpen={settings.join_is_open}
+              programName={brand.isDemo ? "the program" : "the Colts"}
+              subtext={brand.joinSubtext}
+            />
           </div>
         </div>
       </section>

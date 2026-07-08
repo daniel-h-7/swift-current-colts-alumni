@@ -1,5 +1,15 @@
 import { Contact } from "@/lib/contact-options";
 
+const dateOnlyPattern = /^\d{4}-\d{2}-\d{2}$/;
+
+function getDisplayDate(value: string) {
+  if (dateOnlyPattern.test(value)) {
+    return new Date(`${value}T12:00:00.000Z`);
+  }
+
+  return new Date(value);
+}
+
 export function formatContactName(contact: Contact) {
   return `${contact.first_name} ${contact.last_name}`.trim();
 }
@@ -21,7 +31,7 @@ export function formatDate(value: string) {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(new Date(value));
+  }).format(getDisplayDate(value));
 }
 
 export function formatOptionalDate(value: string | null | undefined) {

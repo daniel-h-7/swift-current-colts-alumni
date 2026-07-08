@@ -7,6 +7,7 @@ import {
   isAdminPasswordConfigured,
   verifyAdminPassword,
 } from "@/lib/admin-auth";
+import { getSiteBrand } from "@/lib/site-brand";
 
 type LoginSearchParams = {
   error?: string;
@@ -37,9 +38,10 @@ export default async function AdminLoginPage({
   const params = await searchParams;
   const hasError = params.error === "1";
   const isConfigured = isAdminPasswordConfigured();
+  const brand = getSiteBrand();
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
         <Image
           src="/images/stadium.jpg"
@@ -53,14 +55,20 @@ export default async function AdminLoginPage({
 
         <div className="relative z-10 w-full max-w-md border border-white/10 bg-zinc-950/92 p-8 shadow-[0_28px_90px_rgba(0,0,0,0.44)]">
           <div className="mb-7 flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center border border-red-500/45 bg-red-600 text-sm font-black text-white">
-              SC
+            <span
+              className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white ${
+                brand.isDemo
+                  ? "border-white/40 bg-white/12"
+                  : "border-red-500/45 bg-red-600"
+              }`}
+            >
+              {brand.initials}
             </span>
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[4px] text-red-400">
-                Swift Current
+              <p className={`text-[11px] font-black uppercase tracking-[4px] ${brand.isDemo ? "text-gray-300" : "text-red-400"}`}>
+                {brand.logoEyebrow}
               </p>
-              <p className="mt-1 font-black text-white">Colts Football</p>
+              <p className="mt-1 font-black text-white">{brand.logoTitle}</p>
             </div>
           </div>
           <p className="program-kicker">

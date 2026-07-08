@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin-header";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { LocalDateTime } from "@/components/local-date-time";
 
 export const dynamic = "force-dynamic";
 
@@ -143,10 +144,6 @@ function BlastSortHeader({
       </Link>
     </th>
   );
-}
-
-function formatOptionalBlastDate(value: string | null) {
-  return value ? formatDate(value) : "-";
 }
 
 async function getCampaign(id: string) {
@@ -310,9 +307,28 @@ export default async function CampaignDetailPage({
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.recipient_count}</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getOpenRate(blast)}%</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getClickRate(blast)}%</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatDate(blast.created_at)}</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatOptionalBlastDate(blast.sent_at)}</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatDate(blast.updated_at)}</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      <LocalDateTime
+                        fallback={formatDate(blast.created_at)}
+                        value={blast.created_at}
+                      />
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {blast.sent_at ? (
+                        <LocalDateTime
+                          fallback={formatDate(blast.sent_at)}
+                          value={blast.sent_at}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      <LocalDateTime
+                        fallback={formatDate(blast.updated_at)}
+                        value={blast.updated_at}
+                      />
+                    </td>
                     <td className="max-w-sm px-4 py-4 text-gray-300">
                       {summarizeAudienceFilter(blast.audience_filter)}
                     </td>

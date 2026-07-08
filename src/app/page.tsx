@@ -3,6 +3,7 @@ import Link from "next/link";
 import { EventsSlider } from "@/components/events-slider";
 import { PublicNav } from "@/components/public-nav";
 import { SponsorScroll } from "@/components/sponsor-scroll";
+import { getSiteBrand } from "@/lib/site-brand";
 import { getSiteContent } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
@@ -16,17 +17,20 @@ function getSpotlightImageClass(name: string, savedClass: string) {
 }
 
 export default async function Home() {
+  const brand = getSiteBrand();
   const siteContent = await getSiteContent();
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
       <section className="relative min-h-[88vh] overflow-hidden">
         <Image
           src="/images/stadium.jpg"
           alt="Football stadium under Friday night lights"
           fill
           priority
-          className="object-cover object-center opacity-95 saturate-125 contrast-110 md:scale-110 md:object-[center_42%]"
+          className={`object-cover object-center opacity-95 contrast-110 md:scale-110 md:object-[center_42%] ${
+            brand.isDemo ? "grayscale saturate-0" : "saturate-125"
+          }`}
         />
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-blue-950/18 to-black/90" />
@@ -40,22 +44,24 @@ export default async function Home() {
 
         <div className="relative z-10 flex min-h-[68vh] items-center justify-center px-6 text-center">
           <div className="max-w-5xl">
-            <p className="mb-5 text-sm font-black uppercase tracking-[8px] text-red-400 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
-              Colts Football Alumni and Booster Club
+            <p className={`mb-5 text-sm font-black uppercase tracking-[8px] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] ${brand.isDemo ? "text-gray-200" : "text-red-400"}`}>
+              {brand.heroKicker}
             </p>
 
             <h2 className="text-6xl font-black leading-none text-white drop-shadow-[0_6px_30px_rgba(0,0,0,0.95)] md:text-8xl">
-              THE LEGACY
-              <span className="block text-blue-400 drop-shadow-[0_0_26px_rgba(37,99,235,0.55)]">LIVES ON.</span>
+              {brand.heroLineOne}
+              <span className={`block drop-shadow-[0_0_26px_rgba(37,99,235,0.55)] ${brand.isDemo ? "text-gray-300" : "text-blue-400"}`}>
+                {brand.heroLineTwo}
+              </span>
             </h2>
 
             <p className="mx-auto mt-8 max-w-2xl text-lg font-semibold leading-8 text-gray-100 drop-shadow-[0_3px_18px_rgba(0,0,0,0.95)] md:text-2xl">
-              Connecting generations of Colts football while supporting the athletes who wear the jersey today.
+              {brand.heroBody}
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link href="/join" className="premium-button">
-                Support the Program Today!
+                {brand.ctaLabel}
               </Link>
             </div>
           </div>
@@ -66,11 +72,11 @@ export default async function Home() {
         <div className="overflow-hidden border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[5px] text-blue-100/80">Backed By Community</p>
-              <h2 className="mt-2 text-3xl font-black text-white md:text-4xl">Legacy Sponsors</h2>
+              <p className="text-sm font-black uppercase tracking-[5px] text-blue-100/80">{brand.sponsorEyebrow}</p>
+              <h2 className="mt-2 text-3xl font-black text-white md:text-4xl">{brand.sponsorTitle}</h2>
             </div>
             <p className="max-w-xl text-sm font-semibold leading-6 text-blue-50/85">
-              Thank you to our amazing sponsors for your continued support of Swift Current Colts Football!
+              {brand.sponsorCopy}
             </p>
           </div>
 
@@ -98,8 +104,7 @@ export default async function Home() {
               <h2 className="mt-3 text-4xl font-black md:text-5xl">Alumni Spotlights</h2>
             </div>
             <p className="max-w-lg text-sm font-semibold leading-6 text-gray-400">
-              A cleaner showcase for the players and supporters carrying the
-              program forward.
+              {brand.alumniSectionCopy}
             </p>
           </div>
 
@@ -146,8 +151,8 @@ export default async function Home() {
       </section>
 
       <footer className="border-t border-white/10 px-6 py-12 text-center text-gray-500">
-        <p className="font-bold text-white">Colts Football Alumni and Booster Club</p>
-        <p className="mt-2">Swift Current, Saskatchewan</p>
+        <p className="font-bold text-white">{brand.metaTitle}</p>
+        <p className="mt-2">{brand.footerLocation}</p>
       </footer>
     </main>
   );

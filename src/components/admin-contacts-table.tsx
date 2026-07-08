@@ -17,6 +17,7 @@ import {
   getMembershipStatus,
 } from "@/lib/contact-format";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { LocalDateTime } from "@/components/local-date-time";
 
 type SearchParams = {
   q?: string;
@@ -318,7 +319,14 @@ export function AdminContactsTable({
                   {formatOptionalDate(contact.paid_through)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                  {formatOptionalDate(contact.last_payment_at)}
+                  {contact.last_payment_at ? (
+                    <LocalDateTime
+                      fallback={formatDate(contact.last_payment_at)}
+                      value={contact.last_payment_at}
+                    />
+                  ) : (
+                    "-"
+                  )}
                 </td>
                 <td className="min-w-48 px-4 py-4">
                   <div className="flex flex-wrap gap-2">
@@ -350,7 +358,10 @@ export function AdminContactsTable({
                   {contact.notes || "-"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                  {formatDate(contact.created_at)}
+                  <LocalDateTime
+                    fallback={formatDate(contact.created_at)}
+                    value={contact.created_at}
+                  />
                 </td>
                 <td className="whitespace-nowrap px-4 py-4 text-right">
                   <input

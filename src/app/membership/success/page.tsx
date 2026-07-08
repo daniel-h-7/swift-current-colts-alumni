@@ -2,13 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { PublicNav } from "@/components/public-nav";
 import { SupportShareBar } from "@/components/support-share-bar";
+import { getSiteBrand } from "@/lib/site-brand";
 
 export default function MembershipSuccessPage() {
+  const brand = getSiteBrand();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
   const shareUrl = siteUrl ? `${siteUrl}/join` : undefined;
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
       <section className="relative min-h-screen overflow-hidden">
         <Image
           src="/images/stadium.jpg"
@@ -28,11 +30,10 @@ export default function MembershipSuccessPage() {
               Success!
             </p>
             <h1 className="mt-3 text-4xl font-black">
-              Thank you for your support of Colts Football!
+              {brand.successHeading}
             </h1>
             <p className="mt-4 text-gray-400">
-              Stay tuned for future updates and events regarding the Colts
-              program and our supporters.
+              {brand.successProgramLine}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
@@ -49,7 +50,14 @@ export default function MembershipSuccessPage() {
               </Link>
             </div>
 
-            <SupportShareBar shareUrl={shareUrl} />
+            <SupportShareBar
+              shareText={
+                brand.isDemo
+                  ? "Take a look at this TeamAlum demo for alumni, booster, sponsor, and membership management."
+                  : undefined
+              }
+              shareUrl={shareUrl}
+            />
           </div>
         </div>
       </section>

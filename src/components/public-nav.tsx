@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getSiteBrand } from "@/lib/site-brand";
 
 export function PublicNav({ compact = false }: { compact?: boolean }) {
+  const brand = getSiteBrand();
+
   return (
     <nav
       className={`relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 ${
@@ -8,15 +11,25 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
       }`}
     >
       <Link className="group flex items-center gap-3" href="/">
-        <span className="flex h-11 w-11 items-center justify-center border border-red-500/45 bg-red-600 text-sm font-black text-white shadow-[0_12px_34px_rgba(220,38,38,0.24)]">
-          SC
+        <span
+          className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] ${
+            brand.isDemo
+              ? "border-white/40 bg-white/12"
+              : "border-red-500/45 bg-red-600"
+          }`}
+        >
+          {brand.initials}
         </span>
         <span className="leading-none">
-          <span className="block text-[10px] font-black uppercase tracking-[3px] text-red-400">
-            Swift Current
+          <span
+            className={`block text-[10px] font-black uppercase tracking-[3px] ${
+              brand.isDemo ? "text-gray-300" : "text-red-400"
+            }`}
+          >
+            {brand.logoEyebrow}
           </span>
           <span className="mt-0.5 block text-lg font-black tracking-wide text-white transition group-hover:text-blue-300">
-            Colts Football
+            {brand.logoTitle}
           </span>
         </span>
       </Link>

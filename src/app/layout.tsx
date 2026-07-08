@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getSiteBrand } from "@/lib/site-brand";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const brand = getSiteBrand();
+
 export const metadata: Metadata = {
-  title: "Colts Football Alumni and Booster Club",
-  description:
-    "The official alumni and booster club home for Swift Current Colts Football.",
+  title: brand.metaTitle,
+  description: brand.metaDescription,
 };
 
 export default function RootLayout({

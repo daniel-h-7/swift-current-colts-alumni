@@ -10,6 +10,7 @@ import { ensureRenewalReminderCampaign } from "@/lib/renewal-reminder-automation
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin-header";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { LocalDateTime } from "@/components/local-date-time";
 
 export const dynamic = "force-dynamic";
 
@@ -147,10 +148,6 @@ function CampaignSortHeader({
       </Link>
     </th>
   );
-}
-
-function formatOptionalCampaignDate(value: string | null) {
-  return value ? formatDate(value) : "-";
 }
 
 async function getCampaigns(filters: CampaignsSearchParams) {
@@ -311,16 +308,29 @@ export default async function CampaignsPage({
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatDate(campaign.created_at)}
+                      <LocalDateTime
+                        fallback={formatDate(campaign.created_at)}
+                        value={campaign.created_at}
+                      />
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
                       {campaign.blastCount}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatOptionalCampaignDate(campaign.lastSentAt)}
+                      {campaign.lastSentAt ? (
+                        <LocalDateTime
+                          fallback={formatDate(campaign.lastSentAt)}
+                          value={campaign.lastSentAt}
+                        />
+                      ) : (
+                        "-"
+                      )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">
-                      {formatDate(campaign.lastEditedAt)}
+                      <LocalDateTime
+                        fallback={formatDate(campaign.lastEditedAt)}
+                        value={campaign.lastEditedAt}
+                      />
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-right">
                       <div className="flex flex-wrap justify-end gap-3">

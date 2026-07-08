@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
@@ -22,6 +23,7 @@ import {
   getMembershipStatus,
 } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { LocalDateTime } from "@/components/local-date-time";
 
 export const dynamic = "force-dynamic";
 
@@ -191,7 +193,7 @@ function DetailItem({
   value,
 }: {
   label: string;
-  value: string | number | null | undefined;
+  value: ReactNode;
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
@@ -279,7 +281,11 @@ export default async function ContactDetailPage({
                 </p>
               ) : null}
               <p className="mt-2 text-gray-400">
-                Added {formatDate(contact.created_at)}
+                Added{" "}
+                <LocalDateTime
+                  fallback={formatDate(contact.created_at)}
+                  value={contact.created_at}
+                />
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -329,7 +335,16 @@ export default async function ContactDetailPage({
             />
             <DetailItem
               label="Last Payment"
-              value={formatOptionalDate(contact.last_payment_at)}
+              value={
+                contact.last_payment_at ? (
+                  <LocalDateTime
+                    fallback={formatDate(contact.last_payment_at)}
+                    value={contact.last_payment_at}
+                  />
+                ) : (
+                  "-"
+                )
+              }
             />
           </div>
 
@@ -386,7 +401,10 @@ export default async function ContactDetailPage({
                       </p>
                     ) : null}
                     <p className="mt-2 text-xs font-bold uppercase tracking-[2px] text-gray-500">
-                      {formatDate(activity.created_at)}
+                      <LocalDateTime
+                        fallback={formatDate(activity.created_at)}
+                        value={activity.created_at}
+                      />
                     </p>
                   </div>
                 ))

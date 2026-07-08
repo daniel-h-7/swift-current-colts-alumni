@@ -36,7 +36,17 @@ function getGiftAmountCents(formData: FormData) {
     : 0;
 }
 
-export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
+export function JoinForm({
+  headline = "Support Colts Football",
+  isOpen = true,
+  programName = "the Colts",
+  subtext = "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
+}: {
+  headline?: string;
+  isOpen?: boolean;
+  programName?: string;
+  subtext?: string;
+}) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [giftOption, setGiftOption] = useState<GiftOption>("none");
@@ -133,11 +143,10 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
           Help Build the Legacy
         </p>
         <h2 className="mt-3 text-4xl font-black text-blue-400">
-          Support Colts Football
+          {headline}
         </h2>
         <p className="mt-4 text-gray-400">
-          Your gift today helps ensure our student-athletes have the necessary
-          tools to succeed on and off the football field.
+          {subtext}
         </p>
       </div>
 
@@ -231,7 +240,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
           Looking to support in a bigger way?
         </p>
         <p className="mt-2 text-sm leading-6 text-gray-400">
-          Support the Colts with an additional one-time gift. This will be
+          Support {programName} with an additional one-time gift. This will be
           added to the first annual membership checkout.
         </p>
 

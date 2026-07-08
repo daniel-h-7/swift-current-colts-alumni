@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-const shareText =
+const defaultShareText =
   "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
 
 const iconButtonClass =
@@ -13,7 +13,7 @@ const copyButtonClass =
 type SharePlatform = {
   icon: React.ReactNode;
   label: string;
-  url: (shareUrl: string) => string;
+  url: (shareUrl: string, shareText: string) => string;
 };
 
 const sharePlatforms: SharePlatform[] = [
@@ -42,7 +42,7 @@ const sharePlatforms: SharePlatform[] = [
       </svg>
     ),
     label: "Twitter / X",
-    url: (shareUrl) =>
+    url: (shareUrl, shareText) =>
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(
         shareText,
       )}&url=${encodeURIComponent(shareUrl)}`,
@@ -64,7 +64,13 @@ const sharePlatforms: SharePlatform[] = [
   },
 ];
 
-export function SupportShareBar({ shareUrl }: { shareUrl?: string }) {
+export function SupportShareBar({
+  shareText = defaultShareText,
+  shareUrl,
+}: {
+  shareText?: string;
+  shareUrl?: string;
+}) {
   const [copyMessage, setCopyMessage] = useState("");
   const resolvedShareUrl = useMemo(() => {
     if (shareUrl) {
@@ -122,7 +128,7 @@ export function SupportShareBar({ shareUrl }: { shareUrl?: string }) {
           <a
             aria-label={`Share on ${platform.label}`}
             className={iconButtonClass}
-            href={platform.url(resolvedShareUrl)}
+            href={platform.url(resolvedShareUrl, shareText)}
             key={platform.label}
             rel="noopener noreferrer"
             title={platform.label}

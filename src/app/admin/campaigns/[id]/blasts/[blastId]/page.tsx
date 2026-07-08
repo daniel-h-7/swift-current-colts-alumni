@@ -14,12 +14,13 @@ import {
   getAudiencePreview,
   getEmailAudiencePreview,
 } from "@/lib/campaign-audience";
-import { formatContactName } from "@/lib/contact-format";
+import { formatContactName, formatDate } from "@/lib/contact-format";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { getEmailProviderMode, sendCampaignTestEmail } from "@/lib/email-provider";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createUnsubscribeUrl } from "@/lib/unsubscribe";
 import { BlastEditorForm } from "@/components/blast-editor-form";
+import { LocalDateTime } from "@/components/local-date-time";
 
 type BlastParams = {
   blastId: string;
@@ -540,7 +541,11 @@ export default async function EditBlastPage({
                 >
                   <p className="font-black text-white">{event.event_type}</p>
                   <p className="mt-1 text-gray-400">
-                    {event.email || "-"} · {new Date(event.created_at).toLocaleString()}
+                    {event.email || "-"} ·{" "}
+                    <LocalDateTime
+                      fallback={formatDate(event.created_at)}
+                      value={event.created_at}
+                    />
                   </p>
                   {providerDetail ? (
                     <p className="mt-1 text-gray-500">{providerDetail}</p>
