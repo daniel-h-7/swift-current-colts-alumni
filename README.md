@@ -56,6 +56,11 @@ Demo mode uses built-in generic Team Gridiron homepage content by default so it 
 
 ## Supabase SQL table setup
 
+For new client or demo projects, use the clean setup files in this repo:
+
+1. Run `supabase/schema.sql` in the Supabase SQL editor.
+2. Optionally run `supabase/demo-seed.sql` after that to add fake demo contacts, campaigns, blast activity, and payment activity.
+
 Run this in the Supabase SQL editor:
 
 ```sql
