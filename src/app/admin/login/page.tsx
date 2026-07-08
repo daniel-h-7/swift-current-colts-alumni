@@ -49,9 +49,21 @@ export default async function AdminLoginPage({
           className="object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-blue-950/80 via-black/85 to-black" />
+        <div className="absolute inset-0 premium-grid opacity-25" />
 
-        <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950/90 p-8 shadow-2xl">
-          <p className="text-sm uppercase tracking-[5px] text-red-500">
+        <div className="relative z-10 w-full max-w-md border border-white/10 bg-zinc-950/92 p-8 shadow-[0_28px_90px_rgba(0,0,0,0.44)]">
+          <div className="mb-7 flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center border border-red-500/45 bg-red-600 text-sm font-black text-white">
+              SC
+            </span>
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[4px] text-red-400">
+                Swift Current
+              </p>
+              <p className="mt-1 font-black text-white">Colts Football</p>
+            </div>
+          </div>
+          <p className="program-kicker">
             Colts CRM
           </p>
           <h1 className="mt-3 text-4xl font-black">Admin Login</h1>
@@ -60,13 +72,14 @@ export default async function AdminLoginPage({
           </p>
 
           {!isConfigured ? (
-            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
-              ADMIN_PASSWORD is not configured yet.
+            <div className="mt-6 border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold leading-6 text-red-200">
+              Admin access is not configured yet. Add ADMIN_PASSWORD in your
+              environment variables, then redeploy or restart the dev server.
             </div>
           ) : null}
 
           {hasError ? (
-            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+            <div className="mt-6 border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
               That password did not match.
             </div>
           ) : null}
@@ -75,7 +88,7 @@ export default async function AdminLoginPage({
             <label className="text-sm font-bold text-gray-200">
               Password
               <input
-                className="mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                className="mt-2 w-full border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                 name="password"
                 required
                 type="password"
@@ -83,7 +96,7 @@ export default async function AdminLoginPage({
             </label>
 
             <button
-              className="mt-6 w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 w-full border border-blue-400/40 bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={!isConfigured}
               type="submit"
             >

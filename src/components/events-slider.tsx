@@ -36,15 +36,18 @@ export function EventsSlider({ events }: { events: SiteEvent[] }) {
   return (
     <div className="mt-10">
       <div className="grid gap-6 md:grid-cols-3">
-        {visibleEvents.map((event) => (
+        {visibleEvents.map((event, index) => (
           <div
-            className="flex min-h-56 flex-col rounded-2xl border border-white/10 bg-white/5 p-8"
+            className="flex min-h-64 flex-col border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.86),rgba(9,9,11,0.96))] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.28)]"
             key={`${event.title}-${event.date}`}
           >
             <div>
-              <h3 className="text-2xl font-black">{event.title}</h3>
+              <p className="mb-5 text-xs font-black uppercase tracking-[4px] text-blue-400">
+                0{index + 1}
+              </p>
+              <h3 className="text-2xl font-black leading-tight">{event.title}</h3>
               {event.date ? (
-                <p className="mt-3 text-gray-400">{event.date}</p>
+                <p className="mt-3 border-l-2 border-red-500 pl-3 text-sm font-bold uppercase tracking-[2px] text-gray-300">{event.date}</p>
               ) : null}
             </div>
 
@@ -54,7 +57,7 @@ export function EventsSlider({ events }: { events: SiteEvent[] }) {
               </p>
               {event.linkUrl ? (
                 <a
-                  className="shrink-0 rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white transition hover:bg-blue-600"
+                  className="shrink-0 border border-blue-400/40 bg-blue-700 px-4 py-2 text-sm font-black text-white transition hover:bg-blue-600"
                   href={event.linkUrl}
                   rel="noreferrer"
                   target="_blank"
@@ -70,7 +73,7 @@ export function EventsSlider({ events }: { events: SiteEvent[] }) {
       {pages.length > 1 ? (
         <div className="mt-6 flex items-center justify-between">
           <button
-            className="rounded-md border border-white/15 bg-black/35 px-4 py-3 font-black text-gray-200 transition hover:border-blue-500 hover:text-white"
+            className="border border-white/15 bg-black/35 px-4 py-3 font-black text-gray-200 transition hover:border-blue-500 hover:text-white"
             onClick={() => move(-1)}
             type="button"
           >
@@ -80,7 +83,7 @@ export function EventsSlider({ events }: { events: SiteEvent[] }) {
             {currentPage + 1} / {pages.length}
           </p>
           <button
-            className="rounded-md border border-white/15 bg-black/35 px-4 py-3 font-black text-gray-200 transition hover:border-blue-500 hover:text-white"
+            className="border border-white/15 bg-black/35 px-4 py-3 font-black text-gray-200 transition hover:border-blue-500 hover:text-white"
             onClick={() => move(1)}
             type="button"
           >

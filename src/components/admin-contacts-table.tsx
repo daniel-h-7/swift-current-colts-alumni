@@ -171,13 +171,13 @@ export function AdminContactsTable({
   }
 
   return (
-    <section className="mt-6 overflow-visible rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl">
-      <div className="flex flex-col gap-3 border-b border-white/10 px-4 py-4 md:flex-row md:items-center md:justify-between">
+    <section className="mt-6 overflow-visible border border-white/10 bg-zinc-950 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+      <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.025] px-4 py-4 md:flex-row md:items-center md:justify-between">
         <p className="text-sm font-black uppercase tracking-[2px] text-gray-400">
           {selectedIds.length} selected
         </p>
         <details className="group relative self-start md:self-auto">
-          <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-white/10 bg-black/45 text-gray-300 transition hover:border-blue-500/70 hover:bg-blue-950/40 hover:text-white [&::-webkit-details-marker]:hidden">
+          <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center border border-white/10 bg-black/45 text-gray-300 transition hover:border-blue-500/70 hover:bg-blue-950/40 hover:text-white [&::-webkit-details-marker]:hidden">
             <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
               <path
                 d="M12 7.25h.01M12 12h.01M12 16.75h.01"
@@ -188,14 +188,14 @@ export function AdminContactsTable({
               />
             </svg>
           </summary>
-          <div className="absolute right-auto z-30 mt-2 w-72 overflow-hidden rounded-lg border border-white/10 bg-zinc-950 p-2 shadow-[0_22px_80px_rgba(0,0,0,0.65)] ring-1 ring-black/60 md:right-0">
+          <div className="absolute right-auto z-30 mt-2 w-72 overflow-hidden border border-white/10 bg-zinc-950 p-2 shadow-[0_22px_80px_rgba(0,0,0,0.65)] ring-1 ring-black/60 md:right-0">
             <form action={bulkAction} className="space-y-2">
               <input name="contact_ids" type="hidden" value={selectedValue} />
               <input name="bulk_action" type="hidden" value="status" />
               <label className="block text-xs font-black uppercase tracking-[2px] text-gray-500">
                 Set CRM Status
                 <select
-                  className="mt-2 w-full rounded-md border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
+                  className="mt-2 w-full border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
                   name="status"
                 >
                   {contactStatuses.map((status) => (
@@ -206,7 +206,7 @@ export function AdminContactsTable({
                 </select>
               </label>
               <button
-                className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full px-3 py-2.5 text-left text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={!selectedIds.length}
                 type="submit"
               >
@@ -219,7 +219,7 @@ export function AdminContactsTable({
               <label className="block text-xs font-black uppercase tracking-[2px] text-gray-500">
                 Set Membership
                 <select
-                  className="mt-2 w-full rounded-md border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
+                  className="mt-2 w-full border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
                   name="membership_status"
                 >
                   {membershipStatuses.map((status) => (
@@ -230,7 +230,7 @@ export function AdminContactsTable({
                 </select>
               </label>
               <button
-                className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full px-3 py-2.5 text-left text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={!selectedIds.length}
                 type="submit"
               >
@@ -241,7 +241,7 @@ export function AdminContactsTable({
               <input name="contact_ids" type="hidden" value={selectedValue} />
               <input name="bulk_action" type="hidden" value="delete" />
               <ConfirmSubmitButton
-                className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-red-300 transition hover:bg-red-950/55 hover:text-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full px-3 py-2.5 text-left text-sm font-bold text-red-300 transition hover:bg-red-950/55 hover:text-red-100 disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={!selectedIds.length}
                 message={`Delete ${selectedIds.length} selected contact${selectedIds.length === 1 ? "" : "s"}?`}
               >
@@ -299,12 +299,12 @@ export function AdminContactsTable({
                   {contact.sport}
                 </td>
                 <td className="whitespace-nowrap px-4 py-4">
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-gray-200">
+                  <span className="border border-white/10 bg-white/10 px-3 py-1 text-xs font-black text-gray-200">
                     {getContactStatus(contact)}
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-4 py-4">
-                  <span className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
+                  <span className="border border-red-500/20 bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
                     {getMembershipStatus(contact)}
                   </span>
                 </td>
@@ -325,7 +325,7 @@ export function AdminContactsTable({
                     {getContactTags(contact).length ? (
                       getContactTags(contact).map((tag) => (
                         <span
-                          className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300"
+                          className="border border-blue-500/20 bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300"
                           key={tag}
                         >
                           {tag}
@@ -337,12 +337,12 @@ export function AdminContactsTable({
                   </div>
                 </td>
                 <td className="whitespace-nowrap px-4 py-4">
-                  <span className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300">
+                  <span className="border border-blue-500/20 bg-blue-500/15 px-3 py-1 text-xs font-black text-blue-300">
                     {contact.email_opt_in ? "Yes" : "No"}
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-4 py-4">
-                  <span className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
+                  <span className="border border-red-500/20 bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
                     {contact.sms_opt_in ? "Yes" : "No"}
                   </span>
                 </td>
@@ -356,7 +356,7 @@ export function AdminContactsTable({
                   <input
                     aria-label={`Select ${formatContactName(contact)}`}
                     checked={selectedSet.has(contact.id)}
-                    className="h-4 w-4 rounded border-white/20 bg-black accent-blue-600"
+                    className="h-4 w-4 border-white/20 bg-black accent-blue-600"
                     onChange={() => undefined}
                     onClick={(event) =>
                       toggleContact(
@@ -389,7 +389,7 @@ export function AdminContactsTable({
           <label className="inline-flex items-center gap-2">
             <input
               checked={selectedIds.length === contacts.length}
-              className="h-4 w-4 rounded border-white/20 bg-black accent-blue-600"
+              className="h-4 w-4 border-white/20 bg-black accent-blue-600"
               onChange={(event) => toggleAll(event.target.checked)}
               type="checkbox"
             />

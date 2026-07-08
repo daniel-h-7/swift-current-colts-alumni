@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { EventsSlider } from "@/components/events-slider";
+import { PublicNav } from "@/components/public-nav";
 import { SponsorScroll } from "@/components/sponsor-scroll";
 import { getSiteContent } from "@/lib/site-content";
 
@@ -24,25 +25,10 @@ export default async function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.25)_36%,rgba(0,0,0,0.1)_62%,rgba(0,0,0,0.24)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.04)_62%,rgba(0,0,0,0.14)_100%)]" />
         <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]" />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_42%,rgba(37,99,235,0.24),transparent_24%),radial-gradient(circle_at_78%_43%,rgba(220,38,38,0.22),transparent_26%)]" />
+        <div className="absolute inset-0 premium-grid opacity-45" />
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(37,99,235,0.2)_0%,transparent_34%,rgba(220,38,38,0.18)_70%,transparent_100%)]" />
 
-        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-          <div>
-            <p className="text-xs tracking-[4px] uppercase text-red-500">
-              Swift Current
-            </p>
-            <h1 className="text-xl font-black">
-              Colts Football
-            </h1>
-          </div>
-
-          <div className="hidden items-center overflow-hidden rounded-lg border border-white/10 bg-black/35 text-xs font-black uppercase tracking-[2px] text-gray-300 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur md:flex">
-            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#sponsors">Sponsors</a>
-            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#alumni">Alumni</a>
-            <a className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="#events">Events</a>
-            <Link className="px-4 py-3 transition hover:bg-blue-950/50 hover:text-white" href="/admin">Admin</Link>
-          </div>
-        </nav>
+        <PublicNav />
 
         <div className="relative z-10 flex min-h-[68vh] items-center justify-center px-6 text-center">
           <div className="max-w-5xl">
@@ -50,7 +36,7 @@ export default async function Home() {
               Colts Football Alumni and Booster Club
             </p>
 
-            <h2 className="text-6xl md:text-8xl font-black leading-none text-white drop-shadow-[0_6px_30px_rgba(0,0,0,0.95)]">
+            <h2 className="text-6xl font-black leading-none text-white drop-shadow-[0_6px_30px_rgba(0,0,0,0.95)] md:text-8xl">
               THE LEGACY
               <span className="block text-blue-400 drop-shadow-[0_0_26px_rgba(37,99,235,0.55)]">LIVES ON.</span>
             </h2>
@@ -60,7 +46,7 @@ export default async function Home() {
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link href="/join" className="rounded-md bg-red-600 px-8 py-4 font-bold uppercase tracking-[2px] shadow-[0_16px_44px_rgba(220,38,38,0.32)] transition hover:bg-red-500">
+              <Link href="/join" className="premium-button">
                 Support the Program Today!
               </Link>
             </div>
@@ -68,8 +54,8 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="sponsors" className="max-w-7xl mx-auto px-6 pb-20 pt-6">
-        <div className="overflow-hidden rounded-2xl border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.96)_0%,rgba(30,64,175,0.82)_34%,rgba(10,15,28,0.96)_72%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
+      <section id="sponsors" className="section-rule mx-auto max-w-7xl px-6 pb-20 pt-8">
+        <div className="overflow-hidden border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[5px] text-blue-100/80">Backed By Community</p>
@@ -84,53 +70,69 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="alumni" className="relative isolate overflow-hidden px-6 py-20">
+      <section id="alumni" className="section-rule relative isolate overflow-hidden px-6 py-24">
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-8 hidden h-72 w-72 bg-red-600/30 md:block"
+          className="alumni-logo-mask alumni-logo-sc absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/35 md:block"
         />
         <div
           aria-hidden="true"
-          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-10 hidden h-72 w-72 bg-red-600/30 md:block"
+          className="alumni-logo-mask alumni-logo-horseshoe absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/35 md:block"
         />
 
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-red-950/20 to-transparent" />
-        <div className="absolute left-0 top-0 hidden h-full w-64 bg-gradient-to-r from-black via-black/80 to-transparent md:block" />
-        <div className="absolute right-0 top-0 hidden h-full w-64 bg-gradient-to-l from-black via-black/80 to-transparent md:block" />
+        <div className="absolute inset-0 premium-grid opacity-20" />
 
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-sm uppercase tracking-[5px] text-red-500">Colts Family</p>
-          <h2 className="mt-3 text-4xl md:text-5xl font-black">Alumni Spotlights</h2>
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="program-kicker">Colts Family</p>
+              <h2 className="mt-3 text-4xl font-black md:text-5xl">Alumni Spotlights</h2>
+            </div>
+            <p className="max-w-lg text-sm font-semibold leading-6 text-gray-400">
+              A cleaner showcase for the players and supporters carrying the
+              program forward.
+            </p>
+          </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {siteContent.spotlights.map((spotlight) => (
-              <div key={spotlight.name} className="rounded-2xl bg-zinc-900/90 p-8 border border-white/10">
-                <div className="relative mb-6 h-56 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-blue-950 to-red-950">
+              <article key={spotlight.name} className="group border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.94),rgba(9,9,11,0.96))] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.36)] transition hover:-translate-y-1 hover:border-blue-400/35">
+                <div className="relative h-72 overflow-hidden border border-white/10 bg-gradient-to-br from-blue-950 to-red-950">
                   <Image
                     src={spotlight.imageUrl}
                     alt={`${spotlight.name} headshot`}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className={`object-cover ${spotlight.imageClass} grayscale-[25%]`}
+                    className={`object-cover ${spotlight.imageClass} grayscale-[18%] transition duration-500 group-hover:scale-[1.03]`}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-                  <p className="absolute bottom-3 left-4 text-xs font-bold uppercase tracking-[2px] text-gray-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-transparent" />
+                </div>
+                <div className="border-x border-b border-white/10 px-5 py-5">
+                  <h3 className="text-2xl font-black">{spotlight.name}</h3>
+                  {spotlight.classYear ? (
+                    <p className="mt-1 text-sm font-semibold italic text-red-400">{spotlight.classYear}</p>
+                  ) : null}
+                  <p className="mt-4 border-t border-white/10 pt-4 text-xs font-black uppercase tracking-[2px] text-gray-400">
                     {spotlight.descriptor}
                   </p>
                 </div>
-                <h3 className="text-2xl font-black">{spotlight.name}</h3>
-                {spotlight.classYear ? (
-                  <p className="mt-1 text-sm font-semibold italic text-red-400">{spotlight.classYear}</p>
-                ) : null}
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="events" className="max-w-7xl mx-auto px-6 py-20">
-        <p className="text-sm uppercase tracking-[5px] text-red-500">Gather Again</p>
-        <h2 className="mt-3 text-4xl md:text-5xl font-black">Upcoming Events</h2>
+      <section id="events" className="section-rule mx-auto max-w-7xl px-6 py-24">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="program-kicker">Gather Again</p>
+            <h2 className="mt-3 text-4xl font-black md:text-5xl">Upcoming Events</h2>
+          </div>
+          <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
+            Keep the alumni network moving with clean, scannable event listings.
+          </p>
+        </div>
 
         <EventsSlider events={siteContent.events} />
       </section>

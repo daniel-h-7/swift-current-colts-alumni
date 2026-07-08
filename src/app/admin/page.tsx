@@ -11,6 +11,7 @@ import {
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { AdminHeader } from "@/components/admin-header";
 import { AdminContactsTable } from "@/components/admin-contacts-table";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +31,7 @@ type SearchParams = {
 };
 
 const filterClass =
-  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 
 const sortableColumns = [
   { key: "name", label: "Name" },
@@ -358,68 +359,27 @@ export default async function AdminPage({
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10 bg-zinc-950">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[5px] text-red-500">
-              Colts CRM
-            </p>
-            <h1 className="mt-3 text-4xl font-black">Contacts Dashboard</h1>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/"
-            >
-              Home
-            </Link>
-            <Link
-              className="rounded-md bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(29,78,216,0.22)] transition hover:bg-blue-600"
-              href="/join"
-            >
-              Join Form
-            </Link>
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href={getExportHref(filters)}
-            >
-              Export CSV
-            </Link>
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/admin/import"
-            >
-              Import CSV
-            </Link>
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/admin/campaigns"
-            >
-              Campaigns
-            </Link>
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/admin/settings"
-            >
-              Settings
-            </Link>
-            <Link
-              className="rounded-md bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(220,38,38,0.22)] transition hover:bg-red-500"
-              href="/admin/logout"
-            >
-              Log Out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AdminHeader
+        actions={[
+          { href: "/", label: "Home" },
+          { href: "/join", label: "Join Form", tone: "primary" },
+          { href: getExportHref(filters), label: "Export CSV" },
+          { href: "/admin/import", label: "Import CSV" },
+          { href: "/admin/campaigns", label: "Campaigns" },
+          { href: "/admin/settings", label: "Settings" },
+          { href: "/admin/logout", label: "Log Out", tone: "danger" },
+        ]}
+        eyebrow="Colts CRM"
+        subtitle="Manage contacts, membership status, opt-ins, donations, and campaign audiences from one working console."
+        title="Contacts Dashboard"
+      />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
           {summaryStats.length
             ? summaryStats.map((stat) => (
                 <div
-                  className="rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl"
+                  className="border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.92),rgba(9,9,11,0.96))] p-5 shadow-[0_22px_70px_rgba(0,0,0,0.26)]"
                   key={stat.label}
                 >
                   <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
@@ -439,12 +399,12 @@ export default async function AdminPage({
         </section>
 
         {summaryErrorMessage ? (
-          <section className="mt-6 rounded-3xl border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
+          <section className="mt-6 border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
             Summary stats could not load: {summaryErrorMessage}
           </section>
         ) : null}
 
-        <section className="mt-6 rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+        <section className="mt-6 border border-white/10 bg-zinc-950 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-2xl font-black">Filters</h2>
@@ -623,13 +583,13 @@ export default async function AdminPage({
 
             <div className="flex flex-wrap gap-3 md:col-span-6">
               <button
-                className="rounded-md bg-red-600 px-6 py-3 font-black uppercase tracking-[3px] text-white hover:bg-red-500"
+                className="border border-red-400/40 bg-red-600 px-6 py-3 font-black uppercase tracking-[3px] text-white hover:bg-red-500"
                 type="submit"
               >
                 Apply
               </button>
               <Link
-                className="rounded-md border border-white/15 bg-black/25 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
+                className="border border-white/15 bg-black/25 px-6 py-3 font-bold text-gray-200 hover:border-blue-500 hover:text-white"
                 href="/admin"
               >
                 Clear
@@ -639,7 +599,7 @@ export default async function AdminPage({
         </section>
 
         {errorMessage ? (
-          <section className="mt-6 rounded-3xl border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
+          <section className="mt-6 border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
             {errorMessage}
           </section>
         ) : null}

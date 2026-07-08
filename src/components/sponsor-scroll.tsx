@@ -8,7 +8,7 @@ export function SponsorScroll({ sponsors }: { sponsors: SiteSponsor[] }) {
       <div className="flex w-max animate-[sponsor-scroll_28s_linear_infinite] gap-4">
         {[...sponsorItems, ...sponsorItems].map((sponsor, index) => {
           const card = (
-            <div className="flex h-20 min-w-56 items-center justify-center rounded-lg border border-blue-100/20 bg-black/40 px-6 text-center text-sm font-black uppercase tracking-[2px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-blue-100/45 hover:bg-black/55">
+            <div className="flex h-20 min-w-56 items-center justify-center border border-blue-100/20 bg-black/42 px-6 text-center text-sm font-black uppercase tracking-[2px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-blue-100/45 hover:bg-black/60">
               {sponsor.name}
             </div>
           );

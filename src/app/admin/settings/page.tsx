@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
@@ -6,6 +5,7 @@ import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
+import { AdminHeader } from "@/components/admin-header";
 import { EmailSettingsForm } from "@/components/email-settings-form";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ type SettingsSearchParams = {
 };
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 
 export default async function AdminSettingsPage({
   searchParams,
@@ -35,41 +35,20 @@ export default async function AdminSettingsPage({
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10 bg-zinc-950">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[5px] text-red-500">
-              CRM Settings
-            </p>
-            <h1 className="mt-3 text-4xl font-black">Membership Settings</h1>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/admin/settings/site-content"
-            >
-              Site Content
-            </Link>
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/admin"
-            >
-              Dashboard
-            </Link>
-            <Link
-              className="rounded-md bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(220,38,38,0.22)] transition hover:bg-red-500"
-              href="/admin/logout"
-            >
-              Log Out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AdminHeader
+        actions={[
+          { href: "/admin/settings/site-content", label: "Site Content" },
+          { href: "/admin", label: "Dashboard" },
+          { href: "/admin/logout", label: "Log Out", tone: "danger" },
+        ]}
+        eyebrow="CRM Settings"
+        subtitle="Control membership pricing, join-page availability, and campaign sender details."
+        title="Membership Settings"
+      />
 
       <div className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[1fr_420px]">
         <div className="space-y-6">
-          <section className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+          <section className="border border-white/10 bg-zinc-950 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
             <h2 className="text-2xl font-black">Annual Membership</h2>
             <p className="mt-2 text-gray-400">
               These values shape the join page today and will feed Stripe
@@ -77,7 +56,7 @@ export default async function AdminSettingsPage({
             </p>
 
             {params.saved === "1" ? (
-              <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
+              <div className="mt-5 border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
                 Settings saved.
               </div>
             ) : null}
@@ -116,9 +95,9 @@ export default async function AdminSettingsPage({
                 />
               </label>
 
-              <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm font-bold text-gray-200">
+              <label className="flex items-start gap-3 border border-white/10 bg-white/[0.04] p-4 text-sm font-bold text-gray-200">
                 <input
-                  className="mt-1 h-4 w-4 rounded border-white/20 accent-blue-600"
+                  className="mt-1 h-4 w-4 border-white/20 accent-blue-600"
                   defaultChecked={settings.join_is_open}
                   name="join_is_open"
                   type="checkbox"
@@ -145,7 +124,7 @@ export default async function AdminSettingsPage({
               </label>
 
               <button
-                className="w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
+                className="w-full border border-blue-400/40 bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
                 type="submit"
               >
                 Save Settings
@@ -153,7 +132,7 @@ export default async function AdminSettingsPage({
             </form>
           </section>
 
-          <section className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+          <section className="border border-white/10 bg-zinc-950 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
             <h2 className="text-2xl font-black">Email Sender</h2>
             <p className="mt-2 text-gray-400">
               These settings control campaign test sends. The Resend API key
@@ -167,21 +146,21 @@ export default async function AdminSettingsPage({
           </section>
         </div>
 
-        <section className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
-          <p className="text-sm uppercase tracking-[5px] text-red-500">
+        <section className="border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.94),rgba(9,9,11,0.96))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+          <p className="program-kicker">
             Current Setup
           </p>
           <h2 className="mt-3 text-4xl font-black">
             {formatMembershipAmount(settings)}
           </h2>
           <div className="mt-6 space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 Year
               </p>
               <p className="mt-2 font-bold">{settings.membership_year_label}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 Join Status
               </p>
@@ -189,7 +168,7 @@ export default async function AdminSettingsPage({
                 {settings.join_is_open ? "Open" : "Closed"}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 Renewal Deadline
               </p>
@@ -197,7 +176,7 @@ export default async function AdminSettingsPage({
                 {settings.renewal_deadline || "-"}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 Email From
               </p>
@@ -205,7 +184,7 @@ export default async function AdminSettingsPage({
                 {formatFromEmail(emailSettings)}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 Replies To
               </p>
@@ -213,7 +192,7 @@ export default async function AdminSettingsPage({
                 {emailSettings.email_reply_to || "-"}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 Sending Domain
               </p>

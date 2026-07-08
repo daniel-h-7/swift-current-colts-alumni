@@ -12,7 +12,7 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 type GiftOption = "none" | "100" | "200" | "other";
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 
 const labelClass = "text-sm font-bold text-gray-200";
 
@@ -126,10 +126,10 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
     <form
       id="join"
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-white/10 bg-zinc-950/85 p-6 shadow-2xl shadow-blue-950/30 backdrop-blur md:p-8"
+      className="border border-white/10 bg-zinc-950/90 p-6 shadow-[0_28px_90px_rgba(37,99,235,0.16)] backdrop-blur md:p-8"
     >
       <div>
-        <p className="text-sm uppercase tracking-[5px] text-red-500">
+        <p className="program-kicker">
           Help Build the Legacy
         </p>
         <h2 className="mt-3 text-4xl font-black text-blue-400">
@@ -196,10 +196,10 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
         </label>
       </div>
 
-      <div className="mt-5 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 md:grid-cols-2">
+      <div className="mt-5 grid gap-3 border border-white/10 bg-white/[0.04] p-4 md:grid-cols-2">
         <label className="flex items-start gap-3 text-sm font-bold text-gray-200">
           <input
-            className="mt-1 h-4 w-4 rounded border-white/20 accent-blue-600"
+            className="mt-1 h-4 w-4 border-white/20 accent-blue-600"
             defaultChecked
             name="email_opt_in"
             type="checkbox"
@@ -209,7 +209,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
 
         <label className="flex items-start gap-3 text-sm font-bold text-gray-200">
           <input
-            className="mt-1 h-4 w-4 rounded border-white/20 accent-red-600"
+            className="mt-1 h-4 w-4 border-white/20 accent-red-600"
             name="sms_opt_in"
             type="checkbox"
           />
@@ -226,7 +226,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
         />
       </label>
 
-      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+      <div className="mt-5 border border-white/10 bg-white/[0.04] p-4">
         <p className="text-lg font-black text-white">
           Looking to support in a bigger way?
         </p>
@@ -287,7 +287,7 @@ export function JoinForm({ isOpen = true }: { isOpen?: boolean }) {
       ) : null}
 
       <button
-        className="mt-6 w-full rounded-md bg-red-600 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+        className="premium-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-60"
         disabled={status === "submitting" || !isOpen}
         type="submit"
       >
