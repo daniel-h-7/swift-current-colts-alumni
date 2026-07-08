@@ -8,22 +8,192 @@ import { formatDate } from "@/lib/contact-format";
 import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
 import { ensureRenewalReminderCampaign } from "@/lib/renewal-reminder-automation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { AdminHeader } from "@/components/admin-header";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 
 export const dynamic = "force-dynamic";
 
-async function getCampaigns() {
+type CampaignsSearchParams = {
+  sort_by?: string;
+  sort_dir?: string;
+};
+
+type CampaignRow = Campaign & {
+  blastCount: number;
+  lastEditedAt: string;
+  lastSentAt: string | null;
+};
+
+type CampaignBlastSummary = {
+  created_at: string;
+  id: string;
+  sent_at: string | null;
+  updated_at: string;
+};
+
+type CampaignWithBlasts = Campaign & {
+  campaign_blasts?: CampaignBlastSummary[];
+};
+
+const campaignSortColumns = [
+  { key: "title", label: "Campaign" },
+  { key: "status", label: "Status" },
+  { key: "created_at", label: "Created" },
+  { key: "blastCount", label: "Blasts" },
+  { key: "lastSentAt", label: "Last Sent" },
+  { key: "lastEditedAt", label: "Last Edited" },
+] as const;
+
+type CampaignSortKey = (typeof campaignSortColumns)[number]["key"];
+type SortDirection = "asc" | "desc";
+
+function getCampaignSort(filters: CampaignsSearchParams): {
+  sortBy: CampaignSortKey;
+  sortDir: SortDirection;
+} {
+  const allowedKeys = campaignSortColumns.map((column) => column.key);
+  const sortBy = allowedKeys.includes(filters.sort_by as CampaignSortKey)
+    ? (filters.sort_by as CampaignSortKey)
+    : "lastEditedAt";
+  const sortDir = filters.sort_dir === "asc" ? "asc" : "desc";
+
+  return { sortBy, sortDir };
+}
+
+function compareNullableDates(
+  first: string | null,
+  second: string | null,
+) {
+  if (!first && !second) {
+    return 0;
+  }
+
+  if (!first) {
+    return 1;
+  }
+
+  if (!second) {
+    return -1;
+  }
+
+  return new Date(first).getTime() - new Date(second).getTime();
+}
+
+function sortCampaignRows(rows: CampaignRow[], filters: CampaignsSearchParams) {
+  const { sortBy, sortDir } = getCampaignSort(filters);
+  const direction = sortDir === "asc" ? 1 : -1;
+
+  return [...rows].sort((first, second) => {
+    if (
+      sortBy === "created_at" ||
+      sortBy === "lastSentAt" ||
+      sortBy === "lastEditedAt"
+    ) {
+      const firstValue = first[sortBy];
+      const secondValue = second[sortBy];
+
+      if (!firstValue || !secondValue) {
+        return compareNullableDates(firstValue, secondValue);
+      }
+
+      return compareNullableDates(firstValue, secondValue) * direction;
+    }
+
+    if (sortBy === "blastCount") {
+      return (first.blastCount - second.blastCount) * direction;
+    }
+
+    return String(first[sortBy] ?? "").localeCompare(String(second[sortBy] ?? "")) * direction;
+  });
+}
+
+function getCampaignSortHref(filters: CampaignsSearchParams, sortBy: CampaignSortKey) {
+  const currentSort = getCampaignSort(filters);
+  const params = new URLSearchParams();
+
+  params.set("sort_by", sortBy);
+  params.set(
+    "sort_dir",
+    currentSort.sortBy === sortBy && currentSort.sortDir === "asc"
+      ? "desc"
+      : "asc",
+  );
+
+  return `/admin/campaigns?${params.toString()}`;
+}
+
+function CampaignSortHeader({
+  filters,
+  label,
+  sortBy,
+}: {
+  filters: CampaignsSearchParams;
+  label: string;
+  sortBy: CampaignSortKey;
+}) {
+  const currentSort = getCampaignSort(filters);
+  const isActive = currentSort.sortBy === sortBy;
+
+  return (
+    <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
+      <Link
+        className="inline-flex items-center gap-2 text-white hover:text-blue-300"
+        href={getCampaignSortHref(filters, sortBy)}
+      >
+        {label}
+        <span className={isActive ? "text-blue-300" : "text-white/35"}>
+          {isActive && currentSort.sortDir === "asc" ? "^" : "v"}
+        </span>
+      </Link>
+    </th>
+  );
+}
+
+function formatOptionalCampaignDate(value: string | null) {
+  return value ? formatDate(value) : "-";
+}
+
+async function getCampaigns(filters: CampaignsSearchParams) {
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
     .from("campaigns")
-    .select("*")
-    .order("updated_at", { ascending: false });
+    .select("*, campaign_blasts(id, created_at, sent_at, updated_at)");
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return (data ?? []) as Campaign[];
+  const rows = ((data ?? []) as CampaignWithBlasts[]).map((campaign) => {
+    const blasts = Array.isArray(campaign.campaign_blasts)
+      ? campaign.campaign_blasts
+      : [];
+    const blastDates = blasts
+      .map((blast) => blast.updated_at as string | null)
+      .filter(Boolean) as string[];
+    const sentDates = blasts
+      .map((blast) => blast.sent_at as string | null)
+      .filter(Boolean) as string[];
+    const lastEditedAt = [campaign.updated_at as string, ...blastDates].sort(
+      (first, second) => new Date(second).getTime() - new Date(first).getTime(),
+    )[0];
+    const lastSentAt = sentDates.sort(
+      (first, second) => new Date(second).getTime() - new Date(first).getTime(),
+    )[0] ?? null;
+
+    return {
+      created_at: campaign.created_at,
+      description: campaign.description,
+      id: campaign.id,
+      status: campaign.status,
+      title: campaign.title,
+      updated_at: campaign.updated_at,
+      blastCount: blasts.length,
+      lastEditedAt,
+      lastSentAt,
+    } as CampaignRow;
+  });
+
+  return sortCampaignRows(rows, filters);
 }
 
 async function duplicateCampaign(formData: FormData) {
@@ -62,18 +232,23 @@ async function deleteCampaign(formData: FormData) {
   redirect("/admin/campaigns");
 }
 
-export default async function CampaignsPage() {
+export default async function CampaignsPage({
+  searchParams,
+}: {
+  searchParams: Promise<CampaignsSearchParams>;
+}) {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin/login");
   }
 
-  let campaigns: Campaign[] = [];
+  const filters = await searchParams;
+  let campaigns: CampaignRow[] = [];
   let errorMessage = "";
 
   try {
     await ensureNewSignupAutomationCampaign();
     await ensureRenewalReminderCampaign();
-    campaigns = await getCampaigns();
+    campaigns = await getCampaigns(filters);
   } catch (error) {
     errorMessage =
       error instanceof Error ? error.message : "Unable to load campaigns.";
@@ -81,112 +256,116 @@ export default async function CampaignsPage() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10 bg-zinc-950">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[5px] text-red-500">
-              Communications
-            </p>
-            <h1 className="mt-3 text-4xl font-black">Campaigns</h1>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-md border border-white/15 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/30 hover:text-white"
-              href="/admin"
-            >
-              Dashboard
-            </Link>
-            <Link
-              className="rounded-md bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(29,78,216,0.28)] transition hover:bg-blue-600"
-              href="/admin/campaigns/new"
-            >
-              New Campaign
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AdminHeader
+        actions={[
+          { href: "/admin", label: "Dashboard" },
+          { href: "/admin/campaigns/new", label: "New Campaign", tone: "primary" },
+        ]}
+        eyebrow="Communications"
+        subtitle="Review campaigns, duplicate seasonal templates, and jump into blasts from a sortable campaign list."
+        title="Campaigns"
+      />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         {errorMessage ? (
-          <section className="rounded-3xl border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
+          <section className="border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
             {errorMessage}
           </section>
         ) : null}
 
-        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {campaigns.map((campaign) => (
-            <div
-              className="relative overflow-visible rounded-xl border border-white/10 bg-zinc-950 p-6 pr-16 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition hover:border-blue-500/60 hover:bg-zinc-900/80"
-              key={campaign.id}
-            >
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-zinc-800 to-red-600" />
-              <details className="group absolute right-3 top-3">
-                <summary
-                  aria-label="Campaign actions"
-                  className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-white/10 bg-black/45 text-gray-300 transition hover:border-blue-500/70 hover:bg-blue-950/40 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 [&::-webkit-details-marker]:hidden"
-                >
-                  <svg
-                    aria-hidden="true"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 7.25h.01M12 12h.01M12 16.75h.01"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
+        <section className="overflow-visible border border-white/10 bg-zinc-950 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+              <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
+                <tr>
+                  {campaignSortColumns.map((column) => (
+                    <CampaignSortHeader
+                      filters={filters}
+                      key={column.key}
+                      label={column.label}
+                      sortBy={column.key}
                     />
-                  </svg>
-                </summary>
-                <div className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-white/10 bg-zinc-950/98 p-1.5 shadow-[0_22px_80px_rgba(0,0,0,0.65)] ring-1 ring-black/60">
-                  <Link
-                    className="block rounded-md px-3 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white"
-                    href={`/admin/campaigns/${campaign.id}/edit`}
-                  >
-                    Edit Campaign
-                  </Link>
-                  <form action={duplicateCampaign}>
-                    <input name="campaign_id" type="hidden" value={campaign.id} />
-                    <button
-                      className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-gray-200 transition hover:bg-blue-950/50 hover:text-white"
-                      type="submit"
-                    >
-                      Duplicate Campaign
-                    </button>
-                  </form>
-                  <form action={deleteCampaign}>
-                    <input name="campaign_id" type="hidden" value={campaign.id} />
-                    <ConfirmSubmitButton
-                      className="w-full rounded-md px-3 py-2.5 text-left text-sm font-bold text-red-300 transition hover:bg-red-950/55 hover:text-red-100"
-                      message={`Delete campaign "${campaign.title}" and all of its blasts?`}
-                    >
-                      Delete Campaign
-                    </ConfirmSubmitButton>
-                  </form>
-                </div>
-              </details>
-              <Link href={`/admin/campaigns/${campaign.id}`}>
-                <p className="text-xs font-black uppercase tracking-[3px] text-red-400">
-                  {campaign.status}
-                </p>
-                <h2 className="mt-3 text-2xl font-black">{campaign.title}</h2>
-                <p className="mt-3 min-h-12 text-sm leading-6 text-gray-400">
-                  {campaign.description || "No description yet."}
-                </p>
-                <p className="mt-6 text-xs font-bold uppercase tracking-[2px] text-gray-500">
-                  Updated {formatDate(campaign.updated_at)}
-                </p>
-              </Link>
-            </div>
-          ))}
+                  ))}
+                  <th className="whitespace-nowrap px-4 py-4 text-right font-black uppercase tracking-[3px]">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/10">
+                {campaigns.map((campaign) => (
+                  <tr className="align-top hover:bg-white/[0.04]" key={campaign.id}>
+                    <td className="min-w-80 px-4 py-4">
+                      <Link
+                        className="font-black text-white hover:text-blue-300"
+                        href={`/admin/campaigns/${campaign.id}`}
+                      >
+                        {campaign.title}
+                      </Link>
+                      <p className="mt-1 max-w-xl text-sm leading-6 text-gray-400">
+                        {campaign.description || "No description yet."}
+                      </p>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <span className="border border-red-500/20 bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
+                        {campaign.status}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatDate(campaign.created_at)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {campaign.blastCount}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatOptionalCampaignDate(campaign.lastSentAt)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                      {formatDate(campaign.lastEditedAt)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-right">
+                      <div className="flex flex-wrap justify-end gap-3">
+                        <Link
+                          className="font-black text-blue-400 hover:text-blue-300"
+                          href={`/admin/campaigns/${campaign.id}/edit`}
+                        >
+                          Edit
+                        </Link>
+                        <form action={duplicateCampaign}>
+                          <input name="campaign_id" type="hidden" value={campaign.id} />
+                          <button
+                            className="font-black text-gray-400 hover:text-white"
+                            type="submit"
+                          >
+                            Duplicate
+                          </button>
+                        </form>
+                        <form action={deleteCampaign}>
+                          <input name="campaign_id" type="hidden" value={campaign.id} />
+                          <ConfirmSubmitButton
+                            className="font-black text-red-400 hover:text-red-300"
+                            message={`Delete campaign "${campaign.title}" and all of its blasts?`}
+                          >
+                            Delete
+                          </ConfirmSubmitButton>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
-          {!campaigns.length && !errorMessage ? (
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-8 text-gray-400">
-              No campaigns yet.
-            </div>
-          ) : null}
+                {!campaigns.length && !errorMessage ? (
+                  <tr>
+                    <td
+                      className="px-4 py-12 text-center font-bold text-gray-400"
+                      colSpan={7}
+                    >
+                      No campaigns yet.
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </main>

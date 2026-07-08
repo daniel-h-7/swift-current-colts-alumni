@@ -12,6 +12,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateBlast } from "@/lib/campaign-duplication";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { AdminHeader } from "@/components/admin-header";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,134 @@ export const dynamic = "force-dynamic";
 type CampaignParams = {
   id: string;
 };
+
+type CampaignDetailSearchParams = {
+  sort_by?: string;
+  sort_dir?: string;
+};
+
+const blastSortColumns = [
+  { key: "title", label: "Blast" },
+  { key: "status", label: "Status" },
+  { key: "recipient_count", label: "Recipients" },
+  { key: "open_count", label: "Open" },
+  { key: "click_count", label: "Click" },
+  { key: "created_at", label: "Created" },
+  { key: "sent_at", label: "Last Sent" },
+  { key: "updated_at", label: "Last Edited" },
+] as const;
+
+type BlastSortKey = (typeof blastSortColumns)[number]["key"];
+type SortDirection = "asc" | "desc";
+
+function getBlastSort(filters: CampaignDetailSearchParams): {
+  sortBy: BlastSortKey;
+  sortDir: SortDirection;
+} {
+  const allowedKeys = blastSortColumns.map((column) => column.key);
+  const sortBy = allowedKeys.includes(filters.sort_by as BlastSortKey)
+    ? (filters.sort_by as BlastSortKey)
+    : "updated_at";
+  const sortDir = filters.sort_dir === "asc" ? "asc" : "desc";
+
+  return { sortBy, sortDir };
+}
+
+function compareOptionalDates(first: string | null, second: string | null) {
+  if (!first && !second) {
+    return 0;
+  }
+
+  if (!first) {
+    return 1;
+  }
+
+  if (!second) {
+    return -1;
+  }
+
+  return new Date(first).getTime() - new Date(second).getTime();
+}
+
+function sortBlasts(blasts: Blast[], filters: CampaignDetailSearchParams) {
+  const { sortBy, sortDir } = getBlastSort(filters);
+  const direction = sortDir === "asc" ? 1 : -1;
+
+  return [...blasts].sort((first, second) => {
+    if (sortBy === "created_at" || sortBy === "sent_at" || sortBy === "updated_at") {
+      const firstValue = first[sortBy];
+      const secondValue = second[sortBy];
+
+      if (!firstValue || !secondValue) {
+        return compareOptionalDates(firstValue, secondValue);
+      }
+
+      return compareOptionalDates(firstValue, secondValue) * direction;
+    }
+
+    if (
+      sortBy === "recipient_count" ||
+      sortBy === "open_count" ||
+      sortBy === "click_count"
+    ) {
+      return (first[sortBy] - second[sortBy]) * direction;
+    }
+
+    return String(first[sortBy] ?? "").localeCompare(String(second[sortBy] ?? "")) * direction;
+  });
+}
+
+function getBlastSortHref(
+  campaignId: string,
+  filters: CampaignDetailSearchParams,
+  sortBy: BlastSortKey,
+) {
+  const currentSort = getBlastSort(filters);
+  const params = new URLSearchParams();
+
+  params.set("sort_by", sortBy);
+  params.set(
+    "sort_dir",
+    currentSort.sortBy === sortBy && currentSort.sortDir === "asc"
+      ? "desc"
+      : "asc",
+  );
+
+  return `/admin/campaigns/${campaignId}?${params.toString()}`;
+}
+
+function BlastSortHeader({
+  campaignId,
+  filters,
+  label,
+  sortBy,
+}: {
+  campaignId: string;
+  filters: CampaignDetailSearchParams;
+  label: string;
+  sortBy: BlastSortKey;
+}) {
+  const currentSort = getBlastSort(filters);
+  const isActive = currentSort.sortBy === sortBy;
+
+  return (
+    <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
+      <Link
+        className="inline-flex items-center gap-2 text-white hover:text-blue-300"
+        href={getBlastSortHref(campaignId, filters, sortBy)}
+      >
+        {label}
+        <span className={isActive ? "text-blue-300" : "text-white/35"}>
+          {isActive && currentSort.sortDir === "asc" ? "^" : "v"}
+        </span>
+      </Link>
+    </th>
+  );
+}
+
+function formatOptionalBlastDate(value: string | null) {
+  return value ? formatDate(value) : "-";
+}
 
 async function getCampaign(id: string) {
   const supabase = createServerSupabaseClient();
@@ -90,20 +219,23 @@ async function deleteBlastAction(formData: FormData) {
 
 export default async function CampaignDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<CampaignParams>;
+  searchParams: Promise<CampaignDetailSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin/login");
   }
 
-  const { id } = await params;
-  const [campaign, blasts] = await Promise.all([getCampaign(id), getBlasts(id)]);
+  const [{ id }, filters] = await Promise.all([params, searchParams]);
+  const [campaign, unsortedBlasts] = await Promise.all([getCampaign(id), getBlasts(id)]);
 
   if (!campaign) {
     notFound();
   }
 
+  const blasts = sortBlasts(unsortedBlasts, filters);
   const sentBlasts = blasts.filter((blast) => blast.status === "Sent");
   const recipients = blasts.reduce((total, blast) => total + blast.recipient_count, 0);
   const opens = blasts.reduce((total, blast) => total + blast.open_count, 0);
@@ -113,33 +245,19 @@ export default async function CampaignDetailPage({
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10 bg-zinc-950">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[5px] text-red-500">
-              Campaign
-            </p>
-            <h1 className="mt-3 text-4xl font-black">{campaign.title}</h1>
-            <p className="mt-3 max-w-2xl text-gray-400">
-              {campaign.description || "No description yet."}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-bold text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
-              href="/admin/campaigns"
-            >
-              Campaigns
-            </Link>
-            <Link
-              className="rounded-md bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(29,78,216,0.22)] transition hover:bg-blue-600"
-              href={`/admin/campaigns/${campaign.id}/blasts/new`}
-            >
-              New Blast
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AdminHeader
+        actions={[
+          { href: "/admin/campaigns", label: "Campaigns" },
+          {
+            href: `/admin/campaigns/${campaign.id}/blasts/new`,
+            label: "New Blast",
+            tone: "primary",
+          },
+        ]}
+        eyebrow="Campaign"
+        subtitle={campaign.description || "No description yet."}
+        title={campaign.title}
+      />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <section className="grid gap-4 md:grid-cols-5">
@@ -150,7 +268,7 @@ export default async function CampaignDetailPage({
             ["Open Rate", `${openRate}%`],
             ["Click Rate", `${clickRate}%`],
           ].map(([label, value]) => (
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl" key={label}>
+            <div className="border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.92),rgba(9,9,11,0.96))] p-5 shadow-[0_22px_70px_rgba(0,0,0,0.26)]" key={label}>
               <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
                 {label}
               </p>
@@ -159,25 +277,26 @@ export default async function CampaignDetailPage({
           ))}
         </section>
 
-        <section className="mt-6 rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl">
+        <section className="mt-6 border border-white/10 bg-zinc-950 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-white/10 text-left text-sm">
               <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
                 <tr>
-                  {[
-                    "Blast",
-                    "Audience",
-                    "Status",
-                    "Recipients",
-                    "Open",
-                    "Click",
-                    "Updated",
-                    "",
-                  ].map((heading) => (
-                    <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]" key={heading}>
-                      {heading}
-                    </th>
+                  {blastSortColumns.map((column) => (
+                    <BlastSortHeader
+                      campaignId={campaign.id}
+                      filters={filters}
+                      key={column.key}
+                      label={column.label}
+                      sortBy={column.key}
+                    />
                   ))}
+                  <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
+                    Audience
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-4 text-right font-black uppercase tracking-[3px]">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
@@ -187,16 +306,18 @@ export default async function CampaignDetailPage({
                       <p className="font-black text-white">{blast.title}</p>
                       <p className="mt-1 text-gray-400">{blast.subject}</p>
                     </td>
-                    <td className="max-w-sm px-4 py-4 text-gray-300">
-                      {summarizeAudienceFilter(blast.audience_filter)}
-                    </td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.status}</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.recipient_count}</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getOpenRate(blast)}%</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getClickRate(blast)}%</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatDate(blast.created_at)}</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatOptionalBlastDate(blast.sent_at)}</td>
                     <td className="whitespace-nowrap px-4 py-4 text-gray-300">{formatDate(blast.updated_at)}</td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <div className="flex items-center gap-3">
+                    <td className="max-w-sm px-4 py-4 text-gray-300">
+                      {summarizeAudienceFilter(blast.audience_filter)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-right">
+                      <div className="flex flex-wrap justify-end gap-3">
                         <Link className="font-black text-blue-400 hover:text-blue-300" href={`/admin/campaigns/${campaign.id}/blasts/${blast.id}`}>
                           Edit
                         </Link>
@@ -225,7 +346,7 @@ export default async function CampaignDetailPage({
                 ))}
                 {!blasts.length ? (
                   <tr>
-                    <td className="px-4 py-12 text-center font-bold text-gray-400" colSpan={8}>
+                    <td className="px-4 py-12 text-center font-bold text-gray-400" colSpan={10}>
                       No blasts yet.
                     </td>
                   </tr>
