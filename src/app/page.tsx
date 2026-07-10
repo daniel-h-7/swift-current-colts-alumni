@@ -79,29 +79,29 @@ export default async function Home() {
           </div>
         </div>
 
-        {brand.isDemo && siteContent.impactStats.length ? (
-          <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-6">
-            <div className="mx-auto grid max-w-4xl grid-cols-3 gap-3">
-              {siteContent.impactStats.map((stat) => (
-                <div
-                  className="relative aspect-square overflow-hidden border border-white/15 bg-black/55 p-3 text-center shadow-[0_16px_48px_rgba(0,0,0,0.36)] backdrop-blur-md sm:p-4"
-                  key={stat.label}
-                >
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-                  <div className="flex h-full flex-col items-center justify-center">
-                    <p className="text-3xl font-black leading-none text-white sm:text-4xl md:text-5xl">
-                      {stat.value}
-                    </p>
-                    <p className="mt-3 text-[0.58rem] font-black uppercase leading-4 tracking-[0.22em] text-gray-300 sm:text-xs">
-                      {stat.label}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
       </section>
+
+      {brand.isDemo && siteContent.impactStats.length ? (
+        <section className="px-6 py-7">
+          <div className="mx-auto grid max-w-3xl grid-cols-3 border border-white/10 bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
+            {siteContent.impactStats.map((stat, index) => (
+              <div
+                className={`px-3 py-5 text-center ${
+                  index ? "border-l border-white/10" : ""
+                }`}
+                key={stat.label}
+              >
+                <p className="text-2xl font-black leading-none text-white md:text-3xl">
+                  {stat.value}
+                </p>
+                <p className="mx-auto mt-2 max-w-32 text-[0.6rem] font-black uppercase leading-4 tracking-[0.2em] text-gray-500 md:text-[0.65rem]">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section id="sponsors" className="section-rule mx-auto max-w-7xl px-6 pb-20 pt-8">
         <div className="overflow-hidden border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
