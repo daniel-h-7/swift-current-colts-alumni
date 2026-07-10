@@ -25,8 +25,26 @@ export type SiteSponsor = {
   name: string;
 };
 
+export type SiteImpactStat = {
+  label: string;
+  value: string;
+};
+
+export type SiteFundraisingCampaign = {
+  buttonLabel: string;
+  buttonUrl: string;
+  description: string;
+  eyebrow: string;
+  goalLabel: string;
+  progressPercent: number;
+  raisedLabel: string;
+  title: string;
+};
+
 export type SiteContent = {
   events: SiteEvent[];
+  fundraisingCampaigns: SiteFundraisingCampaign[];
+  impactStats: SiteImpactStat[];
   sponsors: SiteSponsor[];
   spotlights: SiteSpotlight[];
 };
@@ -55,6 +73,8 @@ const coltsDefaultSiteContent: SiteContent = {
       title: "Hall of Fame Banquet",
     },
   ],
+  fundraisingCampaigns: [],
+  impactStats: [],
   sponsors: [
     { imageUrl: "", linkUrl: "", name: "Pioneer Co-op" },
     { imageUrl: "", linkUrl: "", name: "Innovation Credit Union" },
@@ -113,6 +133,24 @@ const demoDefaultSiteContent: SiteContent = {
       notes: "A clean offseason touchpoint for fundraising, alumni updates, and campaign follow-up.",
       title: "Booster Club Social",
     },
+  ],
+  fundraisingCampaigns: [
+    {
+      buttonLabel: "Support the Project",
+      buttonUrl: "/join",
+      description:
+        "Showcase a live fundraising goal, connect every gift to the CRM, and give supporters a clear reason to act.",
+      eyebrow: "Campaign Example",
+      goalLabel: "Raised of $125,000",
+      progressPercent: 63,
+      raisedLabel: "$78,450",
+      title: "New Team Rooms",
+    },
+  ],
+  impactStats: [
+    { label: "Student Athletes", value: "146" },
+    { label: "Honour Roll Students", value: "111" },
+    { label: "Provincial Championships", value: "16" },
   ],
   sponsors: [
     { imageUrl: "", linkUrl: "", name: "Summit Bank" },
@@ -206,6 +244,54 @@ function normalizeSponsor(value: unknown): SiteSponsor | null {
   };
 }
 
+function normalizeImpactStat(value: unknown): SiteImpactStat | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const item = value as Partial<SiteImpactStat>;
+  const label = cleanText(item.label);
+  const statValue = cleanText(item.value);
+
+  if (!label && !statValue) {
+    return null;
+  }
+
+  return {
+    label,
+    value: statValue,
+  };
+}
+
+function normalizeFundraisingCampaign(value: unknown): SiteFundraisingCampaign | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const item = value as Partial<SiteFundraisingCampaign>;
+  const title = cleanText(item.title);
+
+  if (!title) {
+    return null;
+  }
+
+  const progressPercent =
+    typeof item.progressPercent === "number"
+      ? item.progressPercent
+      : Number(item.progressPercent ?? 0);
+
+  return {
+    buttonLabel: cleanText(item.buttonLabel) || "Support the Project",
+    buttonUrl: cleanText(item.buttonUrl) || "/join",
+    description: cleanText(item.description),
+    eyebrow: cleanText(item.eyebrow) || "Campaign Example",
+    goalLabel: cleanText(item.goalLabel),
+    progressPercent: Math.min(100, Math.max(0, Number.isFinite(progressPercent) ? progressPercent : 0)),
+    raisedLabel: cleanText(item.raisedLabel),
+    title,
+  };
+}
+
 export function normalizeSiteContent(value: unknown): SiteContent {
   const defaultSiteContent = getDefaultSiteContent();
 
@@ -223,9 +309,21 @@ export function normalizeSiteContent(value: unknown): SiteContent {
   const sponsors = Array.isArray(content.sponsors)
     ? content.sponsors.map(normalizeSponsor).filter(Boolean)
     : [];
+  const impactStats = Array.isArray(content.impactStats)
+    ? content.impactStats.map(normalizeImpactStat).filter(Boolean)
+    : [];
+  const fundraisingCampaigns = Array.isArray(content.fundraisingCampaigns)
+    ? content.fundraisingCampaigns.map(normalizeFundraisingCampaign).filter(Boolean)
+    : [];
 
   return {
     events: events.length ? (events as SiteEvent[]) : defaultSiteContent.events,
+    fundraisingCampaigns: fundraisingCampaigns.length
+      ? (fundraisingCampaigns as SiteFundraisingCampaign[])
+      : defaultSiteContent.fundraisingCampaigns,
+    impactStats: impactStats.length
+      ? (impactStats as SiteImpactStat[])
+      : defaultSiteContent.impactStats,
     sponsors: sponsors.length
       ? (sponsors as SiteSponsor[])
       : defaultSiteContent.sponsors,

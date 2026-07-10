@@ -80,6 +80,81 @@ export default async function Home() {
         </div>
       </section>
 
+      {brand.isDemo &&
+      (siteContent.fundraisingCampaigns.length || siteContent.impactStats.length) ? (
+        <section className="section-rule relative isolate overflow-hidden px-6 py-16">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.09),transparent_58%)]" />
+          <div className="absolute inset-0 premium-grid opacity-20" />
+
+          <div className="relative mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.9fr_1.35fr]">
+            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
+              {siteContent.fundraisingCampaigns.map((campaign) => (
+                <article
+                  className="min-w-full snap-start border border-white/15 bg-[linear-gradient(180deg,rgba(39,39,42,0.92),rgba(9,9,11,0.97))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]"
+                  key={campaign.title}
+                >
+                  <p className="program-kicker">{campaign.eyebrow}</p>
+                  <h2 className="mt-3 text-3xl font-black text-white md:text-4xl">
+                    {campaign.title}
+                  </h2>
+                  {campaign.description ? (
+                    <p className="mt-4 text-sm font-semibold leading-6 text-gray-400">
+                      {campaign.description}
+                    </p>
+                  ) : null}
+
+                  <div className="mt-7">
+                    <div className="flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-4xl font-black text-white">
+                          {campaign.raisedLabel}
+                        </p>
+                        <p className="mt-1 text-xs font-black uppercase tracking-[3px] text-gray-500">
+                          {campaign.goalLabel}
+                        </p>
+                      </div>
+                      <p className="text-2xl font-black text-gray-200">
+                        {campaign.progressPercent}%
+                      </p>
+                    </div>
+                    <div className="mt-5 h-3 overflow-hidden bg-white/10">
+                      <div
+                        className="h-full bg-[linear-gradient(90deg,rgb(255,255,255),rgb(161,161,170))]"
+                        style={{ width: `${campaign.progressPercent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <Link
+                    href={campaign.buttonUrl || "/join"}
+                    className="premium-button mt-7 w-full"
+                  >
+                    {campaign.buttonLabel}
+                  </Link>
+                </article>
+              ))}
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-3">
+              {siteContent.impactStats.map((stat) => (
+                <div
+                  className="relative overflow-hidden border border-white/15 bg-[linear-gradient(180deg,rgba(24,24,27,0.88),rgba(3,7,18,0.96))] p-6 shadow-[0_20px_70px_rgba(0,0,0,0.3)]"
+                  key={stat.label}
+                >
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+                  <p className="text-5xl font-black leading-none text-white md:text-6xl">
+                    {stat.value}
+                  </p>
+                  <p className="mt-5 text-xs font-black uppercase tracking-[3px] text-gray-400">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section id="sponsors" className="section-rule mx-auto max-w-7xl px-6 pb-20 pt-8">
         <div className="overflow-hidden border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
