@@ -72,7 +72,7 @@ export default async function AdminLoginPage({
             </div>
           </div>
           <p className="program-kicker">
-            {brand.isDemo ? "Team Gridiron CRM" : "Colts CRM"}
+            {brand.isDemo ? "Northwest Yetis CRM" : "Colts CRM"}
           </p>
           <h1 className="mt-3 text-4xl font-black">Admin Login</h1>
           <p className="mt-4 text-gray-400">

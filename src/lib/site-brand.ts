@@ -54,30 +54,30 @@ const coltsBrand: SiteBrand = {
 
 const demoBrand: SiteBrand = {
   alumniSectionCopy:
-    "A premium preview of how Team Gridiron can showcase legendary alumni, supporters, and the next generation of athletes.",
-  ctaLabel: "Support Team Gridiron",
-  footerLocation: "Friday Night Lights Demo",
+    "A polished example of how a program can showcase alumni, activate supporters, and keep the next generation connected.",
+  ctaLabel: "Try the Support Flow",
+  footerLocation: "Fictional Demo Program",
   heroBody:
-    "A black-and-white Friday night lights demo for alumni, boosters, sponsors, memberships, campaigns, and program momentum.",
-  heroKicker: "Team Gridiron Alumni and Booster Club",
-  heroLineOne: "FRIDAY NIGHT",
-  heroLineTwo: "READY.",
-  initials: "TG",
+    "See how one branded site can collect memberships and gifts, spotlight alumni, feature sponsors, manage contacts, and power campaign follow-up.",
+  heroKicker: "Live Demo: Alumni + Booster Platform",
+  heroLineOne: "TURN SUPPORT",
+  heroLineTwo: "INTO MOMENTUM.",
+  initials: "NY",
   isDemo: true,
-  joinHeadline: "Support Team Gridiron",
+  joinHeadline: "Support Northwest Yetis",
   joinSubtext:
     "Demo a clean supporter signup flow built for memberships, one-time gifts, alumni engagement, and future campaign follow-up.",
-  logoEyebrow: "Team",
-  logoTitle: "Gridiron",
+  logoEyebrow: "Northwest",
+  logoTitle: "Yetis",
   metaDescription:
-    "A polished Team Gridiron demo site for football alumni, booster, sponsor, and membership management.",
-  metaTitle: "Team Gridiron Alumni and Booster Club",
-  programName: "Team Gridiron",
+    "A polished Northwest Yetis demo site for alumni, booster, sponsor, and membership management.",
+  metaTitle: "Northwest Yetis Alumni and Booster Club",
+  programName: "Northwest Yetis",
   sponsorCopy:
     "Showcase sponsors, partners, and community champions in a polished scrolling sponsor rail.",
   sponsorEyebrow: "Partner Ready",
   sponsorTitle: "Sponsor Showcase",
-  successHeading: "Thank you for supporting Team Gridiron!",
+  successHeading: "Thank you for supporting the Northwest Yetis!",
   successProgramLine:
     "This is where supporters can share the campaign and stay connected with future updates and events.",
 };

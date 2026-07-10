@@ -384,7 +384,7 @@ export default async function AdminPage({
           { href: "/admin/settings", label: "Settings" },
           { href: "/admin/logout", label: "Log Out", tone: "danger" },
         ]}
-        eyebrow={brand.isDemo ? "Team Gridiron CRM" : "Colts CRM"}
+        eyebrow={brand.isDemo ? "Northwest Yetis CRM" : "Colts CRM"}
         subtitle="Manage contacts, membership status, opt-ins, donations, and campaign audiences from one working console."
         title="Contacts Dashboard"
       />

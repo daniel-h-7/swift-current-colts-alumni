@@ -112,7 +112,7 @@ export default async function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="program-kicker">{brand.isDemo ? "Gridiron Legends" : "Colts Family"}</p>
+              <p className="program-kicker">{brand.isDemo ? "Yeti Legends" : "Colts Family"}</p>
               <h2 className="mt-3 text-4xl font-black md:text-5xl">Alumni Spotlights</h2>
             </div>
             <p className="max-w-lg text-sm font-semibold leading-6 text-gray-400">

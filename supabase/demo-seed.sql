@@ -94,7 +94,7 @@ insert into public.campaign_blasts (
     'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
     '11111111-1111-4111-8111-111111111111',
     'Welcome Thank You',
-    'Thank you for supporting Team Gridiron',
+    'Thank you for supporting the Northwest Yetis',
     'Your support helps build the next generation.',
     '<h1>Thank you for your support!</h1><p>Your annual membership helps provide student-athletes with the tools, experiences, and support they need to succeed on and off the field.</p>',
     'Sent',

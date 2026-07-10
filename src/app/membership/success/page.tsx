@@ -53,7 +53,7 @@ export default function MembershipSuccessPage() {
             <SupportShareBar
               shareText={
                 brand.isDemo
-                  ? "Take a look at this TeamAlum demo for alumni, booster, sponsor, and membership management."
+                  ? "Take a look at this Northwest Yetis demo for alumni, booster, sponsor, and membership management."
                   : undefined
               }
               shareUrl={shareUrl}
