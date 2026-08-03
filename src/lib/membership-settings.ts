@@ -23,7 +23,9 @@ export function getDefaultMembershipSettings(): MembershipSettings {
     membership_year_label:
       brand.variant === "rmrfootball"
         ? "Rocky Mountain Rams Football Alumni & Boosters"
-        : `2026 ${brand.programName} Alumni & Booster Club`,
+        : brand.variant === "bfbadgers"
+          ? "BF Badgers Football Alumni & Boosters"
+          : `2026 ${brand.programName} Alumni & Booster Club`,
     renewal_deadline: null,
     join_is_open: true,
     join_headline: "Help build the legacy.",

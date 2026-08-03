@@ -28,7 +28,7 @@ export type SiteBrand = {
   successHeading: string;
   successProgramLine: string;
   themeClass: string;
-  variant: "colts" | "demo" | "rmrfootball";
+  variant: "colts" | "demo" | "rmrfootball" | "bfbadgers";
 };
 
 const coltsBrand: SiteBrand = {
@@ -147,6 +147,46 @@ const ramsBrand: SiteBrand = {
   variant: "rmrfootball",
 };
 
+const bfBadgersBrand: SiteBrand = {
+  alumniSectionCopy:
+    "A polished home for Badger alumni, families, sponsors, and community supporters to rally around the program.",
+  alumniEyebrow: "Badger Legacy",
+  crmName: "BF Badgers CRM",
+  ctaLabel: "Support the Badgers Today!",
+  footerLocation: "Bonners Ferry, Idaho",
+  heroBody:
+    "Connecting Bonners Ferry football alumni, families, boosters, and sponsors behind the student-athletes carrying Badger pride forward.",
+  heroImage: "/images/bf-badgers-hero.jpeg",
+  heroKicker: "BF Badgers Football Alumni & Boosters",
+  heroLineOne: "BUILD BADGER",
+  heroLineTwo: "MOMENTUM.",
+  heroMarkImage: "/images/bf-badgers-logo.svg",
+  initials: "BF",
+  isDemo: false,
+  joinProgramName: "the Badgers",
+  joinHeadline: "Support BF Badgers Football",
+  joinSubtext:
+    "Your gift helps provide Badger student-athletes with the equipment, opportunities, and support they need to succeed on and off the field.",
+  logoEyebrow: "BF Badgers",
+  logoTitle: "Football",
+  metaDescription:
+    "The official alumni and booster club home for Bonners Ferry High School Badgers Football.",
+  metaTitle: "BF Badgers Football Alumni & Boosters",
+  navLogoImage: "/images/bf-badgers-logo.svg",
+  programName: "BF Badgers Football",
+  shareDescription:
+    "I invite you to join me in supporting BF Badgers Football. Alumni, families, and boosters can make a lasting impact on our student-athletes.",
+  sponsorCopy:
+    "Thank you to the sponsors and community partners helping BF Badgers Football keep moving forward.",
+  sponsorEyebrow: "Community Powered",
+  sponsorTitle: "Badger Partners",
+  successHeading: "Thank you for supporting BF Badgers Football!",
+  successProgramLine:
+    "Stay tuned for future updates and events regarding the Badgers program and our supporters.",
+  themeClass: "badgers-public",
+  variant: "bfbadgers",
+};
+
 export function getSiteBrand() {
   const variant = process.env.NEXT_PUBLIC_SITE_VARIANT?.trim().toLowerCase();
 
@@ -156,6 +196,10 @@ export function getSiteBrand() {
 
   if (variant === "rmrfootball" || variant === "rams") {
     return ramsBrand;
+  }
+
+  if (variant === "bfbadgers" || variant === "bf-badgers" || variant === "badgers") {
+    return bfBadgersBrand;
   }
 
   return coltsBrand;

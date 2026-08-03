@@ -4,6 +4,12 @@ import { getSiteBrand } from "@/lib/site-brand";
 
 export function PublicNav({ compact = false }: { compact?: boolean }) {
   const brand = getSiteBrand();
+  const navLogoFrameClass =
+    brand.variant === "rmrfootball"
+      ? "border-[#CEB74C]/30 bg-black/45"
+      : brand.variant === "bfbadgers"
+        ? "border-blue-200/35 bg-[#041f3d]/70"
+        : "border-white/30 bg-black/45";
 
   return (
     <nav
@@ -13,7 +19,7 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
     >
       <Link className="group flex items-center gap-3" href="/">
         {brand.navLogoImage ? (
-          <span className="relative flex h-11 w-16 items-center justify-center border border-[#CEB74C]/30 bg-black/45 px-2 shadow-[0_12px_34px_rgba(0,0,0,0.28)]">
+          <span className={`relative flex h-11 w-16 items-center justify-center border px-2 shadow-[0_12px_34px_rgba(0,0,0,0.28)] ${navLogoFrameClass}`}>
             <Image
               src={brand.navLogoImage}
               alt={`${brand.programName} logo`}
@@ -40,6 +46,8 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
                 ? "text-gray-300"
                 : brand.variant === "rmrfootball"
                   ? "text-[#CEB74C]"
+                  : brand.variant === "bfbadgers"
+                    ? "text-blue-200"
                   : "text-red-400"
             }`}
           >

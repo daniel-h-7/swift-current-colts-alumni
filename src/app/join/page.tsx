@@ -53,13 +53,15 @@ export default async function JoinPage() {
           className={`object-cover object-center ${
             brand.variant === "rmrfootball"
               ? "opacity-35 saturate-110"
+              : brand.variant === "bfbadgers"
+                ? "scale-110 opacity-42 saturate-110"
               : "opacity-50 grayscale"
           }`}
         />
 
-        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-gradient-to-b from-black/78 via-black/82 to-black" : "bg-gradient-to-b from-blue-950/65 via-black/75 to-black"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-gradient-to-b from-black/78 via-black/82 to-black" : brand.variant === "bfbadgers" ? "bg-gradient-to-b from-[#041f3d]/72 via-black/80 to-black" : "bg-gradient-to-b from-blue-950/65 via-black/75 to-black"}`} />
         <div className="absolute inset-0 premium-grid opacity-25" />
-        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(206,183,76,0.12)_0%,transparent_34%,rgba(206,183,76,0.08)_72%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.22)_0%,transparent_34%,rgba(220,38,38,0.18)_72%,transparent_100%)]"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(206,183,76,0.12)_0%,transparent_34%,rgba(206,183,76,0.08)_72%,transparent_100%)]" : brand.variant === "bfbadgers" ? "bg-[linear-gradient(115deg,rgba(59,130,246,0.18)_0%,transparent_34%,rgba(255,255,255,0.08)_72%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.22)_0%,transparent_34%,rgba(220,38,38,0.18)_72%,transparent_100%)]"}`} />
 
         <PublicNav compact />
 
@@ -80,7 +82,7 @@ export default async function JoinPage() {
                   Renews each year on the subscription date until opted out.
                 </p>
                 <Link
-                  className={`mt-3 inline-flex text-xs font-bold ${brand.variant === "rmrfootball" ? "text-[#CEB74C] hover:text-[#e5d36b]" : "text-blue-300 hover:text-blue-200"}`}
+                  className={`mt-3 inline-flex text-xs font-bold ${brand.variant === "rmrfootball" ? "text-[#CEB74C] hover:text-[#e5d36b]" : brand.variant === "bfbadgers" ? "text-blue-200 hover:text-white" : "text-blue-300 hover:text-blue-200"}`}
                   href="/membership/manage"
                 >
                   Manage or cancel an existing membership
@@ -91,7 +93,7 @@ export default async function JoinPage() {
                   </p>
                 ) : null}
               </div>
-              <div className={`mt-8 h-px w-56 ${brand.variant === "rmrfootball" ? "bg-gradient-to-r from-transparent via-[#CEB74C] to-transparent" : "bg-gradient-to-r from-blue-600 via-white to-red-600"}`} />
+              <div className={`mt-8 h-px w-56 ${brand.variant === "rmrfootball" ? "bg-gradient-to-r from-transparent via-[#CEB74C] to-transparent" : brand.variant === "bfbadgers" ? "bg-gradient-to-r from-transparent via-blue-200 to-transparent" : "bg-gradient-to-r from-blue-600 via-white to-red-600"}`} />
             </div>
 
             <JoinForm

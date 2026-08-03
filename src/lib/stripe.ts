@@ -79,6 +79,14 @@ export function getStripeWebhookSecret() {
   return getServerEnvValue("STRIPE_WEBHOOK_SECRET");
 }
 
+function getStripeConnectedAccountId() {
+  return getServerEnvValue("STRIPE_CONNECTED_ACCOUNT_ID");
+}
+
+function getStripeApplicationFeePercent() {
+  return getServerEnvValue("STRIPE_APPLICATION_FEE_PERCENT");
+}
+
 export async function createStripeCheckoutSession({
   additionalGiftAmountCents = 0,
   cancelUrl,
@@ -94,6 +102,9 @@ export async function createStripeCheckoutSession({
     throw new Error("Missing STRIPE_SECRET_KEY.");
   }
 
+  const brand = getSiteBrand();
+  const connectedAccountId = getStripeConnectedAccountId();
+  const applicationFeePercent = getStripeApplicationFeePercent();
   const body = new URLSearchParams();
   body.set("cancel_url", cancelUrl);
   body.set("client_reference_id", contactId);
@@ -113,18 +124,35 @@ export async function createStripeCheckoutSession({
   body.set("metadata[contact_id]", contactId);
   body.set("metadata[membership_amount_cents]", String(membershipAmountCents));
   body.set("metadata[membership_label]", membershipLabel);
+  body.set("metadata[program]", brand.programName);
+  body.set("metadata[site_variant]", brand.variant);
   body.set("mode", "subscription");
   body.set("subscription_data[metadata][contact_id]", contactId);
   body.set(
     "subscription_data[metadata][membership_amount_cents]",
     String(membershipAmountCents),
   );
+  body.set("subscription_data[metadata][program]", brand.programName);
+  body.set("subscription_data[metadata][site_variant]", brand.variant);
+
+  if (connectedAccountId) {
+    body.set(
+      "subscription_data[transfer_data][destination]",
+      connectedAccountId,
+    );
+
+    if (applicationFeePercent) {
+      body.set(
+        "subscription_data[application_fee_percent]",
+        applicationFeePercent,
+      );
+    }
+  }
+
   body.set("submit_type", "subscribe");
   body.set("success_url", successUrl);
 
   if (additionalGiftAmountCents > 0) {
-    const brand = getSiteBrand();
-
     body.set("line_items[1][price_data][currency]", "cad");
     body.set(
       "line_items[1][price_data][product_data][name]",

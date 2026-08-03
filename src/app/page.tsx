@@ -16,8 +16,15 @@ function getSpotlightImageClass(name: string, savedClass: string) {
   return savedClass;
 }
 
-function getAlumniLogoClass(brandIsDemo: boolean, side: "left" | "right") {
-  if (!brandIsDemo) {
+function getAlumniLogoClass(
+  variant: "colts" | "demo" | "rmrfootball" | "bfbadgers",
+  side: "left" | "right",
+) {
+  if (variant === "bfbadgers") {
+    return "alumni-logo-bf";
+  }
+
+  if (variant !== "demo") {
     return side === "left" ? "alumni-logo-sc" : "alumni-logo-horseshoe";
   }
 
@@ -36,7 +43,9 @@ export default async function Home() {
           alt={
             brand.variant === "rmrfootball"
               ? "Rocky Mountain Rams football players lined up on the sideline"
-              : brand.isDemo
+              : brand.variant === "bfbadgers"
+                ? "Bonners Ferry Badgers football player during game action"
+                : brand.isDemo
                 ? "Generic high school football stadium under Friday night lights"
                 : "Football stadium under Friday night lights"
           }
@@ -45,18 +54,20 @@ export default async function Home() {
           className={`object-cover contrast-110 ${
             brand.variant === "rmrfootball"
               ? "scale-[1.45] object-[52%_42%] opacity-45 saturate-110 md:scale-[1.75] md:object-[48%_40%]"
+              : brand.variant === "bfbadgers"
+                ? "scale-[1.18] object-[center_38%] opacity-72 saturate-110 md:scale-[1.32] md:object-[center_34%]"
               : `object-center opacity-95 md:scale-110 md:object-[center_42%] ${
                   brand.isDemo ? "grayscale saturate-0" : "saturate-125"
                 }`
           }`}
         />
 
-        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-gradient-to-b from-black/70 via-black/72 to-black/96" : "bg-gradient-to-b from-black/20 via-blue-950/18 to-black/90"}`} />
-        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.12)_0%,rgba(0,0,0,0.34)_34%,rgba(0,0,0,0.72)_72%,rgba(0,0,0,0.92)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.38)_34%,rgba(0,0,0,0.76)_72%,rgba(0,0,0,0.94)_100%)]" : "bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.25)_36%,rgba(0,0,0,0.1)_62%,rgba(0,0,0,0.24)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.04)_62%,rgba(0,0,0,0.14)_100%)]"}`} />
-        <div className={`absolute inset-x-0 top-0 h-40 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_top,rgba(206,183,76,0.24),transparent_68%)]" : "bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-gradient-to-b from-black/70 via-black/72 to-black/96" : brand.variant === "bfbadgers" ? "bg-gradient-to-b from-[#041f3d]/45 via-black/72 to-black/95" : "bg-gradient-to-b from-black/20 via-blue-950/18 to-black/90"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.12)_0%,rgba(0,0,0,0.34)_34%,rgba(0,0,0,0.72)_72%,rgba(0,0,0,0.92)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.38)_34%,rgba(0,0,0,0.76)_72%,rgba(0,0,0,0.94)_100%)]" : brand.variant === "bfbadgers" ? "bg-[radial-gradient(ellipse_at_center,rgba(4,31,61,0.2)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.45)_68%,rgba(0,0,0,0.86)_100%)]" : "bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.25)_36%,rgba(0,0,0,0.1)_62%,rgba(0,0,0,0.24)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.04)_62%,rgba(0,0,0,0.14)_100%)]"}`} />
+        <div className={`absolute inset-x-0 top-0 h-40 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_top,rgba(206,183,76,0.24),transparent_68%)]" : brand.variant === "bfbadgers" ? "bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.34),transparent_68%)]" : "bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]"}`} />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
         <div className="absolute inset-0 premium-grid opacity-45" />
-        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(206,183,76,0.14)_0%,transparent_34%,rgba(206,183,76,0.08)_70%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.2)_0%,transparent_34%,rgba(220,38,38,0.18)_70%,transparent_100%)]"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(206,183,76,0.14)_0%,transparent_34%,rgba(206,183,76,0.08)_70%,transparent_100%)]" : brand.variant === "bfbadgers" ? "bg-[linear-gradient(115deg,rgba(59,130,246,0.18)_0%,transparent_34%,rgba(255,255,255,0.08)_70%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.2)_0%,transparent_34%,rgba(220,38,38,0.18)_70%,transparent_100%)]"}`} />
 
         {brand.heroMarkImage ? (
           <Image
@@ -137,7 +148,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {brand.variant === "demo" && siteContent.fundraisingCampaigns.length ? (
+      {(brand.variant === "demo" || brand.variant === "bfbadgers") && siteContent.fundraisingCampaigns.length ? (
         <section className="section-rule relative isolate overflow-hidden px-6 py-16">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_58%)]" />
           <div className="absolute inset-0 premium-grid opacity-20" />
@@ -145,7 +156,9 @@ export default async function Home() {
           <div className="relative mx-auto max-w-7xl">
             <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="program-kicker">Fundraising Demo</p>
+                <p className="program-kicker">
+                  {brand.variant === "demo" ? "Fundraising Demo" : "Current Campaign"}
+                </p>
                 <h2 className="mt-3 text-4xl font-black md:text-5xl">
                   Campaign Goals
                 </h2>
@@ -215,11 +228,11 @@ export default async function Home() {
       <section id="alumni" className="section-rule relative isolate overflow-hidden px-6 py-24">
         <div
           aria-hidden="true"
-          className={`alumni-logo-mask ${getAlumniLogoClass(brand.isDemo, "left")} absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/24 md:block`}
+          className={`alumni-logo-mask ${getAlumniLogoClass(brand.variant, "left")} absolute left-[-2rem] top-10 hidden h-72 w-72 bg-red-600/24 md:block`}
         />
         <div
           aria-hidden="true"
-          className={`alumni-logo-mask ${getAlumniLogoClass(brand.isDemo, "right")} absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/24 md:block`}
+          className={`alumni-logo-mask ${getAlumniLogoClass(brand.variant, "right")} absolute right-[-3rem] top-14 hidden h-72 w-72 bg-red-600/24 md:block`}
         />
 
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-red-950/20 to-transparent" />

@@ -245,6 +245,83 @@ const ramsDefaultSiteContent: SiteContent = {
   ],
 };
 
+const bfBadgersDefaultSiteContent: SiteContent = {
+  events: [
+    {
+      date: "August 28, 2026",
+      linkLabel: "Details",
+      linkUrl: "",
+      notes: "Bring alumni, families, and sponsors together for a football Friday in Bonners Ferry.",
+      title: "Badger Kickoff Night",
+    },
+    {
+      date: "September 25, 2026",
+      linkLabel: "Details",
+      linkUrl: "",
+      notes: "A homecoming-style gathering built around football, school pride, and alumni connection.",
+      title: "Badger Alumni Homecoming",
+    },
+    {
+      date: "November 13, 2026",
+      linkLabel: "Details",
+      linkUrl: "",
+      notes: "Celebrate players, volunteers, sponsors, and the people helping the program move forward.",
+      title: "BF Football Legacy Night",
+    },
+    {
+      date: "January 22, 2027",
+      linkLabel: "Details",
+      linkUrl: "",
+      notes: "An offseason supporter event for campaign updates, future goals, and community momentum.",
+      title: "Badger Booster Social",
+    },
+  ],
+  fundraisingCampaigns: [
+    {
+      buttonLabel: "Support the Project",
+      buttonUrl: "/join",
+      description:
+        "Help create a stronger football experience with updated player development resources, equipment support, and game-day needs.",
+      eyebrow: "Current Campaign",
+      goalLabel: "Raised of $85,000",
+      progressPercent: 54,
+      raisedLabel: "$45,900",
+      title: "Badger Football Fund",
+    },
+  ],
+  impactStats: [
+    { label: "Student Athletes", value: "118" },
+    { label: "Alumni Network", value: "420+" },
+    { label: "Community Partners", value: "28" },
+  ],
+  sponsors: [
+    { imageUrl: "", linkUrl: "", name: "Boundary County Partners" },
+    { imageUrl: "", linkUrl: "", name: "Badger Booster Club" },
+    { imageUrl: "", linkUrl: "", name: "Main Street Auto" },
+    { imageUrl: "", linkUrl: "", name: "Mountain West Bank" },
+    { imageUrl: "", linkUrl: "", name: "North Idaho Rehab" },
+    { imageUrl: "", linkUrl: "", name: "Game Day Grill" },
+    { imageUrl: "", linkUrl: "", name: "Panhandle Builders" },
+    { imageUrl: "", linkUrl: "", name: "Blue Line Electric" },
+  ],
+  spotlights: [
+    {
+      classYear: "Class of '15",
+      descriptor: "Alumni captain and Badger football supporter",
+      imageClass: "object-center",
+      imageUrl: "/images/team-gridiron-elway.svg",
+      name: "Tyler Morgan",
+    },
+    {
+      classYear: "Class of '07",
+      descriptor: "Program mentor and annual fund champion",
+      imageClass: "object-center",
+      imageUrl: "/images/team-gridiron-manning.svg",
+      name: "Caleb Brooks",
+    },
+  ],
+};
+
 export function getDefaultSiteContent() {
   const brand = getSiteBrand();
 
@@ -254,6 +331,10 @@ export function getDefaultSiteContent() {
 
   if (brand.variant === "rmrfootball") {
     return ramsDefaultSiteContent;
+  }
+
+  if (brand.variant === "bfbadgers") {
+    return bfBadgersDefaultSiteContent;
   }
 
   return coltsDefaultSiteContent;
