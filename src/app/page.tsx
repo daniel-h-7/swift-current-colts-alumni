@@ -29,7 +29,7 @@ export default async function Home() {
   const siteContent = await getSiteContent();
 
   return (
-    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
+    <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative min-h-[88vh] overflow-hidden">
         <Image
           src={brand.isDemo ? "/images/demo-friday-night-stadium.png" : "/images/stadium.jpg"}
@@ -81,7 +81,7 @@ export default async function Home() {
 
       </section>
 
-      {brand.isDemo && siteContent.impactStats.length ? (
+      {brand.variant !== "colts" && siteContent.impactStats.length ? (
         <section className="px-6 py-7">
           <div className="mx-auto grid max-w-3xl grid-cols-3 border border-white/10 bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
             {siteContent.impactStats.map((stat, index) => (
@@ -119,7 +119,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {brand.isDemo && siteContent.fundraisingCampaigns.length ? (
+      {brand.variant !== "colts" && siteContent.fundraisingCampaigns.length ? (
         <section className="section-rule relative isolate overflow-hidden px-6 py-16">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_58%)]" />
           <div className="absolute inset-0 premium-grid opacity-20" />
@@ -209,7 +209,7 @@ export default async function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="program-kicker">{brand.isDemo ? "Yeti Legends" : "Colts Family"}</p>
+              <p className="program-kicker">{brand.alumniEyebrow}</p>
               <h2 className="mt-3 text-4xl font-black md:text-5xl">Alumni Spotlights</h2>
             </div>
             <p className="max-w-lg text-sm font-semibold leading-6 text-gray-400">

@@ -48,7 +48,7 @@ Set `DEMO_PASSWORD` only when the public site should be password-protected for d
 
 Set `NEXT_PUBLIC_SITE_URL` to the live site URL so Stripe redirects and email unsubscribe links point at the correct domain. `UNSUBSCRIBE_SECRET` signs unsubscribe links; if it is not set, the app falls back to `ADMIN_SESSION_SECRET`.
 
-Set `NEXT_PUBLIC_SITE_VARIANT=demo` on a separate Vercel project to turn on the fictional Northwest Yetis demo branding. Leave it blank for the Colts/default site.
+Set `NEXT_PUBLIC_SITE_VARIANT=demo` on a separate Vercel project to turn on the fictional Northwest Yetis demo branding. Use `NEXT_PUBLIC_SITE_VARIANT=rmrfootball` for Rocky Mountain Rams Football. Leave it blank for the Colts/default site.
 
 Demo mode uses built-in generic Northwest Yetis homepage content by default so it will not accidentally display Colts data. Set `DEMO_USE_DATABASE_SITE_CONTENT=true` only if you want the demo project's Site Content admin screen to control the demo homepage.
 

@@ -11,9 +11,7 @@ import {
 import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
 const brand = getSiteBrand();
-const shareDescription = brand.isDemo
-  ? "Preview a polished TeamAlum supporter signup flow for alumni, boosters, sponsors, and football programs."
-  : "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
+const shareDescription = brand.shareDescription;
 
 export const metadata: Metadata = {
   description: shareDescription,
@@ -47,7 +45,7 @@ export default async function JoinPage() {
   const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
 
   return (
-    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
+    <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative min-h-screen overflow-hidden">
         <Image
           src="/images/stadium.jpg"
@@ -104,7 +102,7 @@ export default async function JoinPage() {
             <JoinForm
               headline={brand.joinHeadline}
               isOpen={settings.join_is_open}
-              programName={brand.isDemo ? "the program" : "the Colts"}
+              programName={brand.joinProgramName}
               subtext={brand.joinSubtext}
             />
           </div>

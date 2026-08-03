@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
+import { getSiteBrand } from "@/lib/site-brand";
 
-export const alt = "Support Swift Current Colts Football";
 export const contentType = "image/png";
 export const size = {
   height: 630,
@@ -8,6 +8,8 @@ export const size = {
 };
 
 export default function Image() {
+  const brand = getSiteBrand();
+
   return new ImageResponse(
     (
       <div
@@ -45,7 +47,7 @@ export default function Image() {
               textTransform: "uppercase",
             }}
           >
-            Swift Current Colts Football
+            {brand.programName}
           </div>
           <div
             style={{
@@ -69,7 +71,7 @@ export default function Image() {
               maxWidth: 920,
             }}
           >
-            Alumni and boosters can make a lasting impact on our young
+            Alumni, families, and boosters can make a lasting impact on our
             student-athletes.
           </div>
           <div
@@ -103,3 +105,5 @@ export default function Image() {
     size,
   );
 }
+
+export const alt = "Support the program";

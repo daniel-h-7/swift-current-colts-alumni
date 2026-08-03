@@ -4,6 +4,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { serializeAudienceFilter } from "@/lib/campaign-options";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
+import { getSiteBrand } from "@/lib/site-brand";
 
 type NewBlastParams = {
   id: string;
@@ -50,13 +51,14 @@ export default async function NewBlastPage({
   }
 
   const { id } = await params;
+  const brand = getSiteBrand();
 
   return (
     <BlastEditorForm
       action={createBlast}
       backHref={`/admin/campaigns/${id}`}
       campaignId={id}
-      defaultHtml="<h2>Colts update</h2><p>Write your email blast here.</p>"
+      defaultHtml={`<h2>${brand.programName} update</h2><p>Write your email blast here.</p>`}
       heading="New Blast"
       submitLabel="Create Blast"
     />

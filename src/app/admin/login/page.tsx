@@ -41,7 +41,7 @@ export default async function AdminLoginPage({
   const brand = getSiteBrand();
 
   return (
-    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
+    <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
         <Image
           src="/images/stadium.jpg"
@@ -57,22 +57,24 @@ export default async function AdminLoginPage({
           <div className="mb-7 flex items-center gap-3">
             <span
               className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white ${
-                brand.isDemo
+                brand.variant === "demo"
                   ? "border-white/40 bg-white/12"
-                  : "border-red-500/45 bg-red-600"
+                  : brand.variant === "rmrfootball"
+                    ? "border-amber-400/45 bg-amber-700"
+                    : "border-red-500/45 bg-red-600"
               }`}
             >
               {brand.initials}
             </span>
             <div>
-              <p className={`text-[11px] font-black uppercase tracking-[4px] ${brand.isDemo ? "text-gray-300" : "text-red-400"}`}>
+              <p className={`text-[11px] font-black uppercase tracking-[4px] ${brand.variant === "demo" ? "text-gray-300" : brand.variant === "rmrfootball" ? "text-amber-300" : "text-red-400"}`}>
                 {brand.logoEyebrow}
               </p>
               <p className="mt-1 font-black text-white">{brand.logoTitle}</p>
             </div>
           </div>
           <p className="program-kicker">
-            {brand.isDemo ? "Northwest Yetis CRM" : "Colts CRM"}
+            {brand.crmName}
           </p>
           <h1 className="mt-3 text-4xl font-black">Admin Login</h1>
           <p className="mt-4 text-gray-400">

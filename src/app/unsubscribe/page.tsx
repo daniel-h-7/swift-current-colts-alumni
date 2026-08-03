@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logContactActivity } from "@/lib/contact-activity";
+import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { verifyUnsubscribeToken } from "@/lib/unsubscribe";
 
@@ -15,6 +16,7 @@ export default async function UnsubscribePage({
 }: {
   searchParams: Promise<UnsubscribeSearchParams>;
 }) {
+  const brand = getSiteBrand();
   const params = await searchParams;
   const contactId = params.contact ?? "";
   const token = params.token ?? "";
@@ -39,7 +41,7 @@ export default async function UnsubscribePage({
     } else {
       title = "You are unsubscribed";
       message =
-        "Your email opt-in has been turned off. You will no longer receive Colts Football blast emails.";
+        `Your email opt-in has been turned off. You will no longer receive ${brand.programName} blast emails.`;
 
       await logContactActivity({
         body: "Email opt-in was turned off from an unsubscribe link.",
@@ -55,7 +57,7 @@ export default async function UnsubscribePage({
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-black px-6 py-12 text-white">
+    <main className={`flex min-h-screen items-center justify-center bg-black px-6 py-12 text-white ${brand.themeClass}`}>
       <section className="w-full max-w-xl rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
         <p className="text-sm font-black uppercase tracking-[5px] text-red-500">
           Email Preferences

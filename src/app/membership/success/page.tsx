@@ -10,7 +10,7 @@ export default function MembershipSuccessPage() {
   const shareUrl = siteUrl ? `${siteUrl}/join` : undefined;
 
   return (
-    <main className={`min-h-screen bg-black text-white ${brand.isDemo ? "demo-public" : ""}`}>
+    <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative min-h-screen overflow-hidden">
         <Image
           src="/images/stadium.jpg"
@@ -52,9 +52,9 @@ export default function MembershipSuccessPage() {
 
             <SupportShareBar
               shareText={
-                brand.isDemo
+                brand.variant === "demo"
                   ? "Take a look at this Northwest Yetis demo for alumni, booster, sponsor, and membership management."
-                  : undefined
+                  : brand.shareDescription
               }
               shareUrl={shareUrl}
             />

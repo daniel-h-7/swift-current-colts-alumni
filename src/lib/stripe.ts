@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getSiteBrand } from "@/lib/site-brand";
 import { getServerEnvValue } from "@/lib/supabase/server";
 
 type StripeCheckoutSessionInput = {
@@ -122,10 +123,12 @@ export async function createStripeCheckoutSession({
   body.set("success_url", successUrl);
 
   if (additionalGiftAmountCents > 0) {
+    const brand = getSiteBrand();
+
     body.set("line_items[1][price_data][currency]", "cad");
     body.set(
       "line_items[1][price_data][product_data][name]",
-      "Additional one-time gift to Colts Football",
+      `Additional one-time gift to ${brand.programName}`,
     );
     body.set(
       "line_items[1][price_data][unit_amount]",

@@ -8,6 +8,7 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { parseAudienceFilter } from "@/lib/campaign-options";
+import { getSiteBrand } from "@/lib/site-brand";
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
@@ -39,6 +40,7 @@ export function BlastEditorForm({
   heading: string;
   submitLabel: string;
 }) {
+  const brand = getSiteBrand();
   const audience = parseAudienceFilter(defaultAudience);
 
   return (
@@ -249,7 +251,7 @@ export function BlastEditorForm({
                 className={fieldClass}
                 defaultValue={defaultSubject}
                 name="subject"
-                placeholder="Colts Football update"
+                placeholder={`${brand.programName} update`}
                 required
               />
             </label>

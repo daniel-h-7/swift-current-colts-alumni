@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type MembershipSettings = {
@@ -13,18 +14,23 @@ export type MembershipSettings = {
   updated_at?: string;
 };
 
-export const defaultMembershipSettings: MembershipSettings = {
-  id: "default",
-  annual_membership_amount_cents: 10000,
-  membership_year_label: "2026 Colts Football Alumni & Booster Club",
-  renewal_deadline: null,
-  join_is_open: true,
-  join_headline: "Help build the legacy.",
-  join_body:
-    "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
-};
+export function getDefaultMembershipSettings(): MembershipSettings {
+  const brand = getSiteBrand();
+
+  return {
+    id: "default",
+    annual_membership_amount_cents: 10000,
+    membership_year_label: `2026 ${brand.programName} Alumni & Booster Club`,
+    renewal_deadline: null,
+    join_is_open: true,
+    join_headline: "Help build the legacy.",
+    join_body: brand.joinSubtext,
+  };
+}
 
 export async function getMembershipSettings() {
+  const defaultMembershipSettings = getDefaultMembershipSettings();
+
   try {
     const supabase = createServerSupabaseClient();
     const { data, error } = await supabase

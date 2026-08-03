@@ -180,8 +180,88 @@ const demoDefaultSiteContent: SiteContent = {
   ],
 };
 
+const ramsDefaultSiteContent: SiteContent = {
+  events: [
+    {
+      date: "September 12, 2026",
+      linkLabel: "",
+      linkUrl: "",
+      notes: "Bring alumni, families, and boosters together for the first Rams home feature night.",
+      title: "Rams Alumni Night",
+    },
+    {
+      date: "October 3, 2026",
+      linkLabel: "",
+      linkUrl: "",
+      notes: "A community game-day event built around sponsors, families, and future Rams.",
+      title: "Mountain Homecoming",
+    },
+    {
+      date: "November 21, 2026",
+      linkLabel: "",
+      linkUrl: "",
+      notes: "Celebrate the people supporting Rams Football on and off the field.",
+      title: "Rams Legacy Banquet",
+    },
+  ],
+  fundraisingCampaigns: [
+    {
+      buttonLabel: "Support the Project",
+      buttonUrl: "/join",
+      description:
+        "Help build a stronger home base for Rams athletes with updated team room space, storage, and player development resources.",
+      eyebrow: "Current Campaign",
+      goalLabel: "Raised of $100,000",
+      progressPercent: 41,
+      raisedLabel: "$41,200",
+      title: "New Team Rooms",
+    },
+  ],
+  impactStats: [
+    { label: "Student Athletes", value: "132" },
+    { label: "Honour Roll Students", value: "96" },
+    { label: "League Championships", value: "12" },
+  ],
+  sponsors: [
+    { imageUrl: "", linkUrl: "", name: "Mountain View Credit Union" },
+    { imageUrl: "", linkUrl: "", name: "Summit Auto Group" },
+    { imageUrl: "", linkUrl: "", name: "Rocky Ridge Builders" },
+    { imageUrl: "", linkUrl: "", name: "Peak Performance Rehab" },
+    { imageUrl: "", linkUrl: "", name: "High Country Energy" },
+    { imageUrl: "", linkUrl: "", name: "Rams Booster Club" },
+    { imageUrl: "", linkUrl: "", name: "Front Range Insurance" },
+    { imageUrl: "", linkUrl: "", name: "Alpine Equipment" },
+  ],
+  spotlights: [
+    {
+      classYear: "Class of '16",
+      descriptor: "Alumni captain and Rams supporter",
+      imageClass: "object-center",
+      imageUrl: "/images/team-gridiron-elway.svg",
+      name: "Cole Mercer",
+    },
+    {
+      classYear: "Class of '08",
+      descriptor: "Program mentor and annual fund champion",
+      imageClass: "object-center",
+      imageUrl: "/images/team-gridiron-manning.svg",
+      name: "Evan Ridge",
+    },
+  ],
+};
+
 export function getDefaultSiteContent() {
-  return getSiteBrand().isDemo ? demoDefaultSiteContent : coltsDefaultSiteContent;
+  const brand = getSiteBrand();
+
+  if (brand.variant === "demo") {
+    return demoDefaultSiteContent;
+  }
+
+  if (brand.variant === "rmrfootball") {
+    return ramsDefaultSiteContent;
+  }
+
+  return coltsDefaultSiteContent;
 }
 
 function cleanText(value: unknown) {

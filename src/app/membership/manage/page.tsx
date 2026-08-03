@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ManageMembershipForm } from "@/components/manage-membership-form";
+import { getSiteBrand } from "@/lib/site-brand";
 
 export default function ManageMembershipPage() {
+  const brand = getSiteBrand();
+
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
         <Image
           src="/images/stadium.jpg"
@@ -30,7 +33,7 @@ export default function ManageMembershipPage() {
               Manage Your Membership
             </h1>
             <p className="mt-4 text-gray-300">
-              Enter the email used for your Colts Football membership. We will
+              Enter the email used for your {brand.programName} membership. We will
               email a secure Stripe link where you can update your payment
               method or cancel future renewals.
             </p>

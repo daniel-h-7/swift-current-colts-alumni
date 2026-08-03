@@ -13,9 +13,11 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
       <Link className="group flex items-center gap-3" href="/">
         <span
           className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] ${
-            brand.isDemo
+            brand.variant === "demo"
               ? "border-white/40 bg-white/12"
-              : "border-red-500/45 bg-red-600"
+              : brand.variant === "rmrfootball"
+                ? "border-amber-400/45 bg-amber-700"
+                : "border-red-500/45 bg-red-600"
           }`}
         >
           {brand.initials}
@@ -23,7 +25,11 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
         <span className="leading-none">
           <span
             className={`block text-[10px] font-black uppercase tracking-[3px] ${
-              brand.isDemo ? "text-gray-300" : "text-red-400"
+              brand.variant === "demo"
+                ? "text-gray-300"
+                : brand.variant === "rmrfootball"
+                  ? "text-amber-300"
+                  : "text-red-400"
             }`}
           >
             {brand.logoEyebrow}

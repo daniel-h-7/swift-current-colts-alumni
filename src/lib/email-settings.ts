@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type EmailSettings = {
@@ -11,13 +12,17 @@ export type EmailSettings = {
   updated_at?: string;
 };
 
-export const defaultEmailSettings: EmailSettings = {
-  id: "default",
-  email_from_address: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
-  email_from_name: "Colts Alumni",
-  email_reply_to: process.env.RESEND_REPLY_TO_EMAIL ?? "",
-  email_sending_domain: "",
-};
+export function getDefaultEmailSettings(): EmailSettings {
+  const brand = getSiteBrand();
+
+  return {
+    id: "default",
+    email_from_address: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
+    email_from_name: `${brand.programName} Alumni`,
+    email_reply_to: process.env.RESEND_REPLY_TO_EMAIL ?? "",
+    email_sending_domain: "",
+  };
+}
 
 export function formatFromEmail(settings: EmailSettings) {
   const name = settings.email_from_name.trim();
@@ -27,6 +32,8 @@ export function formatFromEmail(settings: EmailSettings) {
 }
 
 export async function getEmailSettings() {
+  const defaultEmailSettings = getDefaultEmailSettings();
+
   try {
     const supabase = createServerSupabaseClient();
     const { data, error } = await supabase

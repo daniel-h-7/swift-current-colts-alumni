@@ -4,20 +4,27 @@ import { logContactActivity } from "@/lib/contact-activity";
 import { Contact } from "@/lib/contact-options";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
+import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createUnsubscribeUrl } from "@/lib/unsubscribe";
 
 const campaignTitle = "New Signups";
 const blastTitle = "Thank You for Your Support";
-const defaultSubject = "Thank you for supporting Colts Football";
-const defaultPreheader =
-  "Your support helps Colts student-athletes on and off the field.";
-const defaultHtml = `
+
+function getDefaultBlastCopy() {
+  const brand = getSiteBrand();
+
+  return {
+    html: `
 <h2 style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:900;color:#0f172a;">Thank you for your support!</h2>
-<p style="margin:0 0 16px;">Thank you for supporting Swift Current Colts Football.</p>
-<p style="margin:0 0 16px;">Your gift helps ensure our student-athletes have the necessary tools to succeed on and off the football field.</p>
-<p style="margin:0;">Stay tuned for future updates and events regarding the Colts program and our supporters.</p>
-`.trim();
+<p style="margin:0 0 16px;">Thank you for supporting ${brand.programName}.</p>
+<p style="margin:0 0 16px;">${brand.joinSubtext}</p>
+<p style="margin:0;">${brand.successProgramLine}</p>
+`.trim(),
+    preheader: `Your support helps ${brand.programName} student-athletes on and off the field.`,
+    subject: `Thank you for supporting ${brand.programName}`,
+  };
+}
 
 type AutomationContext = {
   contactId: string;
@@ -90,6 +97,7 @@ async function getOrCreateCampaign() {
 }
 
 async function getOrCreateBlast(campaignId: string) {
+  const defaultCopy = getDefaultBlastCopy();
   const supabase = createServerSupabaseClient();
   const { data: existing, error: existingError } = await supabase
     .from("campaign_blasts")
@@ -117,10 +125,10 @@ async function getOrCreateBlast(campaignId: string) {
     .insert({
       audience_filter: JSON.stringify({ email_opt_in: true }),
       campaign_id: campaignId,
-      html_content: defaultHtml,
-      preheader: defaultPreheader,
+      html_content: defaultCopy.html,
+      preheader: defaultCopy.preheader,
       status: "Draft",
-      subject: defaultSubject,
+      subject: defaultCopy.subject,
       title: blastTitle,
     })
     .select("id, subject, preheader, html_content")

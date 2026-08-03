@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { logContactActivity } from "@/lib/contact-activity";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
+import { getSiteBrand } from "@/lib/site-brand";
 import { createStripeCustomerPortalSession, isStripeConfigured } from "@/lib/stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createUnsubscribeUrl } from "@/lib/unsubscribe";
@@ -63,18 +64,19 @@ export async function POST(request: Request) {
       returnUrl: `${getOrigin(request)}/membership/manage`,
     });
     const emailSettings = await getEmailSettings();
+    const brand = getSiteBrand();
 
     await sendCampaignTestEmail({
       from: formatFromEmail(emailSettings),
       html: `
-        <h2 style="margin:0 0 14px;font-size:24px;line-height:1.2;font-weight:900;color:#0f172a;">Manage your Colts Football membership</h2>
+        <h2 style="margin:0 0 14px;font-size:24px;line-height:1.2;font-weight:900;color:#0f172a;">Manage your ${brand.programName} membership</h2>
         <p style="margin:0 0 16px;">Use the secure Stripe link below to update your payment method or cancel future annual renewals.</p>
         <p style="margin:0 0 18px;"><a href="${portalSession.url}" style="display:inline-block;background:#1d4ed8;color:#ffffff;padding:12px 16px;text-decoration:none;font-weight:900;">Open Membership Management</a></p>
         <p style="margin:0;color:#4b5563;">If you did not request this link, you can ignore this email.</p>
       `.trim(),
       preheader: "Your secure Stripe membership management link.",
       replyTo: emailSettings.email_reply_to,
-      subject: "Manage your Colts Football membership",
+      subject: `Manage your ${brand.programName} membership`,
       to: contact.email,
       unsubscribeUrl: createUnsubscribeUrl(contact.id),
     });

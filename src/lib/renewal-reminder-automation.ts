@@ -5,20 +5,27 @@ import { Contact } from "@/lib/contact-options";
 import { formatOptionalDate } from "@/lib/contact-format";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
+import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createUnsubscribeUrl } from "@/lib/unsubscribe";
 
 const campaignTitle = "Membership Renewal Reminders";
 const blastTitle = "Annual Membership Renewal Reminder";
-const defaultSubject = "Your Colts Football membership renews soon";
-const defaultPreheader =
-  "Your annual Colts Football support is scheduled to renew in about one month.";
-const defaultHtml = `
+
+function getDefaultBlastCopy() {
+  const brand = getSiteBrand();
+
+  return {
+    html: `
 <h2 style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:900;color:#0f172a;">Your annual membership renews soon</h2>
-<p style="margin:0 0 16px;">Thank you for continuing to support Swift Current Colts Football.</p>
+<p style="margin:0 0 16px;">Thank you for continuing to support ${brand.programName}.</p>
 <p style="margin:0 0 16px;">Your annual membership is scheduled to renew in about one month using the payment method on file with Stripe.</p>
 <p style="margin:0;">Your support helps provide our student-athletes with the tools they need to succeed on and off the football field.</p>
-`.trim();
+`.trim(),
+    preheader: `Your annual ${brand.programName} support is scheduled to renew in about one month.`,
+    subject: `Your ${brand.programName} membership renews soon`,
+  };
+}
 
 type RenewalReminderContact = Pick<
   Contact,
@@ -81,6 +88,7 @@ async function getOrCreateCampaign() {
 }
 
 async function getOrCreateBlast(campaignId: string) {
+  const defaultCopy = getDefaultBlastCopy();
   const supabase = createServerSupabaseClient();
   const { data: existing, error: existingError } = await supabase
     .from("campaign_blasts")
@@ -111,10 +119,10 @@ async function getOrCreateBlast(campaignId: string) {
         membership_status: "Active Member",
       }),
       campaign_id: campaignId,
-      html_content: defaultHtml,
-      preheader: defaultPreheader,
+      html_content: defaultCopy.html,
+      preheader: defaultCopy.preheader,
       status: "Draft",
-      subject: defaultSubject,
+      subject: defaultCopy.subject,
       title: blastTitle,
     })
     .select("id, subject, preheader, html_content")
