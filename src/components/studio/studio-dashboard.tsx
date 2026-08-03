@@ -10,7 +10,9 @@ import {
   getClientIntegrations,
   getFeatureDescription,
   getFeatureLabel,
+  getFeatureManagementLabel,
   getIntegrationStatus,
+  isClientToggleableFeature,
   PlatformClient,
 } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
@@ -24,17 +26,37 @@ const setupItems = [
   "Publish domain",
 ];
 
-function StatusPill({ enabled }: { enabled: boolean }) {
+function FeatureToggle({
+  enabled,
+  lockedLabel,
+  toggleable,
+}: {
+  enabled: boolean;
+  lockedLabel: string;
+  toggleable: boolean;
+}) {
   return (
-    <span
-      className={`inline-flex border px-2.5 py-1 text-xs font-black uppercase tracking-[0.16em] ${
-        enabled
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-          : "border-slate-200 bg-slate-50 text-slate-500"
-      }`}
-    >
-      {enabled ? "On" : "Planned"}
-    </span>
+    <div className="flex flex-col items-end gap-2">
+      <button
+        aria-pressed={enabled}
+        className={`relative h-7 w-12 border transition ${
+          enabled
+            ? "border-emerald-600 bg-emerald-600"
+            : "border-slate-300 bg-slate-200"
+        } ${toggleable ? "" : "cursor-not-allowed opacity-70"}`}
+        disabled={!toggleable}
+        type="button"
+      >
+        <span
+          className={`absolute top-1 h-5 w-5 bg-white shadow-sm transition ${
+            enabled ? "left-6" : "left-1"
+          }`}
+        />
+      </button>
+      <span className="text-[0.62rem] font-black uppercase tracking-[0.14em] text-slate-500">
+        {toggleable ? (enabled ? "On" : "Off") : lockedLabel}
+      </span>
+    </div>
   );
 }
 
@@ -137,8 +159,8 @@ export async function StudioDashboard({
                   Available modules for this site template.
                 </p>
               </div>
-              <span className="border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-700">
-                HQ Managed
+              <span className="border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-emerald-700">
+                Client Setup
               </span>
             </div>
 
@@ -152,7 +174,11 @@ export async function StudioDashboard({
                     <h3 className="font-black">
                       {getFeatureLabel(feature.feature_key)}
                     </h3>
-                    <StatusPill enabled={feature.is_enabled} />
+                    <FeatureToggle
+                      enabled={feature.is_enabled}
+                      lockedLabel={getFeatureManagementLabel(feature.feature_key)}
+                      toggleable={isClientToggleableFeature(feature.feature_key)}
+                    />
                   </div>
                   <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
                     {getFeatureDescription(feature.feature_key)}
@@ -174,7 +200,7 @@ export async function StudioDashboard({
                 className="inline-flex border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
                 href={`/studio/${client.id}/content`}
               >
-                Edit Content
+                Continue to Edit Content
               </Link>
             </div>
 

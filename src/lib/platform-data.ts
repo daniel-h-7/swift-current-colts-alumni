@@ -103,7 +103,7 @@ export async function getPlatformClient(clientId: string) {
 }
 
 const featureLabels: Record<ClientFeatureKey, string> = {
-  broadcasts: "Broadcasts",
+  broadcasts: "Campaigns",
   custom_domain: "Custom Domain",
   events: "Events",
   fundraising_campaigns: "Fundraising Campaigns",
@@ -114,16 +114,35 @@ const featureLabels: Record<ClientFeatureKey, string> = {
 };
 
 const featureDescriptions: Record<ClientFeatureKey, string> = {
-  broadcasts: "Email campaigns and audience segments from the CRM.",
-  custom_domain: "Publishing to the client's own domain.",
+  broadcasts: "Email and SMS campaigns with audience segments from the CRM.",
+  custom_domain: "Publishing to the client's own domain. Planned for a later setup step.",
   events: "Upcoming dates, event links, and homepage calendar highlights.",
   fundraising_campaigns:
     "Campaign pages, target totals, progress, and calls to action.",
   memberships: "Membership signup, renewal status, checkout, and supporter records.",
   sponsors: "Sponsor logos, links, and partner placement on the public site.",
   spotlights: "Alumni profiles, photos, class years, and spotlight copy.",
-  stripe_connect: "Client-owned payment onboarding through Stripe Connect.",
+  stripe_connect: "Payment onboarding through Stripe Connect. HQ manages this for now.",
 };
+
+export function isClientToggleableFeature(featureKey: ClientFeatureKey) {
+  return (
+    featureKey !== "custom_domain" &&
+    featureKey !== "stripe_connect"
+  );
+}
+
+export function getFeatureManagementLabel(featureKey: ClientFeatureKey) {
+  if (featureKey === "custom_domain") {
+    return "Planned";
+  }
+
+  if (featureKey === "stripe_connect") {
+    return "HQ Managed";
+  }
+
+  return "Client Toggle";
+}
 
 export function getFeatureLabel(featureKey: ClientFeatureKey) {
   return featureLabels[featureKey];
