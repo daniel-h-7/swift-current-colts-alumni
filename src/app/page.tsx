@@ -44,7 +44,7 @@ export default async function Home() {
           priority
           className={`object-cover contrast-110 ${
             brand.variant === "rmrfootball"
-              ? "scale-[1.45] object-[52%_42%] opacity-35 saturate-110 md:scale-[1.75] md:object-[48%_40%]"
+              ? "scale-[1.45] object-[52%_42%] opacity-45 saturate-110 md:scale-[1.75] md:object-[48%_40%]"
               : `object-center opacity-95 md:scale-110 md:object-[center_42%] ${
                   brand.isDemo ? "grayscale saturate-0" : "saturate-125"
                 }`

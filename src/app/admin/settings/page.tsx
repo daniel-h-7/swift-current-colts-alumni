@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 type SettingsSearchParams = {
   email_saved?: string;
+  error?: string;
   saved?: string;
 };
 
@@ -58,6 +59,11 @@ export default async function AdminSettingsPage({
             {params.saved === "1" ? (
               <div className="mt-5 border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
                 Settings saved.
+              </div>
+            ) : null}
+            {params.error ? (
+              <div className="mt-5 border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold leading-6 text-red-200">
+                Settings could not be saved: {params.error}
               </div>
             ) : null}
 

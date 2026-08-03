@@ -8,7 +8,6 @@ import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
-import { getStripeMode, isStripeConfigured } from "@/lib/stripe";
 
 const brand = getSiteBrand();
 const shareDescription = brand.shareDescription;
@@ -42,7 +41,6 @@ export const dynamic = "force-dynamic";
 export default async function JoinPage() {
   const brand = getSiteBrand();
   const settings = await getMembershipSettings();
-  const checkoutMode = isStripeConfigured() ? getStripeMode() : "mock";
 
   return (
     <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
@@ -52,12 +50,16 @@ export default async function JoinPage() {
           alt="Football stadium under Friday night lights"
           fill
           priority
-          className="object-cover object-center opacity-50 grayscale"
+          className={`object-cover object-center ${
+            brand.variant === "rmrfootball"
+              ? "opacity-35 saturate-110"
+              : "opacity-50 grayscale"
+          }`}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/65 via-black/75 to-black" />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-gradient-to-b from-black/78 via-black/82 to-black" : "bg-gradient-to-b from-blue-950/65 via-black/75 to-black"}`} />
         <div className="absolute inset-0 premium-grid opacity-25" />
-        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(37,99,235,0.22)_0%,transparent_34%,rgba(220,38,38,0.18)_72%,transparent_100%)]" />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(206,183,76,0.12)_0%,transparent_34%,rgba(206,183,76,0.08)_72%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.22)_0%,transparent_34%,rgba(220,38,38,0.18)_72%,transparent_100%)]"}`} />
 
         <PublicNav compact />
 
@@ -74,18 +76,11 @@ export default async function JoinPage() {
                 <p className="mt-2 text-3xl font-black text-white">
                   {formatMembershipAmount(settings)}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-gray-400">
-                  {checkoutMode === "mock"
-                    ? "This demo captures the CRM record and uses a mock checkout until Stripe keys are configured."
-                    : checkoutMode === "sandbox"
-                      ? "Stripe sandbox checkout is connected for annual membership demos."
-                      : "Secure Stripe checkout is connected for annual memberships."}
-                </p>
                 <p className="mt-3 text-xs leading-5 text-gray-500">
                   Renews each year on the subscription date until opted out.
                 </p>
                 <Link
-                  className="mt-3 inline-flex text-xs font-bold text-blue-300 hover:text-blue-200"
+                  className={`mt-3 inline-flex text-xs font-bold ${brand.variant === "rmrfootball" ? "text-[#CEB74C] hover:text-[#e5d36b]" : "text-blue-300 hover:text-blue-200"}`}
                   href="/membership/manage"
                 >
                   Manage or cancel an existing membership
@@ -96,7 +91,7 @@ export default async function JoinPage() {
                   </p>
                 ) : null}
               </div>
-              <div className="mt-8 h-px w-56 bg-gradient-to-r from-blue-600 via-white to-red-600" />
+              <div className={`mt-8 h-px w-56 ${brand.variant === "rmrfootball" ? "bg-gradient-to-r from-transparent via-[#CEB74C] to-transparent" : "bg-gradient-to-r from-blue-600 via-white to-red-600"}`} />
             </div>
 
             <JoinForm
