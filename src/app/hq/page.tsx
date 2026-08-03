@@ -134,6 +134,7 @@ export default async function HqHomePage() {
       <HqHeader
         actions={[
           { href: "/hq", label: "Clients", tone: "primary" },
+          { href: "/hq/clients/new", label: "New Client" },
           { href: "/hq/logout", label: "Log Out", tone: "danger" },
         ]}
         subtitle="Manage tenant metadata and shared settings across every TeamAlum client."
