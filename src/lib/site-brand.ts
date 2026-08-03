@@ -151,7 +151,7 @@ const bfBadgersBrand: SiteBrand = {
   alumniSectionCopy:
     "A polished home for Badger alumni, families, sponsors, and community supporters to rally around the program.",
   alumniEyebrow: "Badger Legacy",
-  crmName: "BF Badgers CRM",
+  crmName: "Bonners Ferry Badgers CRM",
   ctaLabel: "Support the Badgers Today!",
   footerLocation: "Bonners Ferry, Idaho",
   heroBody:

@@ -33,10 +33,6 @@ type CampaignBlastSummary = {
   updated_at: string;
 };
 
-type CampaignWithBlasts = Campaign & {
-  campaign_blasts?: CampaignBlastSummary[];
-};
-
 const campaignSortColumns = [
   { key: "title", label: "Campaign" },
   { key: "status", label: "Status" },
@@ -153,19 +149,45 @@ function CampaignSortHeader({
 
 async function getCampaigns(filters: CampaignsSearchParams) {
   const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
+  const clientId = getCurrentClientId();
+  const { data: campaigns, error: campaignsError } = await supabase
     .from("campaigns")
-    .select("*, campaign_blasts(id, created_at, sent_at, updated_at)")
-    .eq("client_id", getCurrentClientId());
+    .select("*")
+    .eq("client_id", clientId);
 
-  if (error) {
-    throw new Error(error.message);
+  if (campaignsError) {
+    throw new Error(campaignsError.message);
   }
 
-  const rows = ((data ?? []) as CampaignWithBlasts[]).map((campaign) => {
-    const blasts = Array.isArray(campaign.campaign_blasts)
-      ? campaign.campaign_blasts
-      : [];
+  const campaignIds = (campaigns ?? []).map((campaign) => campaign.id as string);
+  let blastsByCampaign = new Map<string, CampaignBlastSummary[]>();
+
+  if (campaignIds.length) {
+    const { data: blasts, error: blastsError } = await supabase
+      .from("campaign_blasts")
+      .select("campaign_id, created_at, id, sent_at, updated_at")
+      .eq("client_id", clientId)
+      .in("campaign_id", campaignIds);
+
+    if (blastsError) {
+      throw new Error(blastsError.message);
+    }
+
+    blastsByCampaign = (blasts ?? []).reduce((byCampaign, blast) => {
+      const campaignId = blast.campaign_id as string;
+      const existing = byCampaign.get(campaignId) ?? [];
+
+      byCampaign.set(campaignId, [
+        ...existing,
+        blast as CampaignBlastSummary,
+      ]);
+
+      return byCampaign;
+    }, new Map<string, CampaignBlastSummary[]>());
+  }
+
+  const rows = ((campaigns ?? []) as Campaign[]).map((campaign) => {
+    const blasts = blastsByCampaign.get(campaign.id) ?? [];
     const blastDates = blasts
       .map((blast) => blast.updated_at as string | null)
       .filter(Boolean) as string[];
