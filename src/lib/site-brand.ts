@@ -157,30 +157,30 @@ const bfBadgersBrand: SiteBrand = {
   heroBody:
     "Connecting Bonners Ferry football alumni, families, boosters, and sponsors behind the student-athletes carrying Badger pride forward.",
   heroImage: "/images/bf-badgers-hero.jpeg",
-  heroKicker: "BF Badgers Football Alumni & Boosters",
+  heroKicker: "Bonners Ferry Badgers Football Alumni & Boosters",
   heroLineOne: "BUILD BADGER",
   heroLineTwo: "MOMENTUM.",
   heroMarkImage: "/images/bf-badgers-mascot.png",
   initials: "BF",
   isDemo: false,
   joinProgramName: "the Badgers",
-  joinHeadline: "Support BF Badgers Football",
+  joinHeadline: "Support Bonners Ferry Badgers Football",
   joinSubtext:
     "Your gift helps provide Badger student-athletes with the equipment, opportunities, and support they need to succeed on and off the field.",
   logoEyebrow: "BF Badgers",
   logoTitle: "Football",
   metaDescription:
     "The official alumni and booster club home for Bonners Ferry High School Badgers Football.",
-  metaTitle: "BF Badgers Football Alumni & Boosters",
+  metaTitle: "Bonners Ferry Badgers Football Alumni & Boosters",
   navLogoImage: "/images/bf-badgers-mascot.png",
-  programName: "BF Badgers Football",
+  programName: "Bonners Ferry Badgers Football",
   shareDescription:
-    "I invite you to join me in supporting BF Badgers Football. Alumni, families, and boosters can make a lasting impact on our student-athletes.",
+    "I invite you to join me in supporting Bonners Ferry Badgers Football. Alumni, families, and boosters can make a lasting impact on our student-athletes.",
   sponsorCopy:
-    "Thank you to the sponsors and community partners helping BF Badgers Football keep moving forward.",
+    "Thank you to the sponsors and community partners helping Bonners Ferry Badgers Football keep moving forward.",
   sponsorEyebrow: "Community Powered",
   sponsorTitle: "Badger Partners",
-  successHeading: "Thank you for supporting BF Badgers Football!",
+  successHeading: "Thank you for supporting Bonners Ferry Badgers Football!",
   successProgramLine:
     "Stay tuned for future updates and events regarding the Badgers program and our supporters.",
   themeClass: "badgers-public",

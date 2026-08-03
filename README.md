@@ -65,6 +65,8 @@ For one shared multi-client Supabase project:
 2. Point each Vercel site at the same `NEXT_PUBLIC_SUPABASE_URL`, publishable key, and service role key.
 3. Set a different hidden `TEAMALUM_CLIENT_ID` for each Vercel site.
 
+For each new client after the shared project has been migrated, copy `supabase/new-client-setup-template.sql`, replace the placeholder client values, and run it once in the shared Supabase SQL editor.
+
 For a brand-new shared Supabase project, use the clean setup files in this repo:
 
 1. Run `supabase/schema.sql` in the Supabase SQL editor.
