@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --brand-primary-rgb: 220 38 38;
+  --brand-secondary-rgb: 37 99 235;
+  --brand-third-rgb: 255 255 255;
+  --section-rule-gradient: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--brand-secondary-rgb), 0.55),
+    rgba(var(--brand-third-rgb), 0.35),
+    rgba(var(--brand-primary-rgb), 0.55),
+    transparent
+  );
 }
 
 @theme inline {
@@ -37,7 +48,7 @@ body {
 }
 
 .section-rule::before {
-  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.55), rgba(255, 255, 255, 0.35), rgba(220, 38, 38, 0.55), transparent);
+  background: var(--section-rule-gradient);
   content: "";
   height: 1px;
   left: 50%;
@@ -77,6 +88,20 @@ body {
   transform: translateY(-1px);
 }
 
+.demo-public {
+  --brand-primary-rgb: 245 245 245;
+  --brand-secondary-rgb: 113 113 122;
+  --brand-third-rgb: 255 255 255;
+  --section-rule-gradient: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--brand-secondary-rgb), 0.32),
+    rgba(var(--brand-third-rgb), 0.55),
+    rgba(var(--brand-secondary-rgb), 0.32),
+    transparent
+  );
+}
+
 .demo-public .program-kicker,
 .demo-public .text-red-400,
 .demo-public .text-red-500,
@@ -103,6 +128,22 @@ body {
 
 .demo-public .alumni-logo-mask {
   background-color: rgba(255, 255, 255, 0.13);
+}
+
+.rams-public {
+  --brand-primary-rgb: 0 0 0;
+  --brand-secondary-rgb: 206 183 76;
+  --brand-third-rgb: 255 255 255;
+  --section-rule-gradient: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--brand-secondary-rgb), 0.68),
+    rgba(var(--brand-third-rgb), 0.5),
+    rgba(var(--brand-primary-rgb), 0.72),
+    rgba(var(--brand-third-rgb), 0.5),
+    rgba(var(--brand-secondary-rgb), 0.68),
+    transparent
+  );
 }
 
 .rams-public .program-kicker,
