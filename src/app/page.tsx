@@ -42,17 +42,21 @@ export default async function Home() {
           }
           fill
           priority
-          className={`object-cover object-center opacity-95 contrast-110 md:scale-110 md:object-[center_42%] ${
-            brand.isDemo ? "grayscale saturate-0" : "saturate-125"
+          className={`object-cover contrast-110 ${
+            brand.variant === "rmrfootball"
+              ? "scale-[1.45] object-[52%_42%] opacity-35 saturate-110 md:scale-[1.75] md:object-[48%_40%]"
+              : `object-center opacity-95 md:scale-110 md:object-[center_42%] ${
+                  brand.isDemo ? "grayscale saturate-0" : "saturate-125"
+                }`
           }`}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-blue-950/18 to-black/90" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.25)_36%,rgba(0,0,0,0.1)_62%,rgba(0,0,0,0.24)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.04)_62%,rgba(0,0,0,0.14)_100%)]" />
-        <div className={`absolute inset-x-0 top-0 h-40 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_top,rgba(252,211,77,0.34),transparent_68%)]" : "bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-gradient-to-b from-black/70 via-black/72 to-black/96" : "bg-gradient-to-b from-black/20 via-blue-950/18 to-black/90"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.12)_0%,rgba(0,0,0,0.34)_34%,rgba(0,0,0,0.72)_72%,rgba(0,0,0,0.92)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.38)_34%,rgba(0,0,0,0.76)_72%,rgba(0,0,0,0.94)_100%)]" : "bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.25)_36%,rgba(0,0,0,0.1)_62%,rgba(0,0,0,0.24)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.2)_34%,rgba(0,0,0,0.04)_62%,rgba(0,0,0,0.14)_100%)]"}`} />
+        <div className={`absolute inset-x-0 top-0 h-40 ${brand.variant === "rmrfootball" ? "bg-[radial-gradient(ellipse_at_top,rgba(206,183,76,0.24),transparent_68%)]" : "bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.42),transparent_68%)]"}`} />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/80 to-transparent" />
         <div className="absolute inset-0 premium-grid opacity-45" />
-        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(252,211,77,0.18)_0%,transparent_34%,rgba(146,64,14,0.22)_70%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.2)_0%,transparent_34%,rgba(220,38,38,0.18)_70%,transparent_100%)]"}`} />
+        <div className={`absolute inset-0 ${brand.variant === "rmrfootball" ? "bg-[linear-gradient(115deg,rgba(206,183,76,0.14)_0%,transparent_34%,rgba(206,183,76,0.08)_70%,transparent_100%)]" : "bg-[linear-gradient(115deg,rgba(37,99,235,0.2)_0%,transparent_34%,rgba(220,38,38,0.18)_70%,transparent_100%)]"}`} />
 
         {brand.heroMarkImage ? (
           <Image
@@ -121,10 +125,10 @@ export default async function Home() {
         <div className="overflow-hidden border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className={`text-sm font-black uppercase tracking-[5px] ${brand.variant === "rmrfootball" ? "text-amber-100/85" : "text-blue-100/80"}`}>{brand.sponsorEyebrow}</p>
+              <p className={`text-sm font-black uppercase tracking-[5px] ${brand.variant === "rmrfootball" ? "text-[#CEB74C]" : "text-blue-100/80"}`}>{brand.sponsorEyebrow}</p>
               <h2 className="mt-2 text-3xl font-black text-white md:text-4xl">{brand.sponsorTitle}</h2>
             </div>
-            <p className={`max-w-xl text-sm font-semibold leading-6 ${brand.variant === "rmrfootball" ? "text-amber-50/85" : "text-blue-50/85"}`}>
+            <p className={`max-w-xl text-sm font-semibold leading-6 ${brand.variant === "rmrfootball" ? "text-[#f0e6ad]" : "text-blue-50/85"}`}>
               {brand.sponsorCopy}
             </p>
           </div>
@@ -133,7 +137,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {brand.variant !== "colts" && siteContent.fundraisingCampaigns.length ? (
+      {brand.variant === "demo" && siteContent.fundraisingCampaigns.length ? (
         <section className="section-rule relative isolate overflow-hidden px-6 py-16">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_58%)]" />
           <div className="absolute inset-0 premium-grid opacity-20" />

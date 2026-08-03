@@ -13,7 +13,7 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
     >
       <Link className="group flex items-center gap-3" href="/">
         {brand.navLogoImage ? (
-          <span className="relative flex h-11 w-16 items-center justify-center border border-amber-400/30 bg-black/45 px-2 shadow-[0_12px_34px_rgba(0,0,0,0.28)]">
+          <span className="relative flex h-11 w-16 items-center justify-center border border-[#CEB74C]/30 bg-black/45 px-2 shadow-[0_12px_34px_rgba(0,0,0,0.28)]">
             <Image
               src={brand.navLogoImage}
               alt={`${brand.programName} logo`}
@@ -39,7 +39,7 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
               brand.variant === "demo"
                 ? "text-gray-300"
                 : brand.variant === "rmrfootball"
-                  ? "text-amber-300"
+                  ? "text-[#CEB74C]"
                   : "text-red-400"
             }`}
           >
