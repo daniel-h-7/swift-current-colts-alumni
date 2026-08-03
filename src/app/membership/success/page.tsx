@@ -13,7 +13,7 @@ export default function MembershipSuccessPage() {
     <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative min-h-screen overflow-hidden">
         <Image
-          src="/images/stadium.jpg"
+          src={brand.heroImage}
           alt="Football stadium under Friday night lights"
           fill
           priority

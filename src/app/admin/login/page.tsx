@@ -44,7 +44,7 @@ export default async function AdminLoginPage({
     <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
         <Image
-          src="/images/stadium.jpg"
+          src={brand.heroImage}
           alt="Football stadium under Friday night lights"
           fill
           priority
@@ -55,17 +55,27 @@ export default async function AdminLoginPage({
 
         <div className="relative z-10 w-full max-w-md border border-white/10 bg-zinc-950/92 p-8 shadow-[0_28px_90px_rgba(0,0,0,0.44)]">
           <div className="mb-7 flex items-center gap-3">
-            <span
-              className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white ${
-                brand.variant === "demo"
-                  ? "border-white/40 bg-white/12"
-                  : brand.variant === "rmrfootball"
-                    ? "border-amber-400/45 bg-amber-700"
+            {brand.navLogoImage ? (
+              <span className="relative flex h-11 w-16 items-center justify-center border border-amber-400/30 bg-black/45 px-2">
+                <Image
+                  src={brand.navLogoImage}
+                  alt={`${brand.programName} logo`}
+                  fill
+                  sizes="64px"
+                  className="object-contain p-1"
+                />
+              </span>
+            ) : (
+              <span
+                className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white ${
+                  brand.variant === "demo"
+                    ? "border-white/40 bg-white/12"
                     : "border-red-500/45 bg-red-600"
-              }`}
-            >
-              {brand.initials}
-            </span>
+                }`}
+              >
+                {brand.initials}
+              </span>
+            )}
             <div>
               <p className={`text-[11px] font-black uppercase tracking-[4px] ${brand.variant === "demo" ? "text-gray-300" : brand.variant === "rmrfootball" ? "text-amber-300" : "text-red-400"}`}>
                 {brand.logoEyebrow}

@@ -10,7 +10,7 @@ export default function ManageMembershipPage() {
     <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
         <Image
-          src="/images/stadium.jpg"
+          src={brand.heroImage}
           alt="Football stadium under Friday night lights"
           fill
           priority

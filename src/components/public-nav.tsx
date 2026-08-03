@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getSiteBrand } from "@/lib/site-brand";
 
@@ -11,17 +12,27 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
       }`}
     >
       <Link className="group flex items-center gap-3" href="/">
-        <span
-          className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] ${
-            brand.variant === "demo"
-              ? "border-white/40 bg-white/12"
-              : brand.variant === "rmrfootball"
-                ? "border-amber-400/45 bg-amber-700"
+        {brand.navLogoImage ? (
+          <span className="relative flex h-11 w-16 items-center justify-center border border-amber-400/30 bg-black/45 px-2 shadow-[0_12px_34px_rgba(0,0,0,0.28)]">
+            <Image
+              src={brand.navLogoImage}
+              alt={`${brand.programName} logo`}
+              fill
+              sizes="64px"
+              className="object-contain p-1"
+            />
+          </span>
+        ) : (
+          <span
+            className={`flex h-11 w-11 items-center justify-center border text-sm font-black text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] ${
+              brand.variant === "demo"
+                ? "border-white/40 bg-white/12"
                 : "border-red-500/45 bg-red-600"
-          }`}
-        >
-          {brand.initials}
-        </span>
+            }`}
+          >
+            {brand.initials}
+          </span>
+        )}
         <span className="leading-none">
           <span
             className={`block text-[10px] font-black uppercase tracking-[3px] ${
@@ -44,9 +55,11 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
         <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#sponsors">
           Sponsors
         </Link>
-        <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#alumni">
-          Alumni
-        </Link>
+        {brand.variant !== "rmrfootball" ? (
+          <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#alumni">
+            Alumni
+          </Link>
+        ) : null}
         <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#events">
           Events
         </Link>

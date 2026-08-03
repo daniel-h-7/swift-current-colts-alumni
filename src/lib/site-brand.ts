@@ -5,9 +5,11 @@ export type SiteBrand = {
   ctaLabel: string;
   footerLocation: string;
   heroBody: string;
+  heroImage: string;
   heroKicker: string;
   heroLineOne: string;
   heroLineTwo: string;
+  heroMarkImage?: string;
   initials: string;
   isDemo: boolean;
   joinProgramName: string;
@@ -18,6 +20,7 @@ export type SiteBrand = {
   metaDescription: string;
   metaTitle: string;
   programName: string;
+  navLogoImage?: string;
   shareDescription: string;
   sponsorCopy: string;
   sponsorEyebrow: string;
@@ -37,6 +40,7 @@ const coltsBrand: SiteBrand = {
   footerLocation: "Swift Current, Saskatchewan",
   heroBody:
     "Connecting generations of Colts football while supporting the athletes who wear the jersey today.",
+  heroImage: "/images/stadium.jpg",
   heroKicker: "Colts Football Alumni and Booster Club",
   heroLineOne: "THE LEGACY",
   heroLineTwo: "LIVES ON.",
@@ -74,6 +78,7 @@ const demoBrand: SiteBrand = {
   footerLocation: "Fictional Demo Program",
   heroBody:
     "See how one branded site can collect memberships and gifts, spotlight alumni, feature sponsors, manage contacts, and power campaign follow-up.",
+  heroImage: "/images/demo-friday-night-stadium.png",
   heroKicker: "Live Demo: Alumni + Booster Platform",
   heroLineOne: "TURN SUPPORT",
   heroLineTwo: "INTO MOMENTUM.",
@@ -108,12 +113,14 @@ const ramsBrand: SiteBrand = {
   alumniEyebrow: "Rams Legacy",
   crmName: "Rams CRM",
   ctaLabel: "Support the Rams Today!",
-  footerLocation: "Rocky Mountain Region",
+  footerLocation: "Cranbrook, BC",
   heroBody:
     "Connecting Rocky Mountain Rams alumni, families, boosters, and sponsors behind the student-athletes building the next chapter.",
+  heroImage: "/images/rmr-hero-lineup.jpeg",
   heroKicker: "Rocky Mountain Rams Football Alumni and Booster Club",
   heroLineOne: "CLIMB HIGHER.",
   heroLineTwo: "RAMS TOGETHER.",
+  heroMarkImage: "/images/rmr-ramhead.png",
   initials: "RM",
   isDemo: false,
   joinProgramName: "the Rams",
@@ -125,6 +132,7 @@ const ramsBrand: SiteBrand = {
   metaDescription:
     "The official alumni and booster club home for Rocky Mountain Rams Football.",
   metaTitle: "Rocky Mountain Rams Football Alumni and Booster Club",
+  navLogoImage: "/images/rmr-flat-logo-wht.png",
   programName: "Rocky Mountain Rams Football",
   shareDescription:
     "I invite you to join me in supporting Rocky Mountain Rams Football. Alumni, families, and boosters can make a lasting impact on our student-athletes.",

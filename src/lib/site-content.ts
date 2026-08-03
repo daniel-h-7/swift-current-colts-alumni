@@ -223,14 +223,9 @@ const ramsDefaultSiteContent: SiteContent = {
     { label: "League Championships", value: "12" },
   ],
   sponsors: [
-    { imageUrl: "", linkUrl: "", name: "Mountain View Credit Union" },
-    { imageUrl: "", linkUrl: "", name: "Summit Auto Group" },
-    { imageUrl: "", linkUrl: "", name: "Rocky Ridge Builders" },
-    { imageUrl: "", linkUrl: "", name: "Peak Performance Rehab" },
-    { imageUrl: "", linkUrl: "", name: "High Country Energy" },
-    { imageUrl: "", linkUrl: "", name: "Rams Booster Club" },
-    { imageUrl: "", linkUrl: "", name: "Front Range Insurance" },
-    { imageUrl: "", linkUrl: "", name: "Alpine Equipment" },
+    { imageUrl: "", linkUrl: "https://www.eaglehomes.ca/", name: "Eagle Homes" },
+    { imageUrl: "", linkUrl: "https://exacttax.com/", name: "Exact Tax Kimberley" },
+    { imageUrl: "", linkUrl: "https://www.cranbrookflooring.com/", name: "Cranbrook Flooring" },
   ],
   spotlights: [
     {
