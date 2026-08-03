@@ -117,7 +117,7 @@ const ramsBrand: SiteBrand = {
   heroBody:
     "Connecting Rocky Mountain Rams alumni, families, boosters, and sponsors behind the student-athletes building the next chapter.",
   heroImage: "/images/rmr-hero-lineup.jpeg",
-  heroKicker: "Rocky Mountain Rams Football Alumni and Booster Club",
+  heroKicker: "Rocky Mountain Rams Football Alumni & Boosters",
   heroLineOne: "CLIMB HIGHER.",
   heroLineTwo: "RAMS TOGETHER.",
   heroMarkImage: "/images/rmr-ramhead.png",
@@ -131,7 +131,7 @@ const ramsBrand: SiteBrand = {
   logoTitle: "Rams Football",
   metaDescription:
     "The official alumni and booster club home for Rocky Mountain Rams Football.",
-  metaTitle: "Rocky Mountain Rams Football Alumni and Booster Club",
+  metaTitle: "Rocky Mountain Rams Football Alumni & Boosters",
   navLogoImage: "/images/rmr-flat-logo-wht.png",
   programName: "Rocky Mountain Rams Football",
   shareDescription:
