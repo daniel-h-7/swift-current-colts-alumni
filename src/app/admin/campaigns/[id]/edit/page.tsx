@@ -7,6 +7,7 @@ import {
   campaignStatuses,
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type EditCampaignParams = {
@@ -21,6 +22,7 @@ async function getCampaign(id: string) {
   const { data, error } = await supabase
     .from("campaigns")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("id", id)
     .maybeSingle();
 
@@ -49,6 +51,7 @@ async function updateCampaign(formData: FormData) {
       title: String(formData.get("title") ?? "").trim(),
       updated_at: new Date().toISOString(),
     })
+    .eq("client_id", getCurrentClientId())
     .eq("id", campaignId);
 
   if (error) {

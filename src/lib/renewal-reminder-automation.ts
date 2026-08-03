@@ -1,6 +1,7 @@
 import "server-only";
 
 import { logContactActivity } from "@/lib/contact-activity";
+import { getCurrentClientId } from "@/lib/client-context";
 import { Contact } from "@/lib/contact-options";
 import { formatOptionalDate } from "@/lib/contact-format";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
@@ -55,9 +56,11 @@ function getTargetRenewalDate(daysBefore: number) {
 
 async function getOrCreateCampaign() {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: existing, error: existingError } = await supabase
     .from("campaigns")
     .select("id")
+    .eq("client_id", clientId)
     .eq("title", campaignTitle)
     .maybeSingle();
 
@@ -72,6 +75,7 @@ async function getOrCreateCampaign() {
   const { data, error } = await supabase
     .from("campaigns")
     .insert({
+      client_id: clientId,
       description:
         "Automatic reminder sent one month before annual Stripe membership renewal.",
       status: "Active",
@@ -90,9 +94,11 @@ async function getOrCreateCampaign() {
 async function getOrCreateBlast(campaignId: string) {
   const defaultCopy = getDefaultBlastCopy();
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: existing, error: existingError } = await supabase
     .from("campaign_blasts")
     .select("id, subject, preheader, html_content")
+    .eq("client_id", clientId)
     .eq("campaign_id", campaignId)
     .order("updated_at", { ascending: false })
     .limit(1)
@@ -119,6 +125,7 @@ async function getOrCreateBlast(campaignId: string) {
         membership_status: "Active Member",
       }),
       campaign_id: campaignId,
+      client_id: clientId,
       html_content: defaultCopy.html,
       preheader: defaultCopy.preheader,
       status: "Draft",
@@ -157,6 +164,7 @@ async function getContactsForRenewalDate(renewalDate: string) {
     .select(
       "id, first_name, last_name, email, email_opt_in, membership_status, paid_through",
     )
+    .eq("client_id", getCurrentClientId())
     .eq("membership_status", "Active Member")
     .eq("email_opt_in", true)
     .eq("paid_through", renewalDate);
@@ -181,6 +189,7 @@ async function hasAlreadySent({
   const { data, error } = await supabase
     .from("campaign_blast_events")
     .select("id")
+    .eq("client_id", getCurrentClientId())
     .eq("blast_id", blastId)
     .eq("event_type", "renewal_reminder_email_sent")
     .contains("metadata", {
@@ -208,11 +217,16 @@ async function recordBlastEvent({
   metadata: Record<string, unknown>;
 }) {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { error } = await supabase.from("campaign_blast_events").insert({
     blast_id: blastId,
+    client_id: clientId,
     email: email ?? null,
     event_type: eventType,
-    metadata,
+    metadata: {
+      ...metadata,
+      client_id: clientId,
+    },
   });
 
   if (error) {

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { logContactActivity } from "@/lib/contact-activity";
+import { getCurrentClientId } from "@/lib/client-context";
 import { Contact } from "@/lib/contact-options";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
@@ -33,11 +34,13 @@ type AutomationContext = {
 
 async function getContact(contactId: string) {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data, error } = await supabase
     .from("contacts")
     .select(
       "id, first_name, last_name, email, phone, email_opt_in, sms_opt_in, graduation_year, relationship_type, sport, notes, created_at",
     )
+    .eq("client_id", clientId)
     .eq("id", contactId)
     .maybeSingle();
 
@@ -64,9 +67,11 @@ async function getContact(contactId: string) {
 
 async function getOrCreateCampaign() {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: existing, error: existingError } = await supabase
     .from("campaigns")
     .select("id")
+    .eq("client_id", clientId)
     .eq("title", campaignTitle)
     .maybeSingle();
 
@@ -81,6 +86,7 @@ async function getOrCreateCampaign() {
   const { data, error } = await supabase
     .from("campaigns")
     .insert({
+      client_id: clientId,
       description:
         "Automatic thank-you message sent when a new supporter completes signup.",
       status: "Active",
@@ -99,9 +105,11 @@ async function getOrCreateCampaign() {
 async function getOrCreateBlast(campaignId: string) {
   const defaultCopy = getDefaultBlastCopy();
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: existing, error: existingError } = await supabase
     .from("campaign_blasts")
     .select("id, subject, preheader, html_content")
+    .eq("client_id", clientId)
     .eq("campaign_id", campaignId)
     .order("updated_at", { ascending: false })
     .limit(1)
@@ -125,6 +133,7 @@ async function getOrCreateBlast(campaignId: string) {
     .insert({
       audience_filter: JSON.stringify({ email_opt_in: true }),
       campaign_id: campaignId,
+      client_id: clientId,
       html_content: defaultCopy.html,
       preheader: defaultCopy.preheader,
       status: "Draft",
@@ -161,6 +170,7 @@ async function hasAlreadySent(blastId: string, contactId: string, eventType: str
   const { data, error } = await supabase
     .from("campaign_blast_events")
     .select("id")
+    .eq("client_id", getCurrentClientId())
     .eq("blast_id", blastId)
     .eq("event_type", eventType)
     .contains("metadata", { contact_id: contactId })
@@ -185,11 +195,16 @@ async function recordBlastEvent({
   metadata: Record<string, unknown>;
 }) {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { error } = await supabase.from("campaign_blast_events").insert({
     blast_id: blastId,
+    client_id: clientId,
     email: email ?? null,
     event_type: eventType,
-    metadata,
+    metadata: {
+      ...metadata,
+      client_id: clientId,
+    },
   });
 
   if (error) {

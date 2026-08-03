@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getCurrentClientId } from "@/lib/client-context";
 import { getSiteBrand } from "@/lib/site-brand";
 import { getServerEnvValue } from "@/lib/supabase/server";
 
@@ -103,6 +104,7 @@ export async function createStripeCheckoutSession({
   }
 
   const brand = getSiteBrand();
+  const clientId = getCurrentClientId();
   const connectedAccountId = getStripeConnectedAccountId();
   const applicationFeePercent = getStripeApplicationFeePercent();
   const body = new URLSearchParams();
@@ -121,12 +123,14 @@ export async function createStripeCheckoutSession({
     "metadata[additional_gift_amount_cents]",
     String(additionalGiftAmountCents),
   );
+  body.set("metadata[client_id]", clientId);
   body.set("metadata[contact_id]", contactId);
   body.set("metadata[membership_amount_cents]", String(membershipAmountCents));
   body.set("metadata[membership_label]", membershipLabel);
   body.set("metadata[program]", brand.programName);
   body.set("metadata[site_variant]", brand.variant);
   body.set("mode", "subscription");
+  body.set("subscription_data[metadata][client_id]", clientId);
   body.set("subscription_data[metadata][contact_id]", contactId);
   body.set(
     "subscription_data[metadata][membership_amount_cents]",

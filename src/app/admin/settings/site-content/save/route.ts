@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { normalizeSiteContent } from "@/lib/site-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -19,9 +20,12 @@ export async function POST(request: Request) {
   const siteContent = normalizeSiteContent(parsedContent);
   const supabase = createServerSupabaseClient();
   const { error } = await supabase.from("crm_settings").upsert({
+    client_id: getCurrentClientId(),
     id: "default",
     site_content: siteContent,
     updated_at: new Date().toISOString(),
+  }, {
+    onConflict: "client_id,id",
   });
 
   if (error) {

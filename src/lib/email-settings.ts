@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getCurrentClientId } from "@/lib/client-context";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -41,6 +42,7 @@ export async function getEmailSettings() {
       .select(
         "id, email_from_address, email_from_name, email_reply_to, email_sending_domain, updated_at",
       )
+      .eq("client_id", getCurrentClientId())
       .eq("id", "default")
       .maybeSingle();
 

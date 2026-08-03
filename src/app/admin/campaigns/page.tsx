@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Campaign } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateCampaignWithBlasts } from "@/lib/campaign-duplication";
+import { getCurrentClientId } from "@/lib/client-context";
 import { formatDate } from "@/lib/contact-format";
 import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
 import { ensureRenewalReminderCampaign } from "@/lib/renewal-reminder-automation";
@@ -154,7 +155,8 @@ async function getCampaigns(filters: CampaignsSearchParams) {
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
     .from("campaigns")
-    .select("*, campaign_blasts(id, created_at, sent_at, updated_at)");
+    .select("*, campaign_blasts(id, created_at, sent_at, updated_at)")
+    .eq("client_id", getCurrentClientId());
 
   if (error) {
     throw new Error(error.message);
@@ -219,6 +221,7 @@ async function deleteCampaign(formData: FormData) {
   const { error } = await supabase
     .from("campaigns")
     .delete()
+    .eq("client_id", getCurrentClientId())
     .eq("id", campaignId);
 
   if (error) {

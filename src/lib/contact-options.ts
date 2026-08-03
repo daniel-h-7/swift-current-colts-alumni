@@ -36,6 +36,7 @@ export type MembershipStatus = (typeof membershipStatuses)[number];
 
 export type Contact = {
   id: string;
+  client_id?: string;
   first_name: string;
   last_name: string;
   email: string;

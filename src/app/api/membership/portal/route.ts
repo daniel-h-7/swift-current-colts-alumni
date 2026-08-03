@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
@@ -48,6 +49,7 @@ export async function POST(request: Request) {
     const { data: contact, error } = await supabase
       .from("contacts")
       .select("id, email, first_name, stripe_customer_id")
+      .eq("client_id", getCurrentClientId())
       .eq("email", email)
       .maybeSingle();
 

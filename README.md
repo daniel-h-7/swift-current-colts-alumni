@@ -35,6 +35,7 @@ UNSUBSCRIBE_SECRET=choose-a-long-random-unsubscribe-secret
 CRON_SECRET=choose-a-long-random-cron-secret
 NEXT_PUBLIC_SITE_URL=https://your-live-domain.com
 NEXT_PUBLIC_SITE_VARIANT=
+TEAMALUM_CLIENT_ID=
 DEMO_USE_DATABASE_SITE_CONTENT=
 DEMO_PASSWORD=choose-a-demo-viewer-password
 DEMO_SESSION_SECRET=choose-a-long-random-demo-session-secret
@@ -50,13 +51,21 @@ Set `NEXT_PUBLIC_SITE_URL` to the live site URL so Stripe redirects and email un
 
 Set `NEXT_PUBLIC_SITE_VARIANT=demo` on a separate Vercel project to turn on the fictional Northwest Yetis demo branding. Use `NEXT_PUBLIC_SITE_VARIANT=rmrfootball` for Rocky Mountain Rams Football. Leave it blank for the Colts/default site.
 
+For one shared Supabase project across multiple client sites, set `TEAMALUM_CLIENT_ID` in each Vercel project. This is a hidden server-side database lane, not something clients see in the UI. Current values are `colts`, `demo`, `rmrfootball`, and `bfbadgers`. If it is blank, the app uses `NEXT_PUBLIC_SITE_VARIANT`, or `colts` when the variant is blank.
+
 Demo mode uses built-in generic Northwest Yetis homepage content by default so it will not accidentally display Colts data. Set `DEMO_USE_DATABASE_SITE_CONTENT=true` only if you want the demo project's Site Content admin screen to control the demo homepage.
 
 `CRON_SECRET` protects scheduled automation routes such as `/api/cron/renewal-reminders`. Configure a daily Vercel Cron job to call that route with `Authorization: Bearer <CRON_SECRET>`.
 
 ## Supabase SQL table setup
 
-For new client or demo projects, use the clean setup files in this repo:
+For one shared multi-client Supabase project:
+
+1. Run `supabase/multi-tenant-migration.sql` once on the shared Supabase project if it already has tables.
+2. Point each Vercel site at the same `NEXT_PUBLIC_SUPABASE_URL`, publishable key, and service role key.
+3. Set a different hidden `TEAMALUM_CLIENT_ID` for each Vercel site.
+
+For a brand-new shared Supabase project, use the clean setup files in this repo:
 
 1. Run `supabase/schema.sql` in the Supabase SQL editor.
 2. Optionally run `supabase/demo-seed.sql` after that to add fake demo contacts, campaigns, blast activity, and payment activity.

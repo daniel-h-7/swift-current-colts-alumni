@@ -9,6 +9,7 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -120,7 +121,8 @@ async function getCount(
   const supabase = createServerSupabaseClient();
   let query = supabase
     .from("contacts")
-    .select("id", { count: "exact", head: true });
+    .select("id", { count: "exact", head: true })
+    .eq("client_id", getCurrentClientId());
 
   if (column && operator) {
     if (operator === "is") {
@@ -184,7 +186,8 @@ async function getContacts(filters: SearchParams) {
   const supabase = createServerSupabaseClient();
   let query = supabase
     .from("contacts")
-    .select("*");
+    .select("*")
+    .eq("client_id", getCurrentClientId());
 
   if (searchTerm) {
     query = query.or(
@@ -270,11 +273,13 @@ async function bulkContactAction(formData: FormData) {
   }
 
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
 
   if (bulkAction === "delete") {
     const { error } = await supabase
       .from("contacts")
       .delete()
+      .eq("client_id", clientId)
       .in("id", contactIds);
 
     if (error) {
@@ -292,6 +297,7 @@ async function bulkContactAction(formData: FormData) {
     const { error } = await supabase
       .from("contacts")
       .update({ status })
+      .eq("client_id", clientId)
       .in("id", contactIds);
 
     if (error) {
@@ -309,6 +315,7 @@ async function bulkContactAction(formData: FormData) {
     const { error } = await supabase
       .from("contacts")
       .update({ membership_status: membershipStatus })
+      .eq("client_id", clientId)
       .in("id", contactIds);
 
     if (error) {

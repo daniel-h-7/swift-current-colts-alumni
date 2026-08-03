@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const fieldClass =
@@ -17,6 +18,7 @@ async function createCampaign(formData: FormData) {
   const { data, error } = await supabase
     .from("campaigns")
     .insert({
+      client_id: getCurrentClientId(),
       description: String(formData.get("description") ?? "").trim() || null,
       status: "Draft",
       title: String(formData.get("title") ?? "").trim(),

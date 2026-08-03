@@ -9,6 +9,7 @@ import {
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateBlast } from "@/lib/campaign-duplication";
+import { getCurrentClientId } from "@/lib/client-context";
 import {
   getAudienceContacts,
   getAudiencePreview,
@@ -32,6 +33,7 @@ async function getBlast(blastId: string) {
   const { data, error } = await supabase
     .from("campaign_blasts")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("id", blastId)
     .maybeSingle();
 
@@ -47,6 +49,7 @@ async function getBlastEvents(blastId: string) {
   const { data, error } = await supabase
     .from("campaign_blast_events")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("blast_id", blastId)
     .order("created_at", { ascending: false })
     .limit(10);
@@ -68,6 +71,7 @@ async function updateBlast(formData: FormData) {
   const campaignId = String(formData.get("campaign_id") ?? "");
   const blastId = String(formData.get("blast_id") ?? "");
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { error } = await supabase
     .from("campaign_blasts")
     .update({
@@ -78,6 +82,7 @@ async function updateBlast(formData: FormData) {
       title: String(formData.get("title") ?? "").trim(),
       updated_at: new Date().toISOString(),
     })
+    .eq("client_id", clientId)
     .eq("id", blastId);
 
   if (error) {
@@ -99,10 +104,12 @@ async function recordTestSend(formData: FormData) {
   const blastId = String(formData.get("blast_id") ?? "");
   const email = String(formData.get("test_email") ?? "").trim().toLowerCase();
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const emailProviderMode = getEmailProviderMode();
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
     .select("html_content, preheader, subject")
+    .eq("client_id", clientId)
     .eq("id", blastId)
     .maybeSingle();
 
@@ -135,6 +142,7 @@ async function recordTestSend(formData: FormData) {
   if (result) {
     const { error } = await supabase.from("campaign_blast_events").insert({
       blast_id: blastId,
+      client_id: clientId,
       email,
       event_type: "test_send_sent",
       metadata: {
@@ -157,6 +165,7 @@ async function recordTestSend(formData: FormData) {
 
     await supabase.from("campaign_blast_events").insert({
       blast_id: blastId,
+      client_id: clientId,
       email,
       event_type: "test_send_failed",
       metadata: {
@@ -190,9 +199,11 @@ async function sendBlast(formData: FormData) {
   const campaignId = String(formData.get("campaign_id") ?? "");
   const blastId = String(formData.get("blast_id") ?? "");
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
     .select("audience_filter, html_content, preheader, status, subject")
+    .eq("client_id", clientId)
     .eq("id", blastId)
     .maybeSingle();
 
@@ -260,6 +271,7 @@ async function sendBlast(formData: FormData) {
     if ("error" in result) {
       await supabase.from("campaign_blast_events").insert({
         blast_id: blastId,
+        client_id: clientId,
         email: contact.email,
         event_type: "blast_send_failed",
         metadata: {
@@ -276,6 +288,7 @@ async function sendBlast(formData: FormData) {
     sentCount += 1;
     await supabase.from("campaign_blast_events").insert({
       blast_id: blastId,
+      client_id: clientId,
       email: contact.email,
       event_type: "blast_send_sent",
       metadata: {
@@ -307,6 +320,7 @@ async function sendBlast(formData: FormData) {
       status: "Sent" satisfies BlastStatus,
       updated_at: now,
     })
+    .eq("client_id", clientId)
     .eq("id", blastId);
 
   if (updateError) {
@@ -376,7 +390,7 @@ export default async function EditBlastPage({
   const query = await searchParams;
   const blast = await getBlast(blastId);
 
-  if (!blast) {
+  if (!blast || blast.campaign_id !== id) {
     notFound();
   }
 

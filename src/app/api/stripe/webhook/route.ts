@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentClientId, isCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { formatCurrencyFromCents } from "@/lib/contact-format";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
@@ -61,9 +62,14 @@ function isStripeSubscription(value: unknown): value is StripeSubscription {
 
 async function activateMembership(session: StripeCheckoutSessionCompleted) {
   const contactId = session.metadata?.contact_id || session.client_reference_id;
+  const clientId = getCurrentClientId();
 
   if (!contactId) {
     throw new Error("Stripe session is missing contact metadata.");
+  }
+
+  if (session.metadata?.client_id && !isCurrentClientId(session.metadata.client_id)) {
+    throw new Error("Stripe session client did not match this deployment.");
   }
 
   const now = new Date().toISOString();
@@ -79,6 +85,7 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
   const { data: contact } = await supabase
     .from("contacts")
     .select("gift_donation_amount_cents")
+    .eq("client_id", clientId)
     .eq("id", contactId)
     .maybeSingle();
   const contactUpdates = {
@@ -97,6 +104,7 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
   const { error } = await supabase
     .from("contacts")
     .update(contactUpdates)
+    .eq("client_id", clientId)
     .eq("id", contactId);
 
   if (error) {
@@ -156,10 +164,12 @@ async function renewMembership(invoice: StripeInvoicePaid) {
     return;
   }
 
+  const clientId = getCurrentClientId();
   const supabase = createServerSupabaseClient();
   const { data: contact, error: contactError } = await supabase
     .from("contacts")
     .select("id, paid_through")
+    .eq("client_id", clientId)
     .eq("stripe_customer_id", invoice.customer)
     .maybeSingle();
 
@@ -174,6 +184,7 @@ async function renewMembership(invoice: StripeInvoicePaid) {
   const { data: existingRenewal, error: existingRenewalError } = await supabase
     .from("contact_activities")
     .select("id")
+    .eq("client_id", clientId)
     .eq("contact_id", contact.id)
     .eq("activity_type", "membership_subscription_renewed")
     .contains("metadata", { stripe_invoice_id: invoice.id })
@@ -198,6 +209,7 @@ async function renewMembership(invoice: StripeInvoicePaid) {
       membership_status: "Active Member",
       paid_through: paidThrough,
     })
+    .eq("client_id", clientId)
     .eq("id", contact.id);
 
   if (error) {
@@ -234,10 +246,12 @@ async function recordSubscriptionUpdated(subscription: StripeSubscription) {
     return;
   }
 
+  const clientId = getCurrentClientId();
   const supabase = createServerSupabaseClient();
   const { data: contact, error: contactError } = await supabase
     .from("contacts")
     .select("id")
+    .eq("client_id", clientId)
     .eq("stripe_customer_id", subscription.customer)
     .maybeSingle();
 
@@ -272,10 +286,12 @@ async function cancelMembership(subscription: StripeSubscription) {
     return;
   }
 
+  const clientId = getCurrentClientId();
   const supabase = createServerSupabaseClient();
   const { data: contact, error: contactError } = await supabase
     .from("contacts")
     .select("id")
+    .eq("client_id", clientId)
     .eq("stripe_customer_id", subscription.customer)
     .maybeSingle();
 
@@ -292,6 +308,7 @@ async function cancelMembership(subscription: StripeSubscription) {
     .update({
       membership_status: "Expired",
     })
+    .eq("client_id", clientId)
     .eq("id", contact.id);
 
   if (error) {

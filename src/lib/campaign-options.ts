@@ -6,6 +6,7 @@ export type BlastStatus = (typeof blastStatuses)[number];
 
 export type Campaign = {
   id: string;
+  client_id?: string;
   title: string;
   description: string | null;
   status: CampaignStatus;
@@ -15,6 +16,7 @@ export type Campaign = {
 
 export type Blast = {
   id: string;
+  client_id?: string;
   campaign_id: string;
   title: string;
   subject: string;
@@ -32,6 +34,7 @@ export type Blast = {
 
 export type BlastEvent = {
   id: string;
+  client_id?: string;
   blast_id: string;
   event_type: string;
   email: string | null;

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { formatCurrencyFromCents } from "@/lib/contact-format";
 import { getMembershipSettings } from "@/lib/membership-settings";
@@ -29,9 +30,11 @@ export async function POST(request: Request) {
   const now = new Date().toISOString();
   const paidThrough = getPaidThroughDate();
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: contact } = await supabase
     .from("contacts")
     .select("gift_donation_amount_cents")
+    .eq("client_id", clientId)
     .eq("id", contactId)
     .maybeSingle();
   const { error } = await supabase
@@ -45,6 +48,7 @@ export async function POST(request: Request) {
       paid_through: paidThrough,
       stripe_checkout_session_id: "mock_checkout_session",
     })
+    .eq("client_id", clientId)
     .eq("id", contactId);
 
   if (!error) {

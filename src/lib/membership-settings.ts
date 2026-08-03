@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getCurrentClientId } from "@/lib/client-context";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -41,6 +42,7 @@ export async function getMembershipSettings() {
     const { data, error } = await supabase
       .from("crm_settings")
       .select("*")
+      .eq("client_id", getCurrentClientId())
       .eq("id", "default")
       .maybeSingle();
 

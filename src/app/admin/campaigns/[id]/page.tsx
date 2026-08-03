@@ -10,6 +10,7 @@ import {
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateBlast } from "@/lib/campaign-duplication";
+import { getCurrentClientId } from "@/lib/client-context";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin-header";
@@ -151,6 +152,7 @@ async function getCampaign(id: string) {
   const { data, error } = await supabase
     .from("campaigns")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("id", id)
     .maybeSingle();
 
@@ -166,6 +168,7 @@ async function getBlasts(campaignId: string) {
   const { data, error } = await supabase
     .from("campaign_blasts")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("campaign_id", campaignId)
     .order("updated_at", { ascending: false });
 
@@ -203,6 +206,7 @@ async function deleteBlastAction(formData: FormData) {
   const { error } = await supabase
     .from("campaign_blasts")
     .delete()
+    .eq("client_id", getCurrentClientId())
     .eq("id", blastId)
     .eq("campaign_id", campaignId);
 

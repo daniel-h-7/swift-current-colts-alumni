@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Contact } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import {
   getContactStatus,
   getContactTags,
@@ -73,7 +74,10 @@ function applyFilters(filters: ExportFilters) {
   const searchTerm = filters.q?.trim().replaceAll(",", " ");
   const ascending = filters.sort_dir === "asc";
   const supabase = createServerSupabaseClient();
-  let query = supabase.from("contacts").select("*");
+  let query = supabase
+    .from("contacts")
+    .select("*")
+    .eq("client_id", getCurrentClientId());
 
   if (searchTerm) {
     query = query.or(

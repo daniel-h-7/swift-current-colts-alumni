@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentClientId } from "@/lib/client-context";
 import { isValidContact } from "@/lib/contact-validation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -16,9 +17,16 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServerSupabaseClient();
+    const clientId = getCurrentClientId();
     const { error } = await supabase
       .from("contacts")
-      .upsert(contact, { onConflict: "email" });
+      .upsert(
+        {
+          ...contact,
+          client_id: clientId,
+        },
+        { onConflict: "client_id,email" },
+      );
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

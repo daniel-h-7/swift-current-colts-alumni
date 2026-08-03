@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getCurrentClientId } from "@/lib/client-context";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -505,6 +506,7 @@ export async function getSiteContent() {
     const { data, error } = await supabase
       .from("crm_settings")
       .select("site_content")
+      .eq("client_id", getCurrentClientId())
       .eq("id", "default")
       .maybeSingle();
 

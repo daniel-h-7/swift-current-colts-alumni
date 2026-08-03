@@ -6,6 +6,7 @@ import {
   relationshipTypes,
   sports,
 } from "@/lib/contact-options";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type CsvRow = Record<string, string>;
@@ -179,6 +180,7 @@ function normalizeRow(row: CsvRow, index: number, optInMode: string) {
 export async function importContactsFromCsv(csvText: string, optInMode: string) {
   const rows = parseCsv(csvText);
   const contactsByEmail = new Map<string, ReturnType<typeof normalizeRow>>();
+  const clientId = getCurrentClientId();
 
   rows.forEach((row, index) => {
     const contact = normalizeRow(row, index, optInMode);
@@ -190,7 +192,13 @@ export async function importContactsFromCsv(csvText: string, optInMode: string) 
   const supabase = createServerSupabaseClient();
   const { error } = await supabase
     .from("contacts")
-    .upsert(contacts, { onConflict: "email" });
+    .upsert(
+      contacts.map((contact) => ({
+        ...contact,
+        client_id: clientId,
+      })),
+      { onConflict: "client_id,email" },
+    );
 
   if (error) {
     throw new Error(error.message);

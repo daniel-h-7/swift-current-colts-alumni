@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { serializeAudienceFilter } from "@/lib/campaign-options";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
 import { getSiteBrand } from "@/lib/site-brand";
@@ -19,11 +20,13 @@ async function createBlast(formData: FormData) {
 
   const campaignId = String(formData.get("campaign_id") ?? "");
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data, error } = await supabase
     .from("campaign_blasts")
     .insert({
       audience_filter: serializeAudienceFilter(formData),
       campaign_id: campaignId,
+      client_id: clientId,
       html_content: String(formData.get("html_content") ?? "").trim(),
       preheader: String(formData.get("preheader") ?? "").trim() || null,
       status: "Draft",

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { ContactInsert } from "@/lib/contact-options";
 import { isValidContact } from "@/lib/contact-validation";
@@ -53,15 +54,17 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServerSupabaseClient();
+    const clientId = getCurrentClientId();
     const { data, error } = await supabase
       .from("contacts")
       .upsert(
         {
           ...contact,
           annual_dues_amount_cents: settings.annual_membership_amount_cents,
+          client_id: clientId,
           membership_status: "Pending Payment",
         },
-        { onConflict: "email" },
+        { onConflict: "client_id,email" },
       )
       .select("id")
       .single();
@@ -107,6 +110,7 @@ export async function POST(request: Request) {
         .update({
           stripe_checkout_session_id: checkoutSession.id,
         })
+        .eq("client_id", clientId)
         .eq("id", data.id);
 
       return NextResponse.json({

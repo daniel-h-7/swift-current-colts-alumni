@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -27,9 +28,11 @@ export default async function UnsubscribePage({
 
   if (isValid) {
     const supabase = createServerSupabaseClient();
+    const clientId = getCurrentClientId();
     const { data, error } = await supabase
       .from("contacts")
       .update({ email_opt_in: false })
+      .eq("client_id", clientId)
       .eq("id", contactId)
       .select("id, email, first_name, last_name")
       .maybeSingle();

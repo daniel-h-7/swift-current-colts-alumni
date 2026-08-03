@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getCurrentClientId } from "@/lib/client-context";
 import { getServerEnvValue } from "@/lib/supabase/server";
 
 function getUnsubscribeSecret() {
@@ -23,7 +24,7 @@ function signUnsubscribeToken(contactId: string) {
   }
 
   return createHmac("sha256", secret)
-    .update(`unsubscribe:${contactId}`)
+    .update(`unsubscribe:${getCurrentClientId()}:${contactId}`)
     .digest("hex");
 }
 

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function copyTitle(title: string) {
@@ -8,9 +9,11 @@ function copyTitle(title: string) {
 
 export async function duplicateCampaignWithBlasts(campaignId: string) {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: campaign, error: campaignError } = await supabase
     .from("campaigns")
     .select("description, title")
+    .eq("client_id", clientId)
     .eq("id", campaignId)
     .maybeSingle();
 
@@ -26,6 +29,7 @@ export async function duplicateCampaignWithBlasts(campaignId: string) {
   const { data: newCampaign, error: newCampaignError } = await supabase
     .from("campaigns")
     .insert({
+      client_id: clientId,
       description: campaign.description,
       status: "Draft",
       title: copyTitle(campaign.title),
@@ -41,6 +45,7 @@ export async function duplicateCampaignWithBlasts(campaignId: string) {
   const { data: blasts, error: blastsError } = await supabase
     .from("campaign_blasts")
     .select("audience_filter, html_content, preheader, subject, title")
+    .eq("client_id", clientId)
     .eq("campaign_id", campaignId)
     .order("created_at", { ascending: true });
 
@@ -55,6 +60,7 @@ export async function duplicateCampaignWithBlasts(campaignId: string) {
         blasts.map((blast) => ({
           audience_filter: blast.audience_filter,
           campaign_id: newCampaign.id,
+          client_id: clientId,
           click_count: 0,
           html_content: blast.html_content,
           open_count: 0,
@@ -78,11 +84,13 @@ export async function duplicateCampaignWithBlasts(campaignId: string) {
 
 export async function duplicateBlast(blastId: string) {
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
     .select(
       "audience_filter, campaign_id, html_content, preheader, subject, title",
     )
+    .eq("client_id", clientId)
     .eq("id", blastId)
     .maybeSingle();
 
@@ -100,6 +108,7 @@ export async function duplicateBlast(blastId: string) {
     .insert({
       audience_filter: blast.audience_filter,
       campaign_id: blast.campaign_id,
+      client_id: clientId,
       click_count: 0,
       html_content: blast.html_content,
       open_count: 0,

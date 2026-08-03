@@ -2,6 +2,7 @@ import "server-only";
 
 import { Contact } from "@/lib/contact-options";
 import { BlastAudienceFilter, parseAudienceFilter } from "@/lib/campaign-options";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function getTodayDate() {
@@ -13,6 +14,7 @@ function applyAudienceFilter(filter: BlastAudienceFilter) {
   let query = supabase
     .from("contacts")
     .select("*", { count: "exact" })
+    .eq("client_id", getCurrentClientId())
     .order("last_name", { ascending: true })
     .order("first_name", { ascending: true });
 

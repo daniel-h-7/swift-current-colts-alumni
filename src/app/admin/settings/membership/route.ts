@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function redirectTo(request: Request, path: string) {
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
     const supabase = createServerSupabaseClient();
     const { error } = await supabase.from("crm_settings").upsert({
       annual_membership_amount_cents: Math.round(parsedAmount * 100),
+      client_id: getCurrentClientId(),
       id: "default",
       join_body: String(formData.get("join_body") ?? "").trim(),
       join_headline: String(formData.get("join_headline") ?? "").trim(),
@@ -37,6 +39,8 @@ export async function POST(request: Request) {
       renewal_deadline:
         String(formData.get("renewal_deadline") ?? "").trim() || null,
       updated_at: new Date().toISOString(),
+    }, {
+      onConflict: "client_id,id",
     });
 
     if (error) {

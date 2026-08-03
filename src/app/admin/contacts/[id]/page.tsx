@@ -11,6 +11,7 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import {
@@ -40,6 +41,10 @@ const fieldClass =
   "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
 
 function getActionErrorMessage(error: unknown) {
+  if (typeof error === "string") {
+    return error;
+  }
+
   if (error instanceof Error) {
     return error.message;
   }
@@ -69,6 +74,7 @@ async function getContact(id: string) {
   const { data, error } = await supabase
     .from("contacts")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("id", id)
     .maybeSingle();
 
@@ -84,6 +90,7 @@ async function getContactActivities(contactId: string) {
   const { data, error } = await supabase
     .from("contact_activities")
     .select("*")
+    .eq("client_id", getCurrentClientId())
     .eq("contact_id", contactId)
     .order("created_at", { ascending: false })
     .limit(25);
@@ -148,9 +155,22 @@ async function updateContact(formData: FormData) {
   };
 
   const supabase = createServerSupabaseClient();
+  const clientId = getCurrentClientId();
+  const { data: existingContact, error: existingContactError } = await supabase
+    .from("contacts")
+    .select("id")
+    .eq("client_id", clientId)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (existingContactError || !existingContact) {
+    redirect(getErrorRedirect(id, "Contact was not found for this client."));
+  }
+
   const { error } = await supabase
     .from("contacts")
     .update(updates)
+    .eq("client_id", clientId)
     .eq("id", id);
 
   if (error) {

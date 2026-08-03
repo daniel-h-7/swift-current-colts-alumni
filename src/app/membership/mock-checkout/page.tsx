@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getCurrentClientId } from "@/lib/client-context";
 import { formatCurrencyFromCents } from "@/lib/contact-format";
 import { getMembershipSettings } from "@/lib/membership-settings";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -17,6 +18,7 @@ async function getContact(contactId: string) {
   const { data, error } = await supabase
     .from("contacts")
     .select("id, first_name, last_name, email")
+    .eq("client_id", getCurrentClientId())
     .eq("id", contactId)
     .maybeSingle();
 

@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getCurrentClientId } from "@/lib/client-context";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function redirectTo(request: Request, path: string) {
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const supabase = createServerSupabaseClient();
     const { error } = await supabase.from("crm_settings").upsert({
+      client_id: getCurrentClientId(),
       email_from_address: String(formData.get("email_from_address") ?? "")
         .trim()
         .toLowerCase(),
@@ -37,6 +39,8 @@ export async function POST(request: Request) {
         .toLowerCase(),
       id: "default",
       updated_at: new Date().toISOString(),
+    }, {
+      onConflict: "client_id,id",
     });
 
     if (error) {

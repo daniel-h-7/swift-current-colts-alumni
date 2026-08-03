@@ -160,7 +160,7 @@ const bfBadgersBrand: SiteBrand = {
   heroKicker: "BF Badgers Football Alumni & Boosters",
   heroLineOne: "BUILD BADGER",
   heroLineTwo: "MOMENTUM.",
-  heroMarkImage: "/images/bf-badgers-logo.svg",
+  heroMarkImage: "/images/bf-badgers-mascot.png",
   initials: "BF",
   isDemo: false,
   joinProgramName: "the Badgers",
@@ -172,7 +172,7 @@ const bfBadgersBrand: SiteBrand = {
   metaDescription:
     "The official alumni and booster club home for Bonners Ferry High School Badgers Football.",
   metaTitle: "BF Badgers Football Alumni & Boosters",
-  navLogoImage: "/images/bf-badgers-logo.svg",
+  navLogoImage: "/images/bf-badgers-mascot.png",
   programName: "BF Badgers Football",
   shareDescription:
     "I invite you to join me in supporting BF Badgers Football. Alumni, families, and boosters can make a lasting impact on our student-athletes.",
