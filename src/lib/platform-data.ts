@@ -2,6 +2,18 @@ import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+export type PlatformClient = {
+  custom_domain?: string | null;
+  id: string;
+  name: string;
+  plan_key?: string | null;
+  primary_domain?: string | null;
+  published_at?: string | null;
+  site_variant: string;
+  status?: string | null;
+  subdomain?: string | null;
+};
+
 export type ClientFeatureKey =
   | "memberships"
   | "sponsors"
@@ -51,6 +63,44 @@ export const defaultClientIntegrations: ClientIntegration[] = [
   { integration_key: "resend", status: "not_connected" },
   { integration_key: "custom_domain", status: "not_connected" },
 ];
+
+export async function getPlatformClient(clientId: string) {
+  try {
+    const supabase = createServerSupabaseClient();
+    let clientData: PlatformClient | null = null;
+    let queryError: { message: string } | null = null;
+
+    const expandedResult = await supabase
+      .from("clients")
+      .select(
+        "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at",
+      )
+      .eq("id", clientId)
+      .maybeSingle();
+
+    clientData = expandedResult.data as PlatformClient | null;
+    queryError = expandedResult.error;
+
+    if (queryError && queryError.message.includes("schema cache")) {
+      const fallback = await supabase
+        .from("clients")
+        .select("id, name, site_variant, primary_domain")
+        .eq("id", clientId)
+        .maybeSingle();
+
+      clientData = fallback.data as PlatformClient | null;
+      queryError = fallback.error;
+    }
+
+    if (queryError || !clientData) {
+      return null;
+    }
+
+    return clientData;
+  } catch {
+    return null;
+  }
+}
 
 const featureLabels: Record<ClientFeatureKey, string> = {
   broadcasts: "Broadcasts",

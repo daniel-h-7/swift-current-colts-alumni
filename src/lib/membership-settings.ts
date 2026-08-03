@@ -35,6 +35,10 @@ export function getDefaultMembershipSettings(): MembershipSettings {
 }
 
 export async function getMembershipSettings() {
+  return getMembershipSettingsForClient(getCurrentClientId());
+}
+
+export async function getMembershipSettingsForClient(clientId: string) {
   const defaultMembershipSettings = getDefaultMembershipSettings();
 
   try {
@@ -42,7 +46,7 @@ export async function getMembershipSettings() {
     const { data, error } = await supabase
       .from("crm_settings")
       .select("*")
-      .eq("client_id", getCurrentClientId())
+      .eq("client_id", clientId)
       .eq("id", "default")
       .maybeSingle();
 

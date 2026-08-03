@@ -33,6 +33,10 @@ export function formatFromEmail(settings: EmailSettings) {
 }
 
 export async function getEmailSettings() {
+  return getEmailSettingsForClient(getCurrentClientId());
+}
+
+export async function getEmailSettingsForClient(clientId: string) {
   const defaultEmailSettings = getDefaultEmailSettings();
 
   try {
@@ -42,7 +46,7 @@ export async function getEmailSettings() {
       .select(
         "id, email_from_address, email_from_name, email_reply_to, email_sending_domain, updated_at",
       )
-      .eq("client_id", getCurrentClientId())
+      .eq("client_id", clientId)
       .eq("id", "default")
       .maybeSingle();
 

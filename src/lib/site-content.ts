@@ -491,6 +491,10 @@ export function normalizeSiteContent(value: unknown): SiteContent {
 }
 
 export async function getSiteContent() {
+  return getSiteContentForClient(getCurrentClientId());
+}
+
+export async function getSiteContentForClient(clientId: string) {
   const brand = getSiteBrand();
   const defaultSiteContent = getDefaultSiteContent();
 
@@ -506,7 +510,7 @@ export async function getSiteContent() {
     const { data, error } = await supabase
       .from("crm_settings")
       .select("site_content")
-      .eq("client_id", getCurrentClientId())
+      .eq("client_id", clientId)
       .eq("id", "default")
       .maybeSingle();
 

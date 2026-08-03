@@ -48,7 +48,10 @@ export async function POST(request: Request) {
     revalidatePath("/hq");
     revalidatePath("/studio");
 
-    return redirectTo(request, `/studio?created=${encodeURIComponent(clientId)}`);
+    return redirectTo(
+      request,
+      `/studio/${encodeURIComponent(clientId)}?created=1`,
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unable to create your site.";
