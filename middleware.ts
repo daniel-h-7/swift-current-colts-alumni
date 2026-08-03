@@ -6,6 +6,8 @@ function isBypassedPath(pathname: string) {
   return (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/admin") ||
+    pathname.startsWith("/hq") ||
+    pathname.startsWith("/studio") ||
     pathname.startsWith("/api/stripe/webhook") ||
     pathname.startsWith("/demo") ||
     pathname.startsWith("/images") ||

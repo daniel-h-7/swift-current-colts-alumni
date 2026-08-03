@@ -1,4 +1,26 @@
-This is the Next.js home for Swift Current Colts Football Alumni and Booster Club.
+This is the Next.js home for TeamAlum client sites and the TeamAlum platform app.
+
+## Product streams
+
+This repo can now run in two modes:
+
+- `TEAMALUM_APP_MODE=platform`: the root route `/` becomes the TeamAlum platform front door for `teamalum.com`. HQ lives at `/hq`; the client builder lives at `/studio`.
+- `TEAMALUM_APP_MODE=client` or blank: the root route `/` remains a published client/team site, using `TEAMALUM_CLIENT_ID` and `NEXT_PUBLIC_SITE_VARIANT`.
+
+Recommended Vercel setup:
+
+1. Create a new Vercel project for `teamalum.com`.
+2. Use this same GitHub repo.
+3. Set `TEAMALUM_APP_MODE=platform`.
+4. Add `teamalum.com` and `www.teamalum.com` to that Vercel project.
+5. Keep existing client/demo Vercel projects in client mode.
+
+Recommended domain shape:
+
+- `teamalum.com`: platform marketing, signup, login, HQ, and Studio.
+- `teamalum.com/hq`: internal TeamAlum operator console.
+- `teamalum.com/studio`: client-facing site builder.
+- Client subdomains or custom domains: published team sites, powered by tenant data.
 
 ## CRM milestone
 
@@ -31,9 +53,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-key
 SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
 ADMIN_PASSWORD=choose-a-strong-admin-password
 ADMIN_SESSION_SECRET=choose-a-long-random-session-secret
+TEAMALUM_HQ_PASSWORD=choose-a-strong-hq-password
+TEAMALUM_HQ_SESSION_SECRET=choose-a-long-random-hq-session-secret
 UNSUBSCRIBE_SECRET=choose-a-long-random-unsubscribe-secret
 CRON_SECRET=choose-a-long-random-cron-secret
 NEXT_PUBLIC_SITE_URL=https://your-live-domain.com
+TEAMALUM_APP_MODE=client
 NEXT_PUBLIC_SITE_VARIANT=
 TEAMALUM_CLIENT_ID=
 DEMO_USE_DATABASE_SITE_CONTENT=
@@ -48,6 +73,10 @@ Use the Supabase publishable key for `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Use the Su
 Set `DEMO_PASSWORD` only when the public site should be password-protected for demos. When it is set, public pages redirect to `/demo`; `/admin` still uses the separate `ADMIN_PASSWORD`. Remove `DEMO_PASSWORD` or leave it blank to make the public site open again.
 
 Set `NEXT_PUBLIC_SITE_URL` to the live site URL so Stripe redirects and email unsubscribe links point at the correct domain. `UNSUBSCRIBE_SECRET` signs unsubscribe links; if it is not set, the app falls back to `ADMIN_SESSION_SECRET`.
+
+Set `TEAMALUM_APP_MODE=platform` only on the TeamAlum.com Vercel project. Leave it blank or set it to `client` for published client sites.
+
+Set `TEAMALUM_HQ_PASSWORD` and `TEAMALUM_HQ_SESSION_SECRET` on the platform project to protect `/hq`. If those are missing, `/hq` falls back to the older admin password/session secret for local convenience.
 
 Set `NEXT_PUBLIC_SITE_VARIANT=demo` on a separate Vercel project to turn on the fictional Northwest Yetis demo branding. Use `NEXT_PUBLIC_SITE_VARIANT=rmrfootball` for Rocky Mountain Rams Football. Leave it blank for the Colts/default site.
 

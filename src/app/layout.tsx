@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { isPlatformApp } from "@/lib/app-mode";
 import { getSiteBrand } from "@/lib/site-brand";
 import "./globals.css";
 
@@ -16,8 +17,10 @@ const geistMono = Geist_Mono({
 const brand = getSiteBrand();
 
 export const metadata: Metadata = {
-  title: brand.metaTitle,
-  description: brand.metaDescription,
+  title: isPlatformApp() ? "TeamAlum" : brand.metaTitle,
+  description: isPlatformApp()
+    ? "Build alumni, booster, sponsor, and membership sites for sports programs."
+    : brand.metaDescription,
 };
 
 export default function RootLayout({
