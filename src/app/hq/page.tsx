@@ -7,10 +7,15 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type ClientRow = {
+  custom_domain?: string | null;
   id: string;
   name: string;
+  plan_key?: string | null;
   primary_domain: string | null;
+  published_at?: string | null;
   site_variant: string;
+  status?: string | null;
+  subdomain?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -34,16 +39,35 @@ function formatDate(value: string | null) {
 
 async function getClientSummaries() {
   const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
+
+  let clientsData: ClientRow[] | null = null;
+  let queryError: { message: string } | null = null;
+
+  const expandedResult = await supabase
     .from("clients")
-    .select("id, name, site_variant, primary_domain, created_at, updated_at")
+    .select(
+      "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, published_at",
+    )
     .order("name", { ascending: true });
 
-  if (error) {
-    throw new Error(error.message);
+  clientsData = expandedResult.data as ClientRow[] | null;
+  queryError = expandedResult.error;
+
+  if (queryError && queryError.message.includes("schema cache")) {
+    const fallback = await supabase
+      .from("clients")
+      .select("id, name, site_variant, primary_domain, created_at, updated_at")
+      .order("name", { ascending: true });
+
+    clientsData = fallback.data as ClientRow[] | null;
+    queryError = fallback.error;
   }
 
-  const clients = (data ?? []) as ClientRow[];
+  if (queryError) {
+    throw new Error(queryError.message);
+  }
+
+  const clients = clientsData ?? [];
 
   return Promise.all(
     clients.map(async (client) => {
@@ -102,6 +126,8 @@ export default async function HqHomePage() {
   );
   const configuredDomains = clients.filter((client) => client.primary_domain)
     .length;
+  const publishedClients = clients.filter((client) => client.published_at)
+    .length;
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -121,7 +147,7 @@ export default async function HqHomePage() {
           </div>
         ) : null}
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           <div className="border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
               Clients
@@ -140,6 +166,12 @@ export default async function HqHomePage() {
             </p>
             <p className="mt-2 text-3xl font-black">{configuredDomains}</p>
           </div>
+          <div className="border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
+              Published
+            </p>
+            <p className="mt-2 text-3xl font-black">{publishedClients}</p>
+          </div>
         </div>
 
         <div className="mt-8 overflow-hidden border border-slate-200 bg-white shadow-sm">
@@ -153,6 +185,8 @@ export default async function HqHomePage() {
                 <tr>
                   <th className="px-5 py-3">Client</th>
                   <th className="px-5 py-3">Variant</th>
+                  <th className="px-5 py-3">Plan</th>
+                  <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3">Domain</th>
                   <th className="px-5 py-3">Contacts</th>
                   <th className="px-5 py-3">Campaigns</th>
@@ -173,7 +207,17 @@ export default async function HqHomePage() {
                       {client.site_variant}
                     </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">
-                      {client.primary_domain || "Not set"}
+                      {client.plan_key ?? "starter"}
+                    </td>
+                    <td className="px-5 py-4 font-semibold text-slate-700">
+                      {client.status ?? "active"}
+                    </td>
+                    <td className="px-5 py-4 font-semibold text-slate-700">
+                      {client.custom_domain ||
+                        client.primary_domain ||
+                        (client.subdomain
+                          ? `${client.subdomain}.teamalum.com`
+                          : "Not set")}
                     </td>
                     <td className="px-5 py-4 font-black">
                       {client.contactCount}

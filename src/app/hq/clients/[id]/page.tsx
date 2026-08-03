@@ -1,6 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import { HqHeader } from "@/components/hq-header";
 import { isHqAuthenticated } from "@/lib/hq-auth";
+import {
+  getClientFeatures,
+  getClientIntegrations,
+  getFeatureLabel,
+  getIntegrationStatus,
+} from "@/lib/platform-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -15,10 +21,16 @@ type PageSearchParams = {
 };
 
 type ClientRow = {
+  custom_domain?: string | null;
   id: string;
   name: string;
+  plan_key?: string | null;
   primary_domain: string | null;
+  published_at?: string | null;
   site_variant: string;
+  status?: string | null;
+  subdomain?: string | null;
+  support_notes?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -50,11 +62,19 @@ function formatDate(value: string | null) {
 
 async function getClientDetail(clientId: string) {
   const supabase = createServerSupabaseClient();
-  const [clientResult, settingsResult, contactsResult, campaignsResult] =
-    await Promise.all([
+  const [
+    clientResult,
+    settingsResult,
+    contactsResult,
+    campaignsResult,
+    features,
+    integrations,
+  ] = await Promise.all([
       supabase
         .from("clients")
-        .select("id, name, site_variant, primary_domain, created_at, updated_at")
+        .select(
+          "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, support_notes, published_at",
+        )
         .eq("id", clientId)
         .maybeSingle(),
       supabase
@@ -73,6 +93,8 @@ async function getClientDetail(clientId: string) {
         .from("campaigns")
         .select("id", { count: "exact", head: true })
         .eq("client_id", clientId),
+      getClientFeatures(clientId),
+      getClientIntegrations(clientId),
     ]);
 
   if (clientResult.error) {
@@ -91,6 +113,8 @@ async function getClientDetail(clientId: string) {
     campaignCount: campaignsResult.count ?? 0,
     client: clientResult.data as ClientRow,
     contactCount: contactsResult.count ?? 0,
+    features,
+    integrations,
     settings: settingsResult.data as SettingsRow | null,
   };
 }
@@ -107,9 +131,11 @@ export default async function HqClientPage({
   }
 
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const { client, settings, contactCount, campaignCount } =
+  const { client, settings, contactCount, campaignCount, features, integrations } =
     await getClientDetail(id);
   const membershipAmount = ((settings?.annual_membership_amount_cents ?? 10000) / 100).toFixed(2);
+  const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
+  const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -150,18 +176,18 @@ export default async function HqClientPage({
           </div>
           <div className="border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
-              Client Updated
+              Plan
             </p>
             <p className="mt-2 text-sm font-black leading-6">
-              {formatDate(client.updated_at)}
+              {client.plan_key ?? "starter"}
             </p>
           </div>
           <div className="border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
-              Settings Updated
+              Status
             </p>
             <p className="mt-2 text-sm font-black leading-6">
-              {formatDate(settings?.updated_at ?? null)}
+              {client.status ?? "active"}
             </p>
           </div>
         </div>
@@ -208,6 +234,57 @@ export default async function HqClientPage({
                     name="primary_domain"
                     placeholder="club.teamalum.com"
                     defaultValue={client.primary_domain ?? ""}
+                  />
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Subdomain
+                  <input
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="subdomain"
+                    placeholder="club"
+                    defaultValue={client.subdomain ?? ""}
+                  />
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Custom Domain
+                  <input
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="custom_domain"
+                    placeholder="clubfootball.com"
+                    defaultValue={client.custom_domain ?? ""}
+                  />
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Plan
+                  <select
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="plan_key"
+                    defaultValue={client.plan_key ?? "starter"}
+                  >
+                    <option value="starter">Starter</option>
+                    <option value="growth">Growth</option>
+                    <option value="pro">Pro</option>
+                  </select>
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Client Status
+                  <select
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="status"
+                    defaultValue={client.status ?? "active"}
+                  >
+                    <option value="trial">Trial</option>
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </label>
+                <label className="text-sm font-bold text-slate-700 md:col-span-2">
+                  Support Notes
+                  <textarea
+                    className="mt-2 min-h-24 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="support_notes"
+                    defaultValue={client.support_notes ?? ""}
                   />
                 </label>
               </div>
@@ -283,6 +360,56 @@ export default async function HqClientPage({
           </div>
 
           <aside className="space-y-6">
+            <section className="border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-lg font-black">Platform Status</h2>
+              <div className="mt-5 grid gap-3">
+                <div className="border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                    Stripe Connect
+                  </p>
+                  <p className="mt-2 text-sm font-black text-slate-800">
+                    {stripeStatus.replaceAll("_", " ")}
+                  </p>
+                </div>
+                <div className="border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                    Custom Domain
+                  </p>
+                  <p className="mt-2 text-sm font-black text-slate-800">
+                    {customDomainStatus.replaceAll("_", " ")}
+                  </p>
+                </div>
+                <div className="border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                    Published
+                  </p>
+                  <p className="mt-2 text-sm font-black text-slate-800">
+                    {formatDate(client.published_at ?? null)}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-lg font-black">Feature Access</h2>
+              <div className="mt-5 space-y-3">
+                {features.map((feature) => (
+                  <label
+                    className="flex items-center justify-between gap-3 border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700"
+                    key={feature.feature_key}
+                  >
+                    <span>{getFeatureLabel(feature.feature_key)}</span>
+                    <input
+                      className="h-5 w-5 accent-blue-700"
+                      defaultChecked={feature.is_enabled}
+                      name={`feature:${feature.feature_key}`}
+                      type="checkbox"
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Email Settings</h2>
               <div className="mt-5 space-y-5">

@@ -6,43 +6,17 @@ import {
   formatMembershipAmount,
   getMembershipSettings,
 } from "@/lib/membership-settings";
+import {
+  getClientFeatures,
+  getClientIntegrations,
+  getFeatureDescription,
+  getFeatureLabel,
+  getIntegrationStatus,
+} from "@/lib/platform-data";
 import { getSiteBrand } from "@/lib/site-brand";
 import { getSiteContent } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
-
-const featureGroups = [
-  {
-    description: "Membership signup, renewal status, checkout, and supporter records.",
-    enabled: true,
-    label: "Memberships",
-  },
-  {
-    description: "Sponsor logos, links, and partner placement on the public site.",
-    enabled: true,
-    label: "Sponsors",
-  },
-  {
-    description: "Upcoming dates, event links, and homepage calendar highlights.",
-    enabled: true,
-    label: "Events",
-  },
-  {
-    description: "Alumni profiles, photos, class years, and spotlight copy.",
-    enabled: true,
-    label: "Spotlights",
-  },
-  {
-    description: "Campaign pages, target totals, progress, and calls to action.",
-    enabled: false,
-    label: "Fundraising Campaigns",
-  },
-  {
-    description: "Email campaigns and audience segments from the CRM.",
-    enabled: false,
-    label: "Broadcasts",
-  },
-];
 
 const setupItems = [
   "Create organization",
@@ -68,13 +42,21 @@ function StatusPill({ enabled }: { enabled: boolean }) {
 }
 
 export default async function StudioPage() {
-  const [settings, emailSettings, siteContent] = await Promise.all([
+  const currentClientId = getCurrentClientId();
+  const [settings, emailSettings, siteContent, features, integrations] =
+    await Promise.all([
     getMembershipSettings(),
     getEmailSettings(),
     getSiteContent(),
+    getClientFeatures(currentClientId),
+    getClientIntegrations(currentClientId),
   ]);
   const brand = getSiteBrand();
-  const completedSetup = 3;
+  const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
+  const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
+  const completedSetup =
+    3 + (stripeStatus === "connected" ? 1 : 0) +
+    (customDomainStatus === "connected" ? 1 : 0);
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -115,7 +97,7 @@ export default async function StudioPage() {
                   Client
                 </p>
                 <p className="mt-2 font-mono text-sm font-bold">
-                  {getCurrentClientId()}
+                  {currentClientId}
                 </p>
               </div>
               <div className="border border-slate-200 bg-slate-50 p-4">
@@ -149,17 +131,19 @@ export default async function StudioPage() {
             </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {featureGroups.map((feature) => (
+              {features.map((feature) => (
                 <div
                   className="border border-slate-200 bg-slate-50 p-4"
-                  key={feature.label}
+                  key={feature.feature_key}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-black">{feature.label}</h3>
-                    <StatusPill enabled={feature.enabled} />
+                    <h3 className="font-black">
+                      {getFeatureLabel(feature.feature_key)}
+                    </h3>
+                    <StatusPill enabled={feature.is_enabled} />
                   </div>
                   <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                    {feature.description}
+                    {getFeatureDescription(feature.feature_key)}
                   </p>
                 </div>
               ))}
@@ -269,8 +253,28 @@ export default async function StudioPage() {
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                   Stripe Connect
                 </p>
-                <p className="mt-2 text-sm font-bold text-amber-700">
-                  Not connected
+                <p
+                  className={`mt-2 text-sm font-bold ${
+                    stripeStatus === "connected"
+                      ? "text-emerald-700"
+                      : "text-amber-700"
+                  }`}
+                >
+                  {stripeStatus.replaceAll("_", " ")}
+                </p>
+              </div>
+              <div className="border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  Domain
+                </p>
+                <p
+                  className={`mt-2 text-sm font-bold ${
+                    customDomainStatus === "connected"
+                      ? "text-emerald-700"
+                      : "text-amber-700"
+                  }`}
+                >
+                  {customDomainStatus.replaceAll("_", " ")}
                 </p>
               </div>
             </div>

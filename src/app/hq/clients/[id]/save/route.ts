@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isHqAuthenticated } from "@/lib/hq-auth";
+import { defaultClientFeatures } from "@/lib/platform-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type RouteParams = {
@@ -15,6 +16,15 @@ function cleanNullable(value: FormDataEntryValue | null) {
   const cleaned = String(value ?? "").trim();
 
   return cleaned || null;
+}
+
+function isMissingPlatformColumn(message: string) {
+  return (
+    message.includes("schema cache") ||
+    message.includes("Could not find") ||
+    message.includes("column") ||
+    message.includes("client_features")
+  );
 }
 
 export async function POST(
@@ -86,6 +96,28 @@ export async function POST(
       );
     }
 
+    const { error: platformClientError } = await supabase
+      .from("clients")
+      .update({
+        custom_domain: cleanNullable(formData.get("custom_domain")),
+        plan_key: String(formData.get("plan_key") ?? "starter").trim(),
+        status: String(formData.get("status") ?? "active").trim(),
+        subdomain: cleanNullable(formData.get("subdomain")),
+        support_notes: cleanNullable(formData.get("support_notes")),
+        updated_at: updatedAt,
+      })
+      .eq("id", id);
+
+    if (
+      platformClientError &&
+      !isMissingPlatformColumn(platformClientError.message)
+    ) {
+      return redirectTo(
+        request,
+        `${clientPath}?error=${encodeURIComponent(platformClientError.message)}`,
+      );
+    }
+
     const { error: settingsError } = await supabase.from("crm_settings").upsert(
       {
         annual_membership_amount_cents: Math.round(parsedAmount * 100),
@@ -115,6 +147,25 @@ export async function POST(
       return redirectTo(
         request,
         `${clientPath}?error=${encodeURIComponent(settingsError.message)}`,
+      );
+    }
+
+    const featureRows = defaultClientFeatures.map((feature) => ({
+      client_id: id,
+      feature_key: feature.feature_key,
+      is_enabled: formData.get(`feature:${feature.feature_key}`) === "on",
+      updated_at: updatedAt,
+    }));
+    const { error: featuresError } = await supabase
+      .from("client_features")
+      .upsert(featureRows, {
+        onConflict: "client_id,feature_key",
+      });
+
+    if (featuresError && !isMissingPlatformColumn(featuresError.message)) {
+      return redirectTo(
+        request,
+        `${clientPath}?error=${encodeURIComponent(featuresError.message)}`,
       );
     }
 
