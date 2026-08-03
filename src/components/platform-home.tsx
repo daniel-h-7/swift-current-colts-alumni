@@ -91,7 +91,7 @@ export function PlatformHome() {
             </Link>
             <Link
               className="border border-white/15 bg-white/10 px-4 py-2 text-white transition hover:bg-white/15"
-              href="/studio"
+              href="/studio/start"
             >
               Start Building
             </Link>
@@ -116,9 +116,9 @@ export function PlatformHome() {
             <div className="mt-9 flex flex-wrap gap-3">
               <Link
                 className="border border-emerald-400/50 bg-emerald-600 px-6 py-4 text-sm font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-500"
-                href="/studio"
+                href="/studio/start"
               >
-                Open Studio
+                Start a Site
               </Link>
               <Link
                 className="border border-white/15 bg-white/10 px-6 py-4 text-sm font-black uppercase tracking-[0.2em] text-white transition hover:bg-white/15"

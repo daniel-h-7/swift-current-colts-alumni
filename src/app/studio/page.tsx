@@ -63,6 +63,7 @@ export default async function StudioPage() {
       <StudioHeader
         actions={[
           { href: "/studio", label: "Builder", tone: "primary" },
+          { href: "/studio/start", label: "Start Site" },
           { href: "/admin/settings/site-content", label: "Content" },
           { href: "/hq", label: "HQ" },
         ]}
