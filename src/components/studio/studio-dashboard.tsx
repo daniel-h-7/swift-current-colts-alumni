@@ -80,9 +80,7 @@ export async function StudioDashboard({
   const completedSetup =
     3 + (stripeStatus === "connected" ? 1 : 0) +
     (customDomainStatus === "connected" ? 1 : 0);
-  const previewHref = client.subdomain
-    ? `https://${client.subdomain}.teamalum.com`
-    : "/";
+  const previewHref = `/preview/${encodeURIComponent(client.id)}`;
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
