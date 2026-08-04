@@ -7,12 +7,12 @@ import {
   getFeatureLabel,
   getFeatureManagementLabel,
   isClientToggleableFeature,
-} from "@/lib/platform-data";
+} from "@/lib/platform-shared";
 import {
   getSectionLabel,
   SiteSection,
   SiteSectionKey,
-} from "@/lib/site-sections";
+} from "@/lib/site-sections-shared";
 
 function Toggle({
   checked,
