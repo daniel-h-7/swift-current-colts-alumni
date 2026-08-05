@@ -30,7 +30,7 @@ export default async function StudioLoginPage({
 
       <section className="mx-auto grid max-w-5xl gap-6 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <form
-          action="/studio/login"
+          action="/studio/login/submit"
           className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm"
           method="post"
         >
