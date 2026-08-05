@@ -10,6 +10,7 @@ import {
   SiteSectionKey,
 } from "@/lib/site-sections";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { canAccessStudioClient } from "@/lib/studio-auth";
 
 type RouteParams = {
   clientId: string;
@@ -34,6 +35,13 @@ export async function POST(
   const { clientId } = await params;
 
   try {
+    if (!(await canAccessStudioClient(clientId))) {
+      return redirectTo(
+        request,
+        "/studio/login?error=Log%20in%20to%20manage%20your%20site.",
+      );
+    }
+
     const formData = await request.formData();
     const supabase = createServerSupabaseClient();
     const now = new Date().toISOString();

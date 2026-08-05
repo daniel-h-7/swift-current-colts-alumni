@@ -15,12 +15,33 @@ const geistMono = Geist_Mono({
 });
 
 const brand = getSiteBrand();
+const title = isPlatformApp() ? "TeamAlum" : brand.metaTitle;
+const description = isPlatformApp()
+  ? "Alumni CRM, mailer, and passive fundraising tools for sports programs."
+  : brand.metaDescription;
 
 export const metadata: Metadata = {
-  title: isPlatformApp() ? "TeamAlum" : brand.metaTitle,
-  description: isPlatformApp()
-    ? "Build alumni, booster, sponsor, and membership sites for sports programs."
-    : brand.metaDescription,
+  description,
+  openGraph: {
+    description,
+    images: [
+      {
+        alt: title,
+        height: 630,
+        url: "/opengraph-image",
+        width: 1200,
+      },
+    ],
+    title,
+    type: "website",
+  },
+  title,
+  twitter: {
+    card: "summary_large_image",
+    description,
+    images: ["/opengraph-image"],
+    title,
+  },
 };
 
 export default function RootLayout({

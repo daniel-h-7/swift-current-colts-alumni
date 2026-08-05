@@ -1,16 +1,20 @@
-import { notFound } from "next/navigation";
-import { StudioDashboard } from "@/components/studio/studio-dashboard";
-import { getCurrentClientId } from "@/lib/client-context";
-import { getPlatformClient } from "@/lib/platform-data";
+import { redirect } from "next/navigation";
+import { getStudioClientIdsForUser, getStudioSession } from "@/lib/studio-auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudioPage() {
-  const client = await getPlatformClient(getCurrentClientId());
+  const session = await getStudioSession();
 
-  if (!client) {
-    notFound();
+  if (!session) {
+    redirect("/studio/login");
   }
 
-  return <StudioDashboard client={client} />;
+  const clientIds = await getStudioClientIdsForUser(session.authUserId);
+
+  if (!clientIds.length) {
+    redirect("/studio/login?error=No%20TeamAlum%20site%20is%20connected%20to%20that%20login.");
+  }
+
+  redirect(`/studio/${encodeURIComponent(clientIds[0])}`);
 }

@@ -1,0 +1,3374 @@
+                                                                                                             B
+Segoe UI1
+Arial1
+Segoe UI1
+Arial
+General
+0.00
+#,##0
+#,##0.00
+"$"#,##0_);\("$"#,##0\)
+"$"#,##0_);[Red]\("$"#,##0\)
+"$"#,##0.00_);\("$"#,##0.00\)
+"$"#,##0.00_);[Red]\("$"#,##0.00\)
+0.00E+00
+#?/?
+#??/??
+M/D/YY
+D-MMM-YY
+D-MMM
+MMM-YY
+h:mm AM/PM
+h:mm:ss AM/PM
+h:mm
+h:mm:ss
+M/D/YYYY h:mm
+(#,##0_);(#,##0)
+(#,##0_);[Red](#,##0)
+(#,##0.00_);(#,##0.00)
+(#,##0.00_);[Red](#,##0.00)
+_(* #,##0_);_(* \(#,##0\);_(* "-"_);_(@_)
+_("$"* #,##0_);_("$"* \(#,##0\);_("$"* "-"_);_(@_)
+_(* #,##0.00_);_(* \(#,##0.00\);_(* "-"??_);_(@_)
+_("$"* #,##0.00_);_("$"* \(#,##0.00\);_("$"* "-"??_);_(@_)
+mm:ss
+[h]:mm:ss
+mm:ss.0
+##0.0E+0
+rptViewCentralDirectorySchoolSt
+MbP?_
+&L&C&R}
+School Staff by District
+County Name
+System Name
+District Name
+School Name
+First
+Last
+Title
+Phone
+Email
+Address
+City
+State
+Sector
+Beaverhead
+0200
+Beaverhead Co High School
+0006
+Beaverhead County H S
+0023
+Beaverhead Co High School
+Rob                           
+Hankins                       
+Principal
+(406)683-2361
+(406)683-5263
+rhankins@bchsmt.com
+104 North Pacific Street
+Dillon
+59725
+PUBLIC
+Beaverhead
+0202
+Lima K-12 Schools
+0009
+Lima K-12 Schools
+0010
+Lima High School
+Greg                          
+Iverson                       
+Principal
+(406)276-3571
+(406)276-3495
+giverson@limaschoolmt.org
+PO Box 186
+Lima
+59739
+PUBLIC
+Big Horn
+0214
+Pryor Public Schools
+1214
+Plenty Coups H S
+1553
+Plenty Coups High School
+Chris                         
+McCrea                        
+Principal
+(406)259-7329
+(406)245-8938
+chrismccrea@pryorstaff.org
+Box 229
+Pryor
+59066
+PUBLIC
+Big Horn
+0216
+Hardin Public Schools
+1189
+Hardin H S
+0037
+Hardin High School
+Deanna                        
+Albert                        
+Principal
+(406)665-6300
+(406)665-1909
+deanna.albert@hardin.k12.mt.us
+401 Park Road
+Hardin
+59034-2505
+PUBLIC
+Big Horn
+0216
+Hardin Public Schools
+1189
+Hardin H S
+3036
+The Big Horn Academy
+(406)665-9304
+401 Park Road
+Hardin
+59034-2505
+PUBLIC
+Big Horn
+0218
+Lodge Grass Public Schls
+1190
+Lodge Grass H S
+0040
+Lodge Grass High School
+Gary                          
+Stevenson                     
+Principal
+(406)639-2385
+(406)639-2066
+gary.stevenson@lodgegrass.k12.mt.us
+PO Box 810
+Lodge Grass
+59050-0559
+PUBLIC
+Blaine
+0221
+Chinook Public Schools
+0029
+Chinook H S
+0047
+Chinook High School
+Brian                         
+Rayburn                       
+Principal
+(406)357-2236
+(406)357-2238
+rayburnb@chinookschools.org
+Box 1059
+Chinook
+59523
+PUBLIC
+Blaine
+0222
+Harlem Public Schools
+0031
+Harlem H S
+0049
+Harlem High School
+Holly                         
+Allen-King                    
+Principal
+(406)353-2287
+(406)353-2339
+hollya@harlem-hs.k12.mt.us
+PO Box 339
+Harlem
+59526-0339
+PUBLIC
+Blaine
+0234
+Turner Public Schools
+0045
+Turner H S
+0070
+Turner High School
+Jennifer                      
+McAllister                    
+Principal
+(406)379-2219
+(406)379-2398
+jmcallister@turner.k12.mt.us
+Box 40
+Turner
+59542
+PUBLIC
+Blaine
+0235
+Hays-Lodge Pole K-12 Schls
+1213
+Hays-Lodge Pole K-12 Schls
+1551
+Hays-Lodge Pole High Sch
+Jessica                       
+Cochran                       
+Principal
+(406)673-3120
+(406)673-3415
+pcondon@hlpschools.k12.mt.us
+PO Box 110
+Hays
+59527
+PUBLIC
+Broadwater
+1051
+Townsend K-12 Schools
+0055
+Townsend K-12 Schools
+0081
+Broadwater High School
+Sheri
+Heavrin
+Principal
+(406)441-3430
+(406)441-3466
+sheavrin@townsend.k12.mt.us
+201 N Spruce
+Townsend
+59644-2215
+PUBLIC
+Carbon
+0244
+Red Lodge Public Schools
+0057
+Red Lodge H S
+0084
+Red Lodge High School
+Dana                          
+Quenzer                       
+Principal
+(406)446-1903
+(406)446-3953
+dana_quenzer@redlodge.k12.mt.us
+PO Box 1090
+Red Lodge
+59068
+PUBLIC
+Carbon
+0245
+Bridger K-12 Schools
+0059
+Bridger K-12 Schools
+0086
+Bridger High School
+Nicholas                      
+Gallagher                     
+Principal
+(406)662-3533
+(406)662-3076
+nickgallagher@bridgerscouts.org
+429 W. Park Ave
+Bridger
+59014
+PUBLIC
+Carbon
+0246
+Joliet Public Schools
+0061
+Joliet H S
+0088
+Joliet High School
+Mandi                         
+Hernandez                     
+Principal
+(406)962-3541
+(406)962-3958
+mhernandez@joliet.k12.mt.us
+PO Box 590
+Joliet
+59041
+PUBLIC
+Carbon
+0253
+Roberts K-12 Schools
+0069
+Roberts K-12 Schools
+0096
+Roberts High School
+Daniel                        
+Grabowska                     
+Principal
+(406)445-2421
+(406)445-2506
+grabowska@roberts.k12.mt.us
+PO Box 78
+Roberts
+59070
+PUBLIC
+Carbon
+0255
+Fromberg K-12
+0072
+Fromberg K-12
+0099
+Fromberg High School
+Jennifer                      
+Hickok                        
+Principal
+(406)668-7315
+(406)668-7669
+jhickok@fromberg.k12.mt.us
+319 School Street
+Fromberg
+59029
+PUBLIC
+Carbon
+0257
+Belfry K-12 Schools
+0076
+Belfry K-12 Schools
+0103
+Belfry High School
+Jason
+Olson
+Principal
+(406)664-3319
+(406)664-3274
+jolson@belfry.k12.mt.us
+PO Box 210
+Belfry
+59008
+PUBLIC
+Carter
+1052
+Ekalaka Public Schools
+0097
+Carter County H S
+0133
+Carter County High School
+(406)775-8767
+(406)775-8766
+Box 458
+Ekalaka
+59324
+PUBLIC
+Cascade
+0278
+Great Falls Public Schls
+0099
+Great Falls H S
+0134
+Great Falls High School
+Geoff
+Habel
+Principal
+(406)268-6250
+(406)268-6256
+geoffry_habel@gfps.k12.mt.us
+PO Box 2429
+Great Falls
+59403
+PUBLIC
+Cascade
+0278
+Great Falls Public Schls
+0099
+Great Falls H S
+1464
+C M Russell High School
+Jamie                         
+McGraw                        
+Principal
+(406)268-6100
+(406)268-6109
+jamie_mcgraw@gfps.k12.mt.us
+PO Box 2429
+Great Falls
+59403
+PUBLIC
+Cascade
+0280
+Cascade Public Schools
+0102
+Cascade H S
+0157
+Cascade High School
+Michael                       
+Wilson                        
+Principal
+(406)468-2267
+(406)468-2212
+michael.wilson@cascade.k12.mt.us
+PO Box 529
+Cascade
+59421
+PUBLIC
+Cascade
+0282
+Centerville Public Schls
+0105
+Centerville H S
+0161
+Centerville High School
+Michael                       
+Taylor                        
+Principal
+(406)736-5167
+(406)736-5210
+miket@centerville.k12.mt.us
+693 Stockett Rd Box 100
+Sand Coulee
+59472
+PUBLIC
+Cascade
+0289
+Belt Public Schools
+0113
+Belt H S
+0169
+Belt High School
+Kyle
+Paulson
+Principal
+(406)277-3351
+(406)277-4466
+kpaulson@beltschool.com
+PO Box 197
+Belt
+59412
+PUBLIC
+Cascade
+1067
+Sun River Valley Pub Schls
+0118
+Simms H S
+0174
+Simms High School
+Luke                          
+McKinley                      
+Principal
+(406)264-5110
+(406)264-5189
+lmckinley@srvs.k12.mt.us
+Box 380
+Simms
+59477
+PUBLIC
+Cascade
+9089
+Mont Sch for Deaf & Blind
+9258
+Mont Sch for Deaf Blind
+9371
+MT Sch For Deaf & Blnd HS
+Paul
+Furthmyre
+Principal
+(406)771-6017
+(406)771-6164
+pfurthmyre@msdb.mt.gov
+3911 Central Avenue
+Great Falls
+59405
+PUBLIC
+Chouteau
+0307
+Fort Benton Public Schls
+0134
+Fort Benton H S
+0192
+Fort Benton High School
+Greg                          
+Iverson                       
+Principal
+(406)622-3213
+(406)622-5691
+giverson@fortbenton.k12.mt.us
+PO Box 399
+Fort Benton
+59442
+PUBLIC
+Chouteau
+0310
+Big Sandy Public Schools
+0138
+Big Sandy K-12
+0195
+Big Sandy High School
+Heather                       
+Wolery                        
+Principal
+(406)378-2502
+(406)378-2275
+hwolery@bigsandy.k12.mt.us
+PO Box 570
+Big Sandy
+59520
+PUBLIC
+Chouteau
+0317
+Highwood Public Schools
+0146
+Highwood K-12
+0205
+Highwood High School
+Brianna                       
+Bowman                        
+Supervising Teacher
+(406)733-2081
+(406)733-2671
+bbowman@highwood.k12.mt.us
+160 West Street South
+Highwood
+59450
+PUBLIC
+Chouteau
+0324
+Geraldine Public Schools
+0154
+Geraldine K-12
+0214
+Geraldine High School
+Corey                         
+Clark                         
+Principal
+(406)737-4371
+(406)737-4478
+cclark@geraldine.k12.mt.us
+PO Box 347
+Geraldine
+59446
+PUBLIC
+Custer
+0342
+Miles City Public Schools
+0192
+Custer County H S
+0266
+Custer Co District High
+Vince                         
+Gundlach                      
+Principal
+(406)234-4920
+(406)234-4923
+vgundlach@milescity.k12.mt.us
+1604 Main Street
+Miles City
+59301
+PUBLIC
+Custer
+9073
+Dept of Corrections-Youth
+9034
+Dept of Corrections-Youth
+9415
+Pine Hills Youth Corr Facil HS
+Kimberly
+Leslie
+Principal
+(406)232-1377
+(406)232-7432
+kleslie@mt.gov
+PO Box 201301
+Helena
+59620-1301
+PUBLIC
+Custer
+9073
+Dept of Corrections-Youth
+9034
+Dept of Corrections-Youth
+9415
+Pine Hills Youth Corr Facil HS
+Steve
+Supervising Teacher
+(406)232-1377
+(406)232-7432
+sray2@mt.gov
+PO Box 201301
+Helena
+59620-1301
+PUBLIC
+Daniels
+0363
+Scobey K-12 Schools
+0194
+Scobey K-12 Schools
+0268
+Scobey High School
+Caitlin
+Buer
+Principal
+(406)487-2202
+(406)487-2204
+cbuer@scobeyschools.com
+PO Box 10
+Scobey
+59263
+PUBLIC
+Dawson
+0373
+Glendive Public Schools
+0207
+Dawson H S
+0284
+Dawson High School
+Amy                           
+Ree                           
+Principal
+(406)377-5265
+(406)377-8206
+reea@glendiveschools.org
+Box 701
+Glendive
+59330
+PUBLIC
+Dawson
+0393
+Richey Public Schools
+0228
+Richey H S
+0311
+Richey High School
+Lissa                         
+Volbrecht                     
+Supervising Teacher
+(406)773-5523
+(406)773-5554
+lvolbrecht@richey.k12.mt.us
+Box 60
+Richey
+59259
+PUBLIC
+Deer Lodge
+0401
+Anaconda Public Schools
+0237
+Anaconda H S
+0326
+Anaconda Sr High School
+Erik                          
+Swanson                       
+Principal
+(406)563-6361
+(406)563-5260
+eswanson@anacondaschools.org
+1410 West Park Ave.
+Anaconda
+59711
+PUBLIC
+Fallon
+0407
+Baker K-12 Schools
+0244
+Baker K-12 Schools
+0335
+Baker High School
+Megan                         
+McKeighan                     
+Principal
+(406)778-3329
+(406)778-2785
+mckeighanm@baker.k12.mt.us
+Box 659
+Baker
+59313
+PUBLIC
+Fallon
+0418
+Plevna K-12 Schools
+0256
+Plevna K-12 Schools
+0352
+Plevna High School
+Dennis                        
+Gerke                         
+Principal
+(406)772-5666
+(406)772-5548
+dgerke@plevna.k12.mt.us
+PO Box 158
+Plevna
+59344
+PUBLIC
+Fergus
+0420
+Lewistown Public Schools
+0259
+Fergus H S
+0358
+Fergus High School
+Matthew                       
+Lewis                         
+Principal
+(406)535-2321
+(406)535-3835
+mlewis@lewistown.k12.mt.us
+215 7th Avenue South
+Lewistown
+59457
+PUBLIC
+Fergus
+0420
+Lewistown Public Schools
+0259
+Fergus H S
+3030
+Central MT CTE Academy
+Orin                          
+Johnson                       
+Principal
+(406)535-8777
+orin.johnson@lewistown.k12.mt.us
+215 7th Avenue South
+Lewistown
+59457
+PUBLIC
+Fergus
+0429
+Grass Range Public Schls
+0269
+Grass Range H S
+0368
+Grass Range High School
+Michael                       
+Estomo                        
+Principal
+(406)428-2341
+(406)428-2235
+mestomo@grps.k12.mt.us
+PO Box 58
+Grass Range
+59032
+PUBLIC
+Fergus
+0433
+Moore Public Schools
+0274
+Moore H S
+0373
+Moore High School
+Justin                        
+Barnes                        
+Principal
+(406)374-2231
+(406)374-2490
+justin.barnes@moore.k12.mt.us
+509 Highland
+Moore
+59464
+PUBLIC
+Fergus
+0438
+Roy K-12 Schools
+0280
+Roy K-12 Schools
+0379
+Roy High School
+Lindsay                       
+Siroky                        
+Principal
+(406)464-2511
+(406)464-2561
+lindsay.siroky@roy.k12.mt.us
+Box 9
+59471
+PUBLIC
+Fergus
+0439
+Denton Public Schools
+0282
+Denton H S
+0381
+Denton High School
+Scott                         
+Sparks                        
+Principal
+(406)567-2270
+(406)567-2559
+ssparks@denton.k12.mt.us
+PO Box 1048
+Denton
+59430
+PUBLIC
+Fergus
+0447
+Winifred K-12 Schools
+0291
+Winifred K-12 Schools
+0392
+Winifred High School
+Clay                          
+Perison                       
+Principal
+(406)462-5420
+(406)462-5477
+cpierson@winifred.k12.mt.us
+Box 109
+Winifred
+59489
+PUBLIC
+Flathead
+0466
+Kalispell Public Schools
+0311
+Flathead H S
+0462
+Flathead High School
+Michele
+Paine
+Principal
+(406)751-3500
+(406)751-3505
+painem@sd5.k12.mt.us
+233 First Ave East
+Kalispell
+59901
+PUBLIC
+Flathead
+0466
+Kalispell Public Schools
+0311
+Flathead H S
+1835
+Glacier High School
+Brad                          
+Holloway                      
+Principal
+(406)758-8600
+(406)758-8602
+hollowayb@sd5.k12.mt.us
+233 First Ave East
+Kalispell
+59901
+PUBLIC
+Flathead
+0466
+Kalispell Public Schools
+0311
+Flathead H S
+3018
+Flathead Pace Academy
+(406)751-3434
+233 First Ave East
+Kalispell
+59901
+PUBLIC
+Flathead
+0466
+Kalispell Public Schools
+0311
+Flathead H S
+3019
+Kalispell Rising Wolf Charter 
+(406)751-3434
+233 First Ave East
+Kalispell
+59901
+PUBLIC
+Flathead
+0467
+Columbia Falls Pub Schls
+0313
+Columbia Falls H S
+0425
+Columbia Falls High Schl
+Scott
+Gaiser
+Principal
+(406)892-6500
+(406)892-6583
+s_gaiser@cfmtschools.net
+PO Box 1259
+Columbia Falls
+59912
+PUBLIC
+Flathead
+0484
+Bigfork Public Schools
+0331
+Bigfork H S
+0443
+Bigfork High School
+Mark
+Hansen
+Principal
+(406)837-7420
+(406)837-7245
+mhansen@bigfork.k12.mt.us
+PO Box 188
+Bigfork
+59911
+PUBLIC
+Flathead
+0487
+Whitefish Public Schools
+0335
+Whitefish H S
+0448
+Whitefish High School
+Kerry                         
+Drown                         
+Principal
+(406)862-8600
+(406)862-2586
+drownk@whitefishschools.org
+600 East Second Street
+Whitefish
+59937
+PUBLIC
+Gallatin
+0499
+Manhattan Public Schools
+0348
+Manhattan High School
+0465
+Manhattan H S
+Miranda                       
+Howells                       
+Principal
+(406)284-3341
+(406)284-3104
+mhowells@mhstigers.org
+PO Box 425
+Manhattan
+59741-0425
+PUBLIC
+Gallatin
+0501
+Bozeman Public Schools
+0351
+Bozeman H S
+0473
+Bozeman High School
+Dan                           
+Mills                         
+Principal
+(406)522-6200
+(406)522-6222
+dan.mills@bsd7.org
+PO Box 520
+Bozeman
+59771
+PUBLIC
+Gallatin
+0501
+Bozeman Public Schools
+0351
+Bozeman H S
+1864
+Gallatin High School
+Erica
+Schnee
+Principal
+(406)522-4600
+erica.schnee@bsd7.org
+PO Box 520
+Bozeman
+59771
+PUBLIC
+Gallatin
+0501
+Bozeman Public Schools
+0351
+Bozeman H S
+3027
+Bridger Charter School
+Dan                           
+Mills                         
+Principal
+(406)522-6097
+dan.mills@bsd7.org
+PO Box 520
+Bozeman
+59771
+PUBLIC
+Gallatin
+0504
+Willow Creek Public Schls
+0355
+Willow Creek H S
+0477
+Willow Creek High School
+Bonnie
+Lower
+Principal
+(406)285-6991
+(406)285-6923
+bonnielower@willowcreek.k12.mt.us
+PO Box 189
+Willow Creek
+59760
+PUBLIC
+Gallatin
+0509
+Three Forks Public Schls
+0361
+Three Forks H S
+0483
+Three Forks High School
+Gregory
+Heys
+Principal
+(406)285-3224
+(406)285-3503
+gheys@threeforks.k12.mt.us
+212 East Neal
+Three Forks
+59752
+PUBLIC
+Gallatin
+0516
+Belgrade Public Schools
+0369
+Belgrade H S
+0491
+Belgrade High School
+Shanna                        
+Smith                         
+Principal
+(406)924-2545
+(406)388-4633
+ssmith@bsd44.org
+PO Box 166
+Belgrade
+59714
+PUBLIC
+Gallatin
+0520
+West Yellowstone K-12 Schls
+0374
+West Yellowstone K-12
+0496
+West Yellowstone HS
+Robert
+Orsini
+Principal
+(406)646-7617
+(406)646-7232
+rorsini@westyellowstone.k12.mt.us
+Box 460
+West Yellowstone
+59758
+PUBLIC
+Gallatin
+0521
+Big Sky K-12 Schools
+1239
+Big Sky School K-12
+1837
+Lone Peak High School
+Marlo                         
+Mitchem                       
+Principal
+(406)995-4281
+(406)995-2161
+mmitchem@bssd72.org
+PO Box 161280
+Big Sky
+59716
+PUBLIC
+Garfield
+0523
+Jordan Public Schools
+0378
+Garfield County H S
+0534
+Garfield Co Dist HS
+Julie                         
+Elias                         
+Principal
+(406)557-2259
+(406)557-2778
+jelias@jordanpublicschools.org
+Box 409
+Jordan
+59337
+PUBLIC
+Glacier
+0545
+Browning Public Schools
+0401
+Browning H S
+0543
+Browning High School
+Sandi                         
+Campbell                      
+Principal
+(406)338-2745
+(406)338-2844
+sandic@bps.k12.mt.us
+PO Box 610
+Browning
+59417
+PUBLIC
+Glacier
+0546
+Cut Bank Public Schools
+0403
+Cut Bank H S
+0547
+Cut Bank High School
+Jared                         
+Berkram                       
+Principal
+(406)873-5629
+(406)873-4691
+jberkram@cutbankschools.net
+101 3rd Avenue SE
+Cut Bank
+59427
+PUBLIC
+Golden Valley
+0549
+Ryegate K-12 Schools
+0407
+Ryegate K-12 Schools
+0551
+Ryegate High School
+Seth                          
+Shifley                       
+Principal
+(406)568-2211
+(406)568-2528
+sshifley@ryegate.k12.mt.us
+PO Box 129
+Ryegate
+59074
+PUBLIC
+Golden Valley
+0552
+Lavina K-12 Schools
+0411
+Lavina K-12 Schools
+0556
+Lavina High School
+Nicole
+Hanson
+Principal
+(406)636-2761
+(406)636-4911
+nhanson@lavinapublicschools.com
+PO Box 290
+Lavina
+59046
+PUBLIC
+Golden Valley
+0552
+Lavina K-12 Schools
+0411
+Lavina K-12 Schools
+0556
+Lavina High School
+Ivy                           
+Mallo                         
+Supervising Teacher
+(406)636-2761
+(406)636-4911
+imallo@lavinapublicschools.com
+PO Box 290
+Lavina
+59046
+PUBLIC
+Granite
+0556
+Philipsburg K-12 Schools
+0416
+Philipsburg K-12 Schools
+0565
+Granite High School
+Jake                          
+Kelly                         
+Principal
+(406)859-3232
+(406)859-3674
+kellyj@pburg.k12.mt.us
+PO Box 400
+Philipsburg
+59858
+PUBLIC
+Granite
+0556
+Philipsburg K-12 Schools
+0416
+Philipsburg K-12 Schools
+0565
+Granite High School
+Thomas                        
+Gates                         
+Supervising Teacher
+(406)859-3232
+(406)859-3674
+gatest@pburg.k12.mt.us
+PO Box 400
+Philipsburg
+59858
+PUBLIC
+Granite
+0559
+Drummond Public Schools
+0420
+Drummond H S
+0564
+Drummond High School
+Dean                          
+Phillips                      
+Principal
+(406)288-3281
+(406)288-3299
+dphillips@drummondschool.net
+Box 349, 108 West Edwards
+Drummond
+59832
+PUBLIC
+Hill
+0564
+Box Elder Public Schools
+0426
+Box Elder H S
+0571
+Box Elder High School
+(406)352-4195
+(406)352-3830
+Box 205
+Box Elder
+59521
+PUBLIC
+Hill
+0565
+Havre Public Schools
+0428
+Havre H S
+1450
+Havre High School
+Dustin                        
+Kraske                        
+Principal
+(406)265-6731
+(406)265-3217
+krasked@blueponyk12.com
+Box 7791
+Havre
+59501
+PUBLIC
+Hill
+1043
+Rocky Boy Public Schools
+1229
+Rocky Boy H S
+1807
+Rocky Boy High School
+Krystal                       
+Four Souls                    
+Principal
+(406)395-4270
+(406)395-4829
+krystalfs@rockyboy.k12.mt.us
+RR 1 Box 620
+Box Elder
+59521
+PUBLIC
+Hill
+1071
+North Star Public Schools
+1234
+North Star HS
+0591
+North Star High School
+James                         
+Russell                       
+Principal
+(406)355-4481
+(406)355-4532
+jrussell@nsschools.org
+Box 129
+Rudyard
+59540
+PUBLIC
+Jefferson
+0585
+Whitehall Public Schools
+0454
+Whitehall H S
+0608
+Whitehall High School
+Jason                         
+Slater                        
+Principal
+(406)287-3862
+(406)287-3843
+jslater@whitehallmt.org
+Box 1109
+Whitehall
+59759
+PUBLIC
+Jefferson
+1033
+Jefferson High School
+0457
+Jefferson H S
+0611
+Jefferson High School
+Mike                          
+Moodry                        
+Principal
+(406)225-3317
+(406)225-3289
+mike.moodry@jhs.k12.mt.us
+PO Box 838
+Boulder
+59632
+PUBLIC
+Judith Basin
+0593
+Stanford K-12 Schools
+0464
+Stanford K-12 Schools
+0618
+Stanford High School
+Pax                           
+Haslem                        
+Principal
+(406)566-2265
+(406)566-2772
+pax.haslem@stanford.k12.mt.us
+Box 506
+Stanford
+59479
+PUBLIC
+Judith Basin
+0597
+Hobson K-12 Schools
+0469
+Hobson K-12 Schools
+0623
+Hobson High School
+Hugo
+Anderson
+Principal
+(406)423-5483
+(406)423-5260
+hugo.anderson@hobson.k12.mt.us
+PO Box 410
+Hobson
+59452
+PUBLIC
+Judith Basin
+0600
+Geyser K-12 Schools
+0473
+Geyser K-12 Schools
+0627
+Geyser High School
+Matthew                       
+Hauk                          
+Principal
+(406)735-4368
+(406)735-4452
+mhauk@geyser.k12.mt.us
+PO Box 70
+Geyser
+59447
+PUBLIC
+Lake
+0601
+Arlee Public Schools
+0475
+Arlee H S
+0629
+Arlee High School
+Jacob                         
+Bosley                        
+Principal
+(406)726-3216
+(406)726-3940
+jbosley@arleeschools.org
+72220 Fyant Street
+Arlee
+59821
+PUBLIC
+Lake
+0603
+Polson Public Schools
+0478
+Polson H S
+0633
+Polson High School
+Betsy                         
+Wade                          
+Principal
+(406)883-6351
+(406)883-6330
+bwade@polson.k12.mt.us
+111 4th Avenue East
+Polson
+59860
+PUBLIC
+Lake
+0605
+St Ignatius K-12 Schools
+0481
+St Ignatius K-12 Schools
+0643
+St Ignatius High School
+Shawn
+Hendrickson
+Principal
+(406)745-3811
+(406)745-4060
+shendrickson@stignatiusschools.org
+PO Box 1540
+St Ignatius
+59865-1540
+PUBLIC
+Lake
+1037
+Ronan Public Schools
+1200
+Ronan H S
+0640
+Ronan High School
+Kevin
+Kenelty
+Principal
+(406)676-3390
+(406)676-3330
+kevin.kenelty@ronank12.edu
+421 Andrew Street NW
+Ronan
+59864-2302
+PUBLIC
+Lake
+1037
+Ronan Public Schools
+1200
+Ronan H S
+3032
+Ronan Charter Academy HS
+Josh                          
+Illig                         
+Principal
+(406)676-3390
+josh.illig@ronank12.edu
+421 Andrew Street NW
+Ronan
+59864-2302
+PUBLIC
+Lake
+1037
+Ronan Public Schools
+1200
+Ronan H S
+3032
+Ronan Charter Academy HS
+Tera                          
+Flink                         
+Supervising Teacher
+(406)676-3390
+tera.flink@ronank12.edu
+421 Andrew Street NW
+Ronan
+59864-2302
+PUBLIC
+Lake
+1042
+Charlo Public Schools
+1206
+Charlo H S
+0636
+Charlo High School
+(406)644-2206
+(406)644-2400
+PO Box 10
+Charlo
+59824
+PUBLIC
+Lewis & Clark
+0611
+Helena Public Schools
+0488
+Helena H S
+0661
+Helena High School
+Brian                         
+Kessler                       
+Principal
+(406)324-2200
+(406)324-2201
+bkessler@helenaschools.org
+1325 Poplar Street
+Helena
+59601-5763
+PUBLIC
+Lewis & Clark
+0611
+Helena Public Schools
+0488
+Helena H S
+1547
+Capital High School
+Brett
+Zanto
+Principal
+(406)324-2500
+(406)324-2501
+bzanto@helenaschools.org
+1325 Poplar Street
+Helena
+59601-5763
+PUBLIC
+Lewis & Clark
+0611
+Helena Public Schools
+0488
+Helena H S
+3025
+Mount Ascension Learning Ac HS
+Josh                          
+McKay                         
+Principal
+(406)324-2000
+jmckay@helenaschools.org
+1325 Poplar Street
+Helena
+59601-5763
+PUBLIC
+Lewis & Clark
+0611
+Helena Public Schools
+0488
+Helena H S
+3026
+Helena P.A.L.
+Matthew                       
+Carey                         
+Principal
+(406)324-2000
+mcarey@helenaschools.org
+1325 Poplar Street
+Helena
+59601-5763
+PUBLIC
+Lewis & Clark
+0615
+East Helena Public Schools
+1240
+East Helena K-12
+1861
+East Helena High School
+Paul                          
+Condon                        
+Principal
+(406)227-7700
+(406)227-5534
+pcondon@ehps.k12.mt.us
+PO Box 1280
+East Helena
+59635
+PUBLIC
+Lewis & Clark
+0615
+East Helena Public Schools
+1240
+East Helena K-12
+3029
+227 Academy- HS
+Paul                          
+Condon                        
+Principal
+(406)227-7700
+pcondon@ehps.k12.mt.us
+PO Box 1280
+East Helena
+59635
+PUBLIC
+Lewis & Clark
+0624
+Lincoln K-12 Schools
+1221
+Lincoln K-12 Schools
+1610
+Lincoln High School
+Tom                           
+Barnett                       
+Principal
+(406)362-4201
+(406)362-4030
+tombarnett@lincoln.k12.mt.us
+PO Box 39
+Lincoln
+59639
+PUBLIC
+Lewis & Clark
+0625
+Augusta Public Schools
+0503
+Augusta H S
+0677
+Augusta High School
+Ramorini
+Principal
+(406)562-3384
+(406)562-3898
+kramorini@augusta.k12.mt.us
+PO Box 307
+Augusta
+59410
+PUBLIC
+Lewis & Clark
+6123
+Dept of Corrections-Adult
+9029
+Dept of Corrections-Adult
+9604
+Montana State Prison
+(406)846-1320
+1539 11th Ave
+Helena
+59620-1301
+PUBLIC
+Liberty
+1073
+Chester-Joplin-Inverness PS
+1237
+Chester-Joplin-Inverness HS
+0687
+Chester-Joplin-Inverness HS
+Kimberly                      
+Grammar                       
+Principal
+(406)759-5108
+(406)759-5867
+kgrammar@cji.k12.mt.us
+Box 550
+Chester
+59522
+PUBLIC
+Lincoln
+0639
+Troy Public Schools
+0520
+Troy H S
+0697
+Troy High School
+Tisee                         
+Lewis                         
+Principal
+(406)295-4520
+(406)295-5371
+tlewis@troyk12.org
+PO Box 867
+Troy
+59935
+PUBLIC
+Lincoln
+0640
+Libby K-12 Schools
+0522
+Libby K-12 Schools
+0705
+Libby High School
+Scott                         
+Beagle                        
+Principal
+(406)293-8802
+(406)293-3927
+beagles@libbyschools.org
+724 Louisiana Ave
+Libby
+59923
+PUBLIC
+Lincoln
+0640
+Libby K-12 Schools
+0522
+Libby K-12 Schools
+3033
+Libby Central Charter School
+(406)293-8811
+724 Louisiana Ave
+Libby
+59923
+PUBLIC
+Lincoln
+0645
+Eureka Public Schools
+0528
+Lincoln County H S
+0711
+Lincoln Co High School
+CARI                          
+LUCEY                         
+Principal
+(406)297-5700
+(406)297-5714
+clucey@teameureka.net
+PO Box 2000
+Eureka
+59917
+PUBLIC
+Madison
+0654
+Sheridan Public Schools
+0538
+Sheridan H S
+0722
+Sheridan High School
+Nicole                        
+Volschenk                     
+Principal
+(406)842-5401
+(406)842-5856
+nicole.volschenk@sheridan.k12.mt.us
+PO Box 586
+Sheridan
+59749
+PUBLIC
+Madison
+0655
+Twin Bridges K-12 Schools
+0540
+Twin Bridges K-12 Schools
+0724
+Twin Bridges High School
+John                          
+Stromberg                     
+Principal
+(406)684-5657
+(406)684-5458
+jstromberg@tbschools.org
+Box 419
+Twin Bridges
+59754
+PUBLIC
+Madison
+0657
+Harrison K-12 Schools
+0543
+Harrison K-12 Schools
+0727
+Harrison High School
+Doug                          
+Pfau                          
+Principal
+(406)685-3428
+(406)685-3430
+dpfau@harrison.k12.mt.us
+PO Box 7
+Harrison
+59735
+PUBLIC
+Madison
+0659
+Ennis K-12 Schools
+0546
+Ennis K-12 Schools
+0731
+Ennis High School
+Melissa
+Newman
+Principal
+(406)682-4258
+(406)682-7751
+mnewman@ennisschools.org
+Box 517
+Ennis
+59729
+PUBLIC
+McCone
+0660
+Circle Public Schools
+0548
+Circle H S
+0733
+Circle High School
+Megan                         
+Knuth                         
+Principal
+(406)485-3600
+(406)485-2332
+mknuth@circleschools.k12.mt.us
+Box 99
+Circle
+59215
+PUBLIC
+Meagher
+0681
+White Sul Spgs Pub Schls
+0570
+White Sulphur Spgs K-12
+0759
+White Sulphur Springs HS
+Lacey                         
+Arthun                        
+Principal
+(406)547-3351
+(406)547-2407
+larthun@whitesulphur.k12.mt.us
+PO Box C
+White Sulphur Springs
+59645
+PUBLIC
+Mineral
+0687
+Alberton K-12 Schools
+0577
+Alberton K-12 Schools
+0766
+Alberton High School
+Amanda                        
+Cyr                           
+Principal
+(406)722-3381
+(406)722-3040
+acyr@alberton.k12.mt.us
+PO Box 330
+Alberton
+59820
+PUBLIC
+Mineral
+0688
+Superior K-12 Schools
+0579
+Superior K-12 Schools
+0768
+Superior High School
+Chris
+Clairmont
+Principal
+(406)822-4851
+(406)822-4396
+cclairmont@superior.k12.mt.us
+PO Box 400
+Superior
+59872
+PUBLIC
+Mineral
+0690
+St Regis K-12 Schools
+0582
+St Regis K-12 Schools
+0771
+St Regis High School
+Shaun
+Ball
+Principal
+(406)649-2311
+(406)649-2788
+sball@stregis.k12.mt.us
+PO Box 280
+St Regis
+59866
+PUBLIC
+Missoula
+0692
+Missoula Co Public Schls
+0584
+Missoula H S
+1432
+Hellgate High School
+Judson                        
+Miller                        
+Principal
+(406)728-2402
+(406)728-2496
+jcmiller@mcpsmt.org
+909 South Ave West
+Missoula
+59801
+PUBLIC
+Missoula
+0692
+Missoula Co Public Schls
+0584
+Missoula H S
+1433
+Sentinel High School
+Stephanie                     
+Thennis                       
+Principal
+(406)728-2403
+(406)329-5959
+sthennis@mcpsmt.org
+909 South Ave West
+Missoula
+59801
+PUBLIC
+Missoula
+0692
+Missoula Co Public Schls
+0584
+Missoula H S
+1434
+Seeley-Swan High School
+John                          
+Stilson                       
+Principal
+(406)677-2224
+(406)677-2949
+jstilson80@outlook.com
+909 South Ave West
+Missoula
+59801
+PUBLIC
+Missoula
+0692
+Missoula Co Public Schls
+0584
+Missoula H S
+1592
+Big Sky High School
+Jennifer                      
+Courtney                      
+Principal
+(406)728-2401
+(406)549-4616
+jccourtney@mcpsmt.org
+909 South Ave West
+Missoula
+59801
+PUBLIC
+Missoula
+0692
+Missoula Co Public Schls
+0584
+Missoula H S
+3008
+Missoula Connect Academy HS
+Nick                          
+Laatsch                       
+Principal
+(406)728-2400
+nalaatsch@mcpsmt.org
+909 South Ave West
+Missoula
+59801
+PUBLIC
+Missoula
+0706
+Frenchtown K-12 Schools
+0599
+Frenchtown K-12 Schools
+0803
+Frenchtown High School
+Jake                          
+Haynes                        
+Principal
+(406)626-2670
+(406)626-2676
+JakeHaynes@ftbroncs.org
+PO Box 117
+Frenchtown
+59834
+PUBLIC
+Missoula
+0706
+Frenchtown K-12 Schools
+0599
+Frenchtown K-12 Schools
+3017
+Bronc Fast Track 
+Jake                          
+Haynes                        
+Principal
+(406)626-2600
+JakeHaynes@ftbroncs.org
+PO Box 117
+Frenchtown
+59834
+PUBLIC
+Musselshell
+0711
+Roundup Public Schools
+0606
+Roundup High School
+0811
+Roundup H S
+Riley                         
+Mayo                          
+Principal
+(406)323-2402
+(406)323-1583
+rileymayo@roundup.k12.mt.us
+12 Main Street
+Roundup
+59072
+PUBLIC
+Musselshell
+0712
+Melstone Public Schools
+0608
+Melstone H S
+0813
+Melstone High School
+Kevin                         
+St. John                      
+Principal
+(406)358-2352
+(406)358-2346
+kevin.stjohn@melstone.net
+Box 97
+Melstone
+59054
+PUBLIC
+Park
+0716
+Livingston Public Schools
+0613
+Park H S
+0823
+Park High School
+Cole                          
+Maxwell                       
+Principal
+(406)222-0448
+(406)222-9404
+cole.maxwell@livingston.k12.mt.us
+132 South B Street
+Livingston
+59047
+PUBLIC
+Park
+0716
+Livingston Public Schools
+0613
+Park H S
+3039
+Park Pathways High School
+(406)222-0861
+132 South B Street
+Livingston
+59047
+PUBLIC
+Park
+0718
+Gardiner Public Schools
+1191
+Gardiner H S
+0824
+Gardiner High School
+Sheri                         
+Modderman                     
+Supervising Teacher
+(406)848-7261
+(406)848-9489
+Sheri@gardiner.org
+510 Stone Street
+Gardiner
+59030
+PUBLIC
+Park
+1068
+Shields Valley Pub Schls
+1228
+Shields Valley H S
+1666
+Shields Valley High Schl
+Greg
+Sager
+Principal
+(406)686-4621
+(406)686-4937
+gsager@shieldsvalleyschools.org
+PO Box 40
+Clyde Park
+59018
+PUBLIC
+Petroleum
+0743
+Winnett K-12 Schools
+0642
+Winnett K-12 Schools
+0853
+Winnett High School
+Teri                          
+Harris                        
+Principal
+(406)429-2251
+(406)429-7631
+tharris@winnettschool.org
+Box 167
+Winnett
+59087
+PUBLIC
+Phillips
+0748
+Dodson K-12
+0648
+Dodson K-12
+0863
+Dodson High School
+Angela                        
+Richards                      
+Principal
+(406)383-4362
+(406)383-4489
+angelar@dodson.k12.mt.us
+Box 278
+Dodson
+59524
+PUBLIC
+Phillips
+0756
+Saco Public Schools
+0657
+Saco H S
+0873
+Saco High School
+Shyla                         
+Sunford                       
+Supervising Teacher
+(406)527-3531
+(406)527-3479
+ssunford@sacoschools.k12.mt.us
+Box 298
+Saco
+59261
+PUBLIC
+Phillips
+0757
+Malta K-12 Schools
+0659
+Malta K-12 Schools
+0875
+Malta High School
+Shawn
+Bleth
+Principal
+(406)654-2002
+(406)654-2226
+sbleth@maltaschools.org
+PO Box 670
+Malta
+59538
+PUBLIC
+Phillips
+0760
+Whitewater K-12 Schools
+0663
+Whitewater K-12 Schools
+0879
+Whitewater High School
+Darin
+Cummings
+Principal
+(406)674-5417
+(406)674-5460
+wwsupt@whitewater.k12.mt.us
+PO Box 46
+Whitewater
+59544-0046
+PUBLIC
+Pondera
+0767
+Heart Butte K-12 Schools
+1226
+Heart Butte K-12 Schools
+1656
+Heart Butte High School
+Christy                       
+Day Chief                     
+Principal
+(406)338-3344
+(406)338-5832
+christyd@heartbutte.k12.mt.us
+PO Box 259
+Heart Butte
+59448
+PUBLIC
+Pondera
+0771
+Conrad Public Schools
+0675
+Conrad H S
+0893
+Conrad High School
+Raymond                       
+Debruycker                    
+Principal
+(406)278-3285
+(406)278-3806
+raymond.debruycker@conradschools.org
+215 South Maryland St
+Conrad
+59425-2017
+PUBLIC
+Pondera
+0775
+Valier Public Schools
+0680
+Valier H S
+0899
+Valier High School
+Joshua                        
+Reed                          
+Principal
+(406)279-3613
+(406)279-3764
+reedj@valier.k12.mt.us
+PO Box 528
+Valier
+59486
+PUBLIC
+Powder River
+0799
+Broadus Public Schools
+0706
+Powder River Co Dist H S
+0931
+Powder River Co Dist High
+Libby                         
+Nisley                        
+Principal
+(406)436-2658
+(406)436-2660
+libby@broadus.net
+Box 500
+Broadus
+59317
+PUBLIC
+Powell
+0806
+Deer Lodge School District No1
+0713
+Powell County H S
+0953
+Powell County High School
+Katie                         
+Crofutt                       
+Principal
+(406)846-2757
+(406)846-2759
+kcrofutt@pchs.dl.k12.mt.us
+709 Missouri Avenue
+Deer Lodge
+59722
+PUBLIC
+Prairie
+0818
+Terry K-12 Schools
+0726
+Terry K-12 Schools
+0958
+Terry High School
+Megan                         
+Murrell                       
+Principal
+(406)635-5533
+(406)635-5705
+megan.murrell@terryschools.com
+Box 187
+Terry
+59349
+PUBLIC
+Ravalli
+0822
+Corvallis K-12 Schools
+0731
+Corvallis K-12 Schools
+0964
+Corvallis High School
+Cammie
+Knapp
+Principal
+(406)961-3201
+(406)961-4894
+1151 Eastside Highway
+Corvallis
+59828
+PUBLIC
+Ravalli
+0822
+Corvallis K-12 Schools
+0731
+Corvallis K-12 Schools
+3012
+CSD HS Rise Distance Academy
+(406)381-5364
+1151 Eastside Highway
+Corvallis
+59828
+PUBLIC
+Ravalli
+0822
+Corvallis K-12 Schools
+0731
+Corvallis K-12 Schools
+3015
+CSD HS Rise Pathway Academy
+(406)381-5364
+1151 Eastside Highway
+Corvallis
+59828
+PUBLIC
+Ravalli
+0823
+Stevensville Public Schls
+0733
+Stevensville H S
+0966
+Stevensville High School
+Zeke                          
+Kaney                         
+Principal
+(406)777-5481
+(406)258-1243
+kaneyz@stevensville.k12.mt.us
+300 Park Street
+Stevensville
+59870
+PUBLIC
+Ravalli
+0823
+Stevensville Public Schls
+0733
+Stevensville H S
+3037
+Stevensville Health Sciences 
+(406)777-5481
+300 Park Street
+Stevensville
+59870
+PUBLIC
+Ravalli
+0824
+Hamilton K-12 Schools
+0735
+Hamilton K-12 Schools
+1084
+Hamilton High School
+Marlin                        
+Lewis                         
+Principal
+(406)375-6060
+(406)375-6076
+lewism@hsd3.org
+217 Daly Avenue
+Hamilton
+59840
+PUBLIC
+Ravalli
+0824
+Hamilton K-12 Schools
+0735
+Hamilton K-12 Schools
+3021
+Bitterroot Polytech HS
+(406)363-2280
+217 Daly Avenue
+Hamilton
+59840
+PUBLIC
+Ravalli
+0826
+Victor K-12 Schools
+0738
+Victor K-12 Schools
+0972
+Victor High School
+David                         
+Jamison                       
+Principal
+(406)642-3221
+(406)642-3446
+jamison@victor.k12.mt.us
+425 4th Avenue
+Victor
+59875
+PUBLIC
+Ravalli
+0827
+Darby K-12 Schools
+0740
+Darby K-12 Schools
+0974
+Darby High School
+J.P.                          
+McCrossin                     
+Principal
+(406)821-3252
+(406)821-4977
+jmccrossin@darby.k12.mt.us
+209 School Drive
+Darby
+59829
+PUBLIC
+Ravalli
+0829
+Florence-Carlton K-12 Schls
+0743
+Florence-Carlton K-12 Schls
+0977
+Florence-Carlton HS
+Scott                         
+Marsh                         
+Principal
+(406)273-6301
+(406)273-2643
+marshs@florence.k12.mt.us
+5602 Old Highway 93
+Florence
+59833
+PUBLIC
+Richland
+0831
+Sidney Public Schools
+0746
+Sidney H S
+0981
+Sidney High School
+Carl                          
+Dynneson                      
+Principal
+(406)433-2330
+(406)433-2481
+cdynneson@sidneyps.com
+200 3rd Ave SE
+Sidney
+59270
+PUBLIC
+Richland
+0832
+Savage Public Schools
+0748
+Savage H S
+0983
+Savage High School
+Angella
+Nelson
+Principal
+(406)776-2317
+(406)776-2260
+anelson@savagepublicschool.com
+Box 110
+Savage
+59262
+PUBLIC
+Richland
+0834
+Fairview Public Schools
+0751
+Fairview H S
+0987
+Fairview High School
+Brandy                        
+Spitzer-Tjelde                
+Principal
+(406)742-5265
+(406)742-3336
+btjelde@fschool.org
+PO Box 467
+Fairview
+59221
+PUBLIC
+Richland
+0851
+Lambert Public Schools
+0769
+Lambert H S
+1006
+Lambert High School
+Lacey                         
+Nevins                        
+Principal
+(406)774-3333
+(406)774-3335
+lnevins@lambertschool.net
+Box 260
+Lambert
+59243
+PUBLIC
+Roosevelt
+0857
+Poplar Public Schools
+0776
+Poplar H S
+1016
+Poplar High School
+Frank                         
+Gourneau III                  
+Principal
+(406)768-6830
+(406)768-6803
+frank.gourneau@poplarschools.com
+Box 458
+Poplar
+59255
+PUBLIC
+Roosevelt
+0858
+Culbertson Public Schools
+0778
+Culbertson H S
+1018
+Culbertson High School
+Mike                          
+Olson                         
+Principal
+(406)787-6241
+(406)787-6244
+olsonm@culbertson.k12.mt.us
+Box 459
+Culbertson
+59218
+PUBLIC
+Roosevelt
+0860
+Wolf Point Public Schools
+0781
+Wolf Point H S
+1023
+Wolf Point High School
+Kim                           
+Hanks                         
+Principal
+(406)653-1200
+(406)653-3104
+khanks@wolfpoint.k12.mt.us
+213 6th Avenue South
+Wolf Point
+59201
+PUBLIC
+Roosevelt
+0861
+Brockton Public Schools
+0783
+Brockton H S
+1026
+Brockton High School
+RaeAnne                       
+Edmisten                      
+Principal
+(406)786-3311
+(406)786-3377
+redmisten@brockton.k12.mt.us
+PO Box 198
+Brockton
+59213
+PUBLIC
+Roosevelt
+0862
+Bainville K-12 Schools
+0785
+Bainville K-12 Schools
+1028
+Bainville High School
+Rhiannon
+Beery
+Principal
+(406)769-2321
+(406)769-3291
+rbeery@nemont.net
+Box 177
+Bainville
+59212
+PUBLIC
+Roosevelt
+0863
+Froid Public Schools
+0787
+Froid H S
+1030
+Froid High School
+Lance                         
+Olson                         
+Principal
+(406)766-2342
+(406)766-2206
+lolson@froidschool.com
+Box 218
+Froid
+59226
+PUBLIC
+Rosebud
+0866
+Forsyth Public Schools
+0791
+Forsyth H S
+1034
+Forsyth High School
+Aaron                         
+Morgenstern                   
+Principal
+(406)346-2796
+(406)346-9219
+amorgenstern@forsyth.k12.mt.us
+Box 319
+Forsyth
+59327
+PUBLIC
+Rosebud
+0867
+Lame Deer Public Schools
+1230
+Lame Deer H S
+1816
+Lame Deer High School
+Matthew                       
+Jolley                        
+Principal
+(406)477-8900
+(406)477-8906
+matthew.jolley@lamedeer.k12.mt.us
+Box 96
+Lame Deer
+59043
+PUBLIC
+Rosebud
+0869
+Rosebud Public Schools
+0795
+Rosebud K-12
+1038
+Rosebud High School
+Abby                          
+Tucker                        
+Principal
+(406)347-5353
+(406)347-5544
+atucker@rhs12.com
+PO Box 38
+Rosebud
+59347
+PUBLIC
+Rosebud
+0870
+Colstrip Public Schools
+0797
+Colstrip H S
+1040
+Colstrip High School
+Robin                         
+Nansel                        
+Principal
+(406)748-4699
+(406)748-2517
+robin.nansel@colstrip.k12.mt.us
+PO Box 159
+Colstrip
+59323
+PUBLIC
+Sanders
+0874
+Plains Public Schools
+0803
+Plains K-12
+1046
+Plains High School
+Heidii                        
+Fettinger                     
+Principal
+(406)826-8600
+(406)826-4439
+heidii.fettinger@plainsschools.net
+Box 549
+Plains
+59859
+PUBLIC
+Sanders
+0875
+Thompson Falls Pub Schls
+0805
+Thompson Falls H S
+1048
+Thompson Falls High Schl
+Jodi                          
+Morgan                        
+Principal
+(406)827-3561
+(406)827-9463
+jmorgan@tfalls.org
+206 Haley Ave
+Thompson Falls
+59873
+PUBLIC
+Sanders
+0880
+Noxon Public Schools
+0812
+Noxon H S
+1055
+Noxon High School
+Joel                          
+Ramsey                        
+Principal
+(406)847-2442
+(406)847-2232
+joel.ramsey@noxonschools.com
+300 Noxon Ave
+Noxon
+59853
+PUBLIC
+Sanders
+0882
+Hot Springs K-12
+0815
+Hot Springs K-12
+1058
+Hot Springs High School
+Sam                           
+Hoff                          
+Principal
+(406)741-2962
+(406)741-3287
+shoff@hotspringspride.com
+PO Box 1005
+Hot Springs
+59845
+PUBLIC
+Sheridan
+0885
+Westby K-12 Schools
+0819
+Westby K-12 Schools
+1062
+Westby High School
+Lisa                          
+Laughlin                      
+Principal
+(406)385-2225
+(406)385-2430
+lisa.laughlin@westbyschool.k12.mt.us
+PO Box 109
+Westby
+59275
+PUBLIC
+Sheridan
+0887
+Medicine Lake K-12 Schools
+0822
+Medicine Lake K-12 Schools
+1065
+Medicine Lake High School
+Heather                       
+Marottek                      
+Principal
+(406)789-2211
+(406)789-2213
+hmarottek@medicinelake.k12.mt.us
+PO Box 265 311 Young St
+Medicine Lake
+59247
+PUBLIC
+Sheridan
+0891
+Plentywood K-12 Schools
+0828
+Plentywood K-12 Schools
+1071
+Plentywood High School
+Rob                           
+Nyby                          
+Principal
+(406)765-1803
+(406)765-1195
+rob.nyby@plentywood.k12.mt.us
+100 East Laurel Ave
+Plentywood
+59254
+PUBLIC
+Silver Bow
+0902
+Butte Public Schools
+1212
+Butte H S
+1103
+Butte High School
+John                          
+Metz                          
+Principal
+(406)533-2220
+(406)533-2277
+metzja@bsd1.org
+111 North Montana
+Butte
+59701
+PUBLIC
+Silver Bow
+0902
+Butte Public Schools
+1212
+Butte H S
+3034
+Butte Pathway Academy
+Melissa                       
+Johnson                       
+Principal
+(406)533-2527
+johnsonmj@bsd1.org
+111 North Montana
+Butte
+59701
+PUBLIC
+Stillwater
+0908
+Park City Public Schools
+0847
+Park City H S
+1110
+Park City High School
+Mitchell                      
+Ward                          
+Principal
+(406)633-2350
+(406)633-2913
+mward@pcsd5.org
+PO Box 278
+Park City
+59063
+PUBLIC
+Stillwater
+0909
+Columbus Public Schools
+0849
+Columbus H S
+1112
+Columbus High School
+Jim                           
+Browning                      
+Principal
+(406)322-5373
+(406)322-5028
+jbrowning@columbus.k12.mt.us
+433 N 3rd St
+Columbus
+59019-7165
+PUBLIC
+Stillwater
+0910
+Reed Point Public Schools
+0851
+Reed Point H S
+1114
+Reed Point High School
+Heather
+Jarrett
+Principal
+(406)326-2245
+(406)326-2339
+hjarrett@reedpoint.k12.mt.us
+PO Box 338
+Reed Point
+59069
+PUBLIC
+Stillwater
+0917
+Rapelje Public Schools
+0859
+Rapelje H S
+1123
+Rapelje High School
+Brent                         
+Lipp                          
+Principal
+(406)663-2215
+(406)663-2299
+blipp@rapelje.k12.mt.us
+PO Box 89
+Rapelje
+59067
+PUBLIC
+Stillwater
+0919
+Absarokee Public Schools
+0862
+Absarokee H S
+1126
+Absarokee High School
+Brett                         
+Scott                         
+Principal
+(406)328-4583
+(406)328-4077
+Scottb@absarokee.k12.mt.us
+327 S Woodard Ave
+Absarokee
+59001
+PUBLIC
+Sweet Grass
+0939
+Sweet Grass County HS
+0882
+Sweet Grass County H S
+1130
+Sweet Grass Co High Schl
+Eric
+Gustafson
+Principal
+(406)932-5993
+(406)932-5982
+gustafsone@sgchs.com
+PO Box 886
+Big Timber
+59011
+PUBLIC
+Teton
+0940
+Choteau Public Schools
+0884
+Choteau H S
+1148
+Choteau High School
+Matthew                       
+Cornelius                     
+Principal
+(406)466-5303
+(406)466-5305
+matt.cornelius@choteauschools.net
+204 7th Ave NW
+Choteau
+59422
+PUBLIC
+Teton
+0946
+Fairfield Public Schools
+0891
+Fairfield H S
+1155
+Fairfield High School
+Paul                          
+Wilson                        
+Principal
+(406)467-2528
+(406)467-2554
+pwilson@fairfield.k12.mt.us
+Box 399
+Fairfield
+59436
+PUBLIC
+Teton
+0948
+Power Public Schools
+0895
+Power H S
+1159
+Power High School
+Nichole                       
+Pieper                        
+Principal
+(406)463-2251
+(406)463-2360
+npieper@power.k12.mt.us
+PO Box 155
+Power
+59468
+PUBLIC
+Teton
+1072
+Dutton/Brady K-12 Schools
+1235
+Dutton/Brady K-12 Schools
+1157
+Dutton/Brady High School
+Erica
+Allen
+Principal
+(406)476-3424
+(406)476-3342
+eallen@dbps.us
+101 2nd St NE
+Dutton
+59433-9670
+PUBLIC
+Toole
+0955
+Sunburst K-12 Schools
+0903
+Sunburst K-12 Schools
+1168
+Sunburst High School
+J. Tyler
+Bucklin
+Principal
+(406)937-2811
+(406)937-2828
+tbucklin@sunburst.k12.mt.us
+Box 710
+Sunburst
+59482
+PUBLIC
+Toole
+0962
+Shelby Public Schools
+0911
+Shelby H S
+1178
+Shelby High School
+Kyle                          
+Fisher                        
+Principal
+(406)424-8910
+(406)434-7273
+kyle.fisher@shelby.k12.mt.us
+1010 Oilfield Avenue
+Shelby
+59474
+PUBLIC
+Treasure
+0973
+Hysham K-12 Schools
+0923
+Hysham K-12 Schools
+1194
+Hysham High School
+Willam                        
+Colter                        
+Supervising Teacher
+(406)342-5237
+(406)342-5257
+bcolter@hyshamschools.com
+PO Box 272
+Hysham
+59038
+PUBLIC
+Valley
+0975
+Glasgow K-12 Schools
+0926
+Glasgow K-12 Schools
+1204
+Glasgow High School
+Brett                         
+Huntsman                      
+Principal
+(406)228-2485
+(406)228-4061
+huntsman@glasgow.k12.mt.us
+Box 28
+Glasgow
+59230
+PUBLIC
+Valley
+0976
+Frazer Public Schools
+0928
+Frazer H S
+1208
+Frazer High School
+Shiloh                        
+Seymour                       
+Principal
+(406)695-2241
+(406)695-2243
+principal@frazer.k12.mt.us
+PO Box 488
+Frazer
+59225
+PUBLIC
+Valley
+0980
+Hinsdale Public Schools
+0933
+Hinsdale H S
+1213
+Hinsdale High School
+Adam                          
+Zopp                          
+Principal
+(406)364-2314
+(406)364-2205
+superintendent@hinsdale.k12.mt.us
+PO Box 398
+Hinsdale
+59241
+PUBLIC
+Valley
+0980
+Hinsdale Public Schools
+0933
+Hinsdale H S
+1213
+Hinsdale High School
+Adam                          
+Zopp                          
+Supervising Teacher
+(406)364-2314
+(406)364-2205
+superintendent@hinsdale.k12.mt.us
+PO Box 398
+Hinsdale
+59241
+PUBLIC
+Valley
+0981
+Opheim K-12 Schools
+0935
+Opheim K-12 Schools
+1215
+Opheim High School
+Colby                         
+Minert                        
+Principal
+(406)762-3214
+(406)762-3348
+ohs.admin@ohsvikings.org
+Box 108
+Opheim
+59250
+PUBLIC
+Valley
+0982
+Nashua K-12 Schools
+0937
+Nashua K-12 Schools
+1219
+Nashua High School
+Sue                           
+Hoyer                         
+Principal
+(406)746-3411
+(406)746-3458
+shoyer@nashua.k12.mt.us
+PO Box 170
+Nashua
+59248
+PUBLIC
+Wheatland
+0990
+Harlowton Public Schools
+0946
+Harlowton K-12
+1230
+Harlowton High School
+Kim                           
+Carey                         
+Principal
+(406)632-4324
+(406)632-4416
+kim.carey@harlowton.k12.mt.us
+PO Box 288
+Harlowton
+59036
+PUBLIC
+Wheatland
+0992
+Judith Gap Public Schools
+0949
+Judith Gap H S
+1233
+Judith Gap High School
+Jon                           
+Wrzesinski                    
+Principal
+(406)473-2211
+(406)473-2250
+jwrzesinski@judithgap.k12.mt.us
+PO Box 67
+Judith Gap
+59453
+PUBLIC
+Wibaux
+0997
+Wibaux K-12 Schools
+0964
+Wibaux K-12 Schools
+1239
+Wibaux High School
+Annie
+Begger
+Principal
+(406)796-2474
+(406)796-2259
+ambegger@wibauxschool.net
+121 F Street N
+Wibaux
+59353
+PUBLIC
+Yellowstone
+1007
+Billings Public Schools
+0966
+Billings H S
+1250
+Billings Sr High School
+Shelli                        
+Strouf                        
+Principal
+(406)281-5400
+(406)281-6174
+stroufm@billingsschools.org
+415 North 30th Street
+Billings
+59101
+PUBLIC
+Yellowstone
+1007
+Billings Public Schools
+0966
+Billings H S
+1251
+Billings West High School
+Jeremy                        
+Carlson                       
+Principal
+(406)281-5600
+(406)655-3100
+carlsonj@billingsschools.org
+415 North 30th Street
+Billings
+59101
+PUBLIC
+Yellowstone
+1007
+Billings Public Schools
+0966
+Billings H S
+1628
+Skyview High School
+Jay                           
+Wahl                          
+Principal
+(406)281-5200
+(406)255-3507
+wahlj@billingsschools.org
+415 North 30th Street
+Billings
+59101
+PUBLIC
+Yellowstone
+1007
+Billings Public Schools
+0966
+Billings H S
+3004
+Billings Multilingual Acad HS
+Coul                          
+Hill                          
+Principal
+(406)281-5066
+hillcl@billingsschools.org
+415 North 30th Street
+Billings
+59101
+PUBLIC
+Yellowstone
+1007
+Billings Public Schools
+0966
+Billings H S
+3005
+Billings Early College School 
+Josh                          
+Monson                        
+Principal
+(406)281-5994
+monsonj@billingsschools.org
+415 North 30th Street
+Billings
+59101
+PUBLIC
+Yellowstone
+1007
+Billings Public Schools
+0966
+Billings H S
+3006
+Billings Opportunity School 
+Josh                          
+Monson                        
+Principal
+(406)281-5120
+monsonj@billingsschools.org
+415 North 30th Street
+Billings
+59101
+PUBLIC
+Yellowstone
+1008
+Lockwood Public Schools
+1241
+Lockwood K-12
+1862
+Lockwood High School
+Gwen                          
+Poole                         
+Principal
+(406)252-6022
+(406)259-2502
+pooleg@lockwoodschool.org
+1932 US Highway 87 E.
+Lockwood
+59101
+PUBLIC
+Yellowstone
+1011
+Laurel Public Schools
+0971
+Laurel H S
+1284
+Laurel High School
+Melissa                       
+Byington                      
+Principal
+(406)628-7911
+(406)628-3558
+melissa_byington@laurel.k12.mt.us
+606 S 5th St 
+Laurel
+59044
+PUBLIC
+Yellowstone
+1014
+Custer K-12 Schools
+0975
+Custer K-12 Schools
+1289
+Custer High School
+Lance                         
+Olson                         
+Principal
+(406)856-4117
+(406)856-4206
+supt@custerschools.org
+Box 69
+Custer
+59024
+PUBLIC
+Yellowstone
+1017
+Broadview Public Schools
+0979
+Broadview K-12
+1293
+Broadview High School
+Chad                          
+Fordyce                       
+Principal
+(406)667-2337
+(406)667-2195
+chad_f@broadviewschools.org
+PO Box 147
+Broadview
+59015
+PUBLIC
+Yellowstone
+1020
+Huntley Project K-12 Schls
+0983
+Huntley Project K-12 Schools
+1298
+Huntley Project High Schl
+Tim                           
+Kaczmarek                     
+Principal
+(406)967-2540
+(406)967-2589
+tkaczmarek@huntley.k12.mt.us
+1477 Ash Street
+Worden
+59088
+PUBLIC
+Yellowstone
+1022
+Shepherd Public Schools
+0986
+Shepherd H S
+1301
+Shepherd High School
+Kenneth
+Poepping
+Principal
+(406)373-5300
+(406)373-5342
+kj-poepping@shepherd.k12.mt.us
+Box 8
+Shepherd
+59079
+PUBLIC

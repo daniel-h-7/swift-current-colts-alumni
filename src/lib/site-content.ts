@@ -42,7 +42,20 @@ export type SiteFundraisingCampaign = {
   title: string;
 };
 
+export type SiteBrandContent = {
+  accentColor: string;
+  heroBody: string;
+  heroImageUrl: string;
+  heroKicker: string;
+  heroTitle: string;
+  logoUrl: string;
+  primaryColor: string;
+  secondaryColor: string;
+  siteTitle: string;
+};
+
 export type SiteContent = {
+  brand: SiteBrandContent;
   events: SiteEvent[];
   fundraisingCampaigns: SiteFundraisingCampaign[];
   impactStats: SiteImpactStat[];
@@ -50,7 +63,36 @@ export type SiteContent = {
   spotlights: SiteSpotlight[];
 };
 
+function createDefaultBrandContent(): SiteBrandContent {
+  const brand = getSiteBrand();
+  const primaryColor =
+    brand.variant === "rmrfootball"
+      ? "#ceb74c"
+      : brand.variant === "bfbadgers"
+        ? "#1d4ed8"
+        : "#047857";
+  const accentColor =
+    brand.variant === "rmrfootball"
+      ? "#e5d36b"
+      : brand.variant === "bfbadgers"
+        ? "#bfdbfe"
+        : "#10b981";
+
+  return {
+    accentColor,
+    heroBody: brand.heroBody,
+    heroImageUrl: brand.heroImage,
+    heroKicker: brand.heroKicker,
+    heroTitle: `${brand.heroLineOne} ${brand.heroLineTwo}`.trim(),
+    logoUrl: brand.navLogoImage ?? brand.heroMarkImage ?? "",
+    primaryColor,
+    secondaryColor: "#0f172a",
+    siteTitle: brand.programName,
+  };
+}
+
 const coltsDefaultSiteContent: SiteContent = {
+  brand: createDefaultBrandContent(),
   events: [
     {
       date: "June 21, 2026",
@@ -105,6 +147,7 @@ const coltsDefaultSiteContent: SiteContent = {
 };
 
 const demoDefaultSiteContent: SiteContent = {
+  brand: createDefaultBrandContent(),
   events: [
     {
       date: "August 28, 2026",
@@ -182,6 +225,7 @@ const demoDefaultSiteContent: SiteContent = {
 };
 
 const ramsDefaultSiteContent: SiteContent = {
+  brand: createDefaultBrandContent(),
   events: [
     {
       date: "September 12, 2026",
@@ -247,6 +291,7 @@ const ramsDefaultSiteContent: SiteContent = {
 };
 
 const bfBadgersDefaultSiteContent: SiteContent = {
+  brand: createDefaultBrandContent(),
   events: [
     {
       date: "August 28, 2026",
@@ -343,6 +388,42 @@ export function getDefaultSiteContent() {
 
 function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function cleanColor(value: unknown, fallback: string) {
+  const text = cleanText(value);
+
+  if (/^#[0-9a-f]{6}$/i.test(text)) {
+    return text;
+  }
+
+  if (/^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/i.test(text)) {
+    return text;
+  }
+
+  return fallback;
+}
+
+function normalizeBrandContent(value: unknown): SiteBrandContent {
+  const defaults = createDefaultBrandContent();
+
+  if (!value || typeof value !== "object") {
+    return defaults;
+  }
+
+  const item = value as Partial<SiteBrandContent>;
+
+  return {
+    accentColor: cleanColor(item.accentColor, defaults.accentColor),
+    heroBody: cleanText(item.heroBody) || defaults.heroBody,
+    heroImageUrl: cleanText(item.heroImageUrl) || defaults.heroImageUrl,
+    heroKicker: cleanText(item.heroKicker) || defaults.heroKicker,
+    heroTitle: cleanText(item.heroTitle) || defaults.heroTitle,
+    logoUrl: cleanText(item.logoUrl),
+    primaryColor: cleanColor(item.primaryColor, defaults.primaryColor),
+    secondaryColor: cleanColor(item.secondaryColor, defaults.secondaryColor),
+    siteTitle: cleanText(item.siteTitle) || defaults.siteTitle,
+  };
 }
 
 function normalizeSpotlight(value: unknown): SiteSpotlight | null {
@@ -457,6 +538,7 @@ export function normalizeSiteContent(value: unknown): SiteContent {
   }
 
   const content = value as Partial<SiteContent>;
+  const brand = normalizeBrandContent(content.brand);
   const spotlights = Array.isArray(content.spotlights)
     ? content.spotlights.map(normalizeSpotlight).filter(Boolean)
     : [];
@@ -474,6 +556,7 @@ export function normalizeSiteContent(value: unknown): SiteContent {
     : [];
 
   return {
+    brand,
     events: events.length ? (events as SiteEvent[]) : defaultSiteContent.events,
     fundraisingCampaigns: fundraisingCampaigns.length
       ? (fundraisingCampaigns as SiteFundraisingCampaign[])
@@ -521,5 +604,91 @@ export async function getSiteContentForClient(clientId: string) {
     return normalizeSiteContent(data.site_content);
   } catch {
     return defaultSiteContent;
+  }
+}
+
+export function createStarterSiteContent(clientName: string): SiteContent {
+  const name = cleanText(clientName) || "Your Program";
+
+  return {
+    brand: {
+      accentColor: "#10b981",
+      heroBody:
+        "Connect alumni, families, sponsors, and supporters around the stories and moments that keep the program moving.",
+      heroImageUrl: "/images/stadium.jpg",
+      heroKicker: "Alumni and Booster Club",
+      heroTitle: `${name} Alumni`,
+      logoUrl: "",
+      primaryColor: "#047857",
+      secondaryColor: "#0f172a",
+      siteTitle: name,
+    },
+    events: [
+      {
+        date: "September 18, 2026",
+        linkLabel: "Details",
+        linkUrl: "",
+        notes: "Bring alumni, families, and supporters together for a game-day gathering.",
+        title: "Alumni Homecoming",
+      },
+    ],
+    fundraisingCampaigns: [
+      {
+        buttonLabel: "Support the Program",
+        buttonUrl: "/join",
+        description:
+          "Give supporters a clear campaign to rally around and track progress as momentum grows.",
+        eyebrow: "Current Campaign",
+        goalLabel: "Raised of $25,000",
+        progressPercent: 25,
+        raisedLabel: "$6,250",
+        title: "Program Support Fund",
+      },
+    ],
+    impactStats: [],
+    sponsors: [
+      { imageUrl: "", linkUrl: "", name: "Founding Sponsor" },
+      { imageUrl: "", linkUrl: "", name: "Community Partner" },
+    ],
+    spotlights: [
+      {
+        classYear: "Alumni",
+        descriptor: "Program supporter and community champion",
+        imageClass: "object-center",
+        imageUrl: "/images/team-gridiron-shield.svg",
+        name: "Alumni Spotlight",
+      },
+    ],
+  };
+}
+
+export async function saveSiteContentForClient(
+  clientId: string,
+  content: SiteContent,
+  membership: {
+    joinBody: string;
+    joinHeadline: string;
+    membershipYearLabel: string;
+  },
+) {
+  const supabase = createServerSupabaseClient();
+  const now = new Date().toISOString();
+  const { error } = await supabase.from("crm_settings").upsert(
+    {
+      client_id: clientId,
+      id: "default",
+      join_body: membership.joinBody,
+      join_headline: membership.joinHeadline,
+      membership_year_label: membership.membershipYearLabel,
+      site_content: content,
+      updated_at: now,
+    },
+    {
+      onConflict: "client_id,id",
+    },
+  );
+
+  if (error) {
+    throw new Error(error.message);
   }
 }

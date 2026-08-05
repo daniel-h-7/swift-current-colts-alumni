@@ -53,7 +53,7 @@ export async function StudioDashboard({
         actions={[
           { href: `/studio/${client.id}`, label: "Builder", tone: "primary" },
           { href: "/studio/start", label: "Start Site" },
-          { href: `/hq/clients/${client.id}`, label: "HQ" },
+          { href: "/studio/logout", label: "Log Out" },
         ]}
         subtitle="The client-facing workspace for building and managing a TeamAlum site."
         title={`${client.name} Site Builder`}
@@ -192,6 +192,16 @@ export async function StudioDashboard({
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">Payments</h2>
             <div className="mt-4 space-y-4">
+              <div className="border border-emerald-200 bg-emerald-50 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">
+                  TeamAlum Access
+                </p>
+                <p className="mt-2 text-xl font-black">$360 / year</p>
+                <p className="mt-2 text-xs font-bold leading-5 text-emerald-800">
+                  Planned as $30/month, billed annually. If your site does not
+                  raise enough to cover the fee, the site is on us.
+                </p>
+              </div>
               <div className="border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                   Annual Amount

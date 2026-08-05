@@ -1,6 +1,7 @@
 import "server-only";
 
 import { defaultClientFeatures } from "@/lib/platform-data";
+import { createStarterSiteContent } from "@/lib/site-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type CreateClientInput = {
@@ -91,6 +92,7 @@ export async function createTeamAlumClient(input: CreateClientInput) {
       join_headline: joinHeadline,
       join_is_open: true,
       membership_year_label: membershipYearLabel,
+      site_content: createStarterSiteContent(input.name),
       updated_at: now,
     },
     {

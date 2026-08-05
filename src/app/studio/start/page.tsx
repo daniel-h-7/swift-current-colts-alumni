@@ -22,9 +22,9 @@ export default async function StudioStartPage({
       <StudioHeader
         actions={[
           { href: "/", label: "TeamAlum" },
-          { href: "/studio", label: "Studio" },
+          { href: "/studio/login", label: "Log In" },
         ]}
-        subtitle="Create the first version of a team site, then finish setup in Studio."
+        subtitle="Create the first version of a team site, then come back any time to keep it fresh."
         title="Start a TeamAlum Site"
       />
 
@@ -36,7 +36,8 @@ export default async function StudioStartPage({
         >
           <h2 className="text-xl font-black">Organization</h2>
           <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-            This creates a tenant in the shared TeamAlum database.
+            This creates your site workspace and your owner login in the shared
+            TeamAlum platform.
           </p>
 
           {params.error ? (
@@ -102,12 +103,24 @@ export default async function StudioStartPage({
             </label>
 
             <label className="text-sm font-bold text-slate-700">
-              Admin Email
+              Owner Email
               <input
                 className={fieldClass}
                 name="admin_email"
                 placeholder="you@example.com"
+                required
                 type="email"
+              />
+            </label>
+            <label className="text-sm font-bold text-slate-700">
+              Owner Password
+              <input
+                autoComplete="new-password"
+                className={fieldClass}
+                minLength={8}
+                name="password"
+                required
+                type="password"
               />
             </label>
           </div>
@@ -124,11 +137,12 @@ export default async function StudioStartPage({
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">What Happens Next</h2>
             <div className="mt-5 space-y-3">
-              {[
-                "Your site workspace is created",
-                "Default membership settings are seeded",
-                "Core features are turned on",
-                "You land in Studio to continue setup",
+            {[
+              "Your site workspace is created",
+              "Your owner login is connected",
+              "Default membership settings are seeded",
+              "Core features are turned on",
+              "You land in Studio to continue setup",
               ].map((item, index) => (
                 <div
                   className="flex gap-3 border border-slate-200 bg-slate-50 p-4"
@@ -144,16 +158,16 @@ export default async function StudioStartPage({
           </section>
 
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-black">Internal Setup</h2>
+            <h2 className="text-lg font-black">Simple Pricing</h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-              You can also create clients from HQ when you want a controlled
-              operator-led setup.
+              TeamAlum is planned at $30/month, billed annually at $360. If the
+              site does not raise enough to cover the fee, the site is on us.
             </p>
             <Link
               className="mt-5 inline-flex border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-black text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
-              href="/hq/clients/new"
+              href="/studio/login"
             >
-              Open HQ New Client
+              Log In Later
             </Link>
           </section>
         </aside>

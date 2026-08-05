@@ -4,6 +4,11 @@ import {
   createTeamAlumClient,
   normalizeClientId,
 } from "@/lib/client-create";
+import {
+  addStudioClientUser,
+  createStudioSession,
+  createStudioUser,
+} from "@/lib/studio-auth";
 
 function redirectTo(request: Request, path: string) {
   return NextResponse.redirect(new URL(path, request.url), 303);
@@ -17,12 +22,23 @@ export async function POST(request: Request) {
     const amount = String(formData.get("annual_membership_amount") ?? "").trim();
     const parsedAmount = amount ? Number.parseFloat(amount) : 0;
     const template = String(formData.get("template") ?? "football").trim();
+    const adminEmail = String(formData.get("admin_email") ?? "")
+      .trim()
+      .toLowerCase();
+    const password = String(formData.get("password") ?? "");
     const clientId = subdomain;
 
-    if (!name || !subdomain) {
+    if (!name || !subdomain || !adminEmail || !password) {
       return redirectTo(
         request,
-        `/studio/start?error=${encodeURIComponent("Add a program name and site URL.")}`,
+        `/studio/start?error=${encodeURIComponent("Add a program name, site URL, owner email, and password.")}`,
+      );
+    }
+
+    if (password.length < 8) {
+      return redirectTo(
+        request,
+        "/studio/start?error=Password%20must%20be%20at%20least%208%20characters.",
       );
     }
 
@@ -32,6 +48,8 @@ export async function POST(request: Request) {
         "/studio/start?error=Enter%20a%20valid%20membership%20amount.",
       );
     }
+
+    const studioUser = await createStudioUser(adminEmail, password);
 
     await createTeamAlumClient({
       annualMembershipAmountCents: Math.round(parsedAmount * 100),
@@ -44,6 +62,14 @@ export async function POST(request: Request) {
       status: "trial",
       subdomain,
     });
+    await addStudioClientUser({
+      authUserId: studioUser.authUserId,
+      clientId,
+      email: studioUser.email,
+      fullName: name,
+      role: "owner",
+    });
+    await createStudioSession(studioUser);
 
     revalidatePath("/hq");
     revalidatePath("/studio");

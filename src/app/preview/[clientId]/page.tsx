@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventsSlider } from "@/components/events-slider";
@@ -59,12 +58,15 @@ export default async function ClientPreviewPage({
   const visibleSections = sections.filter((section) =>
     isSectionVisible(section.section_key),
   );
+  const brand = siteContent.brand;
+  const heroImage = brand.heroImageUrl || "/images/stadium.jpg";
+  const joinHref = isSectionVisible("memberships") ? "#join" : `/studio/${previewClient.id}/content`;
 
   function renderSection(sectionKey: SiteSectionKey) {
     if (sectionKey === "sponsors") {
       return (
         <section id="sponsors" className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
-          <div className="border border-white/10 bg-zinc-950 p-8">
+          <div className="rounded-[8px] border border-white/10 bg-zinc-950 p-8">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="program-kicker">Community Powered</p>
@@ -107,7 +109,7 @@ export default async function ClientPreviewPage({
               {settings.membership_year_label}
             </p>
             <Link
-              className="mt-7 inline-flex border border-white/15 bg-white/10 px-6 py-4 text-sm font-black uppercase tracking-[0.2em] text-white"
+              className="mt-7 inline-flex rounded-full border border-white/15 bg-white/10 px-6 py-4 text-sm font-black uppercase text-white"
               href={`/studio/${previewClient.id}/content`}
             >
               Continue Editing
@@ -146,7 +148,7 @@ export default async function ClientPreviewPage({
     if (sectionKey === "fundraising_campaigns") {
       return (
         <section className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
-          <div className="border border-white/10 bg-zinc-950 p-8">
+          <div className="rounded-[8px] border border-white/10 bg-zinc-950 p-8">
             <p className="program-kicker">Campaigns</p>
             <h2 className="mt-3 text-4xl font-black">Campaign Goals</h2>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -168,36 +170,50 @@ export default async function ClientPreviewPage({
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="border-b border-amber-300/25 bg-amber-950/50 px-6 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-amber-100">
+    <main
+      className="min-h-screen text-white"
+      style={{ backgroundColor: brand.secondaryColor }}
+    >
+      <div className="border-b border-amber-300/25 bg-amber-950/50 px-6 py-3 text-center text-xs font-black uppercase text-amber-100">
         Preview Mode
       </div>
 
       <section className="relative min-h-[82vh] overflow-hidden">
-        <Image
-          alt="Football stadium under lights"
-          className="object-cover opacity-55 saturate-125"
-          fill
-          priority
-          src="/images/stadium.jpg"
+        <div
+          aria-label="Site hero image"
+          className="absolute inset-0 bg-cover bg-center opacity-55 saturate-125"
+          role="img"
+          style={{ backgroundImage: `url("${heroImage}")` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/72 to-black" />
         <div className="absolute inset-0 premium-grid opacity-35" />
 
         <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
           <Link className="flex items-center gap-3" href={`/studio/${previewClient.id}`}>
-            <span className="flex h-11 w-11 items-center justify-center border border-white/25 bg-white/10 text-sm font-black">
-              {previewClient.name
-                .split(/\s+/)
-                .slice(0, 2)
-                .map((part) => part[0])
-                .join("")
-                .toUpperCase()}
-            </span>
-            <span className="font-black">{previewClient.name}</span>
+            {brand.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                alt={`${brand.siteTitle} logo`}
+                className="h-12 w-12 rounded-full border border-white/25 bg-white object-contain p-1"
+                src={brand.logoUrl}
+              />
+            ) : (
+              <span
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-sm font-black"
+                style={{ backgroundColor: brand.primaryColor }}
+              >
+                {brand.siteTitle
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join("")
+                  .toUpperCase()}
+              </span>
+            )}
+            <span className="font-black">{brand.siteTitle}</span>
           </Link>
 
-          <nav className="hidden gap-5 text-sm font-black uppercase tracking-[0.16em] text-gray-300 md:flex">
+          <nav className="hidden gap-5 text-sm font-black uppercase text-gray-300 md:flex">
             {isSectionVisible("sponsors") ? <a href="#sponsors">Sponsors</a> : null}
             {isSectionVisible("events") ? <a href="#events">Events</a> : null}
             {isSectionVisible("memberships") ? <a href="#join">Join</a> : null}
@@ -206,18 +222,22 @@ export default async function ClientPreviewPage({
 
         <div className="relative z-10 mx-auto flex min-h-[62vh] max-w-5xl items-center justify-center px-6 text-center">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.36em] text-emerald-300">
-              Alumni and Booster Club
+            <p
+              className="text-sm font-black uppercase"
+              style={{ color: brand.accentColor }}
+            >
+              {brand.heroKicker}
             </p>
             <h1 className="mt-5 text-5xl font-black leading-none md:text-7xl">
-              {previewClient.name}
+              {brand.heroTitle}
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg font-semibold leading-8 text-gray-200">
-              {settings.join_body}
+              {brand.heroBody}
             </p>
             <Link
-              className="mt-9 inline-flex border border-emerald-400/50 bg-emerald-600 px-6 py-4 text-sm font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-500"
-              href="#join"
+              className="mt-9 inline-flex rounded-full px-6 py-4 text-sm font-black uppercase text-white transition hover:opacity-90"
+              href={joinHref}
+              style={{ backgroundColor: brand.primaryColor }}
             >
               Support the Program
             </Link>
