@@ -43,6 +43,7 @@ export async function POST(
     }
 
     const formData = await request.formData();
+    const intent = String(formData.get("intent") ?? "save");
     const supabase = createServerSupabaseClient();
     const now = new Date().toISOString();
     const featureRows = defaultClientFeatures.map((feature) => ({
@@ -70,11 +71,16 @@ export async function POST(
     const submittedOrder = formData
       .getAll("section_order")
       .map((value) => String(value)) as SiteSectionKey[];
-    const orderedKeys = submittedOrder.length
+    const hasSectionOrder = formData.get("has_section_order") === "1";
+    const orderedKeys = submittedOrder.length || hasSectionOrder
       ? submittedOrder
       : defaultSiteSections.map((section) => section.section_key);
-    const sections = orderedKeys.map((sectionKey, index) => ({
-      is_enabled: formData.get(`section:${sectionKey}`) === "on",
+    const orderedKeySet = new Set(orderedKeys);
+    const disabledKeys = defaultSiteSections
+      .map((section) => section.section_key)
+      .filter((sectionKey) => !orderedKeySet.has(sectionKey));
+    const sections = [...orderedKeys, ...disabledKeys].map((sectionKey, index) => ({
+      is_enabled: orderedKeySet.has(sectionKey),
       section_key: sectionKey,
       sort_order: (index + 1) * 10,
     }));
@@ -83,6 +89,13 @@ export async function POST(
 
     revalidatePath(`/studio/${clientId}`);
     revalidatePath(`/preview/${clientId}`);
+
+    if (intent === "continue") {
+      return redirectTo(
+        request,
+        `/studio/${encodeURIComponent(clientId)}/content?saved=features`,
+      );
+    }
 
     return redirectTo(request, `/studio/${encodeURIComponent(clientId)}?saved=features`);
   } catch (error) {

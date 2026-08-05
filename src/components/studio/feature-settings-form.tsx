@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ClientFeature,
   getFeatureDescription,
@@ -66,10 +66,72 @@ export function FeatureSettingsForm({
   features: ClientFeature[];
   sections: SiteSection[];
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [featureState, setFeatureState] = useState(() =>
+    Object.fromEntries(
+      features.map((feature) => [feature.feature_key, feature.is_enabled]),
+    ),
+  );
   const [orderedSections, setOrderedSections] = useState(sections);
   const [draggedSection, setDraggedSection] = useState<SiteSectionKey | null>(
     null,
   );
+  const enabledOrderedSections = useMemo(
+    () =>
+      orderedSections.filter(
+        (section) => featureState[section.section_key] !== false,
+      ),
+    [featureState, orderedSections],
+  );
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!isDirty || isSubmitting) {
+        return;
+      }
+
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      if (!isDirty || isSubmitting) {
+        return;
+      }
+
+      const target = event.target;
+
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const link = target.closest("a");
+
+      if (!link) {
+        return;
+      }
+
+      const href = link.getAttribute("href") ?? "";
+
+      if (!href || href.startsWith("#")) {
+        return;
+      }
+
+      if (!window.confirm("You have unsaved changes. Leave without saving?")) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleClick, true);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleClick, true);
+    };
+  }, [isDirty, isSubmitting]);
 
   function moveSection(sectionKey: SiteSectionKey, targetKey: SiteSectionKey) {
     if (sectionKey === targetKey) {
@@ -91,13 +153,24 @@ export function FeatureSettingsForm({
 
       const next = [...withoutMoving];
       next.splice(targetIndex, 0, moving);
+      setIsDirty(true);
 
       return next;
     });
   }
 
   return (
-    <form action={action} className="space-y-6" method="post">
+    <form
+      action={action}
+      className="space-y-6"
+      id="feature-settings-form"
+      method="post"
+      onSubmit={() => {
+        setIsSubmitting(true);
+        setIsDirty(false);
+      }}
+      ref={formRef}
+    >
       <section className="border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -106,7 +179,7 @@ export function FeatureSettingsForm({
               Turn site sections on or off for this client.
             </p>
           </div>
-          <span className="border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-emerald-700">
+          <span className="border border-emerald-200 bg-emerald-50 px-3 py-3 text-xs font-black uppercase tracking-[0.16em] text-emerald-700">
             Live Controls
           </span>
         </div>
@@ -125,11 +198,11 @@ export function FeatureSettingsForm({
                     {getFeatureLabel(feature.feature_key)}
                   </h3>
                   <Toggle
-                    checked={feature.is_enabled}
+                    checked={Boolean(featureState[feature.feature_key])}
                     disabled={!toggleable}
                     label={
                       toggleable
-                        ? feature.is_enabled
+                        ? featureState[feature.feature_key]
                           ? "On"
                           : "Off"
                         : getFeatureManagementLabel(feature.feature_key)
@@ -137,6 +210,13 @@ export function FeatureSettingsForm({
                     name={
                       toggleable ? `feature:${feature.feature_key}` : undefined
                     }
+                    onChange={(checked) => {
+                      setFeatureState((current) => ({
+                        ...current,
+                        [feature.feature_key]: checked,
+                      }));
+                      setIsDirty(true);
+                    }}
                   />
                 </div>
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
@@ -149,13 +229,16 @@ export function FeatureSettingsForm({
       </section>
 
       <section className="border border-slate-200 bg-white p-6 shadow-sm">
+        <input name="has_section_order" type="hidden" value="1" />
         <h2 className="text-lg font-black">Homepage Order</h2>
         <p className="mt-1 text-sm font-semibold text-slate-500">
-          Drag sections into the order they should appear on the preview site.
+          Drag the enabled sections into the order they should appear on the
+          preview site.
         </p>
 
         <div className="mt-5 space-y-3">
-          {orderedSections.map((section, index) => (
+          {enabledOrderedSections.length ? (
+            enabledOrderedSections.map((section, index) => (
             <div
               className="flex cursor-grab items-center justify-between gap-4 border border-slate-200 bg-slate-50 px-4 py-3 active:cursor-grabbing"
               draggable
@@ -182,30 +265,36 @@ export function FeatureSettingsForm({
                   {getSectionLabel(section.section_key)}
                 </span>
               </div>
-              <Toggle
-                checked={section.is_enabled}
-                label={section.is_enabled ? "Shown" : "Hidden"}
-                name={`section:${section.section_key}`}
-                onChange={(checked) => {
-                  setOrderedSections((current) =>
-                    current.map((item) =>
-                      item.section_key === section.section_key
-                        ? { ...item, is_enabled: checked }
-                        : item,
-                    ),
-                  );
-                }}
-              />
+              <span className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-black uppercase text-emerald-700">
+                Enabled
+              </span>
             </div>
-          ))}
+            ))
+          ) : (
+            <div className="border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm font-bold text-slate-500">
+              Turn on a homepage feature above to add it to the order.
+            </div>
+          )}
         </div>
+        {orderedSections
+          .filter((section) => !enabledOrderedSections.includes(section))
+          .map((section) => (
+            <input
+              key={section.section_key}
+              name="section_disabled"
+              type="hidden"
+              value={section.section_key}
+            />
+          ))}
       </section>
 
       <button
         className="w-full border border-emerald-700 bg-emerald-700 px-6 py-5 text-center text-sm font-black uppercase tracking-[0.2em] text-white shadow-sm transition hover:bg-emerald-600"
+        name="intent"
         type="submit"
+        value="continue"
       >
-        Save Feature Settings
+        Save Settings and Continue to Edit Content
       </button>
     </form>
   );

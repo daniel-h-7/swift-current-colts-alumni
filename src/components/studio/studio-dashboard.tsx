@@ -80,12 +80,23 @@ export async function StudioDashboard({
                     : client.custom_domain || client.primary_domain || client.id}
                 </p>
               </div>
-              <Link
-                className="inline-flex border border-slate-300 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700"
-                href={previewHref}
-              >
-                Preview Site
-              </Link>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="inline-flex border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+                  form="feature-settings-form"
+                  name="intent"
+                  type="submit"
+                  value="save"
+                >
+                  Save Settings
+                </button>
+                <Link
+                  className="inline-flex border border-slate-300 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700"
+                  href={previewHref}
+                >
+                  Preview Site
+                </Link>
+              </div>
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -121,19 +132,13 @@ export async function StudioDashboard({
           />
 
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
               <div>
                 <h2 className="text-lg font-black">Homepage Content</h2>
                 <p className="mt-1 text-sm font-semibold text-slate-500">
                   Current content blocks connected to the public template.
                 </p>
               </div>
-              <Link
-                className="inline-flex border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
-                href={`/studio/${client.id}/content`}
-              >
-                Continue to Edit Content
-              </Link>
             </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-4">
