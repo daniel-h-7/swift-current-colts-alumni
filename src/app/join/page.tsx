@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { JoinForm } from "@/components/join-form";
 import { PublicNav } from "@/components/public-nav";
+import { SiteNotLaunched } from "@/components/site-not-launched";
+import { getCurrentClientLaunchState } from "@/lib/launch-approval";
 import { getSiteBrand } from "@/lib/site-brand";
 import {
   formatMembershipAmount,
@@ -39,6 +41,12 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function JoinPage() {
+  const launchState = await getCurrentClientLaunchState();
+
+  if (!launchState.isApproved) {
+    return <SiteNotLaunched siteName={launchState.client?.name} />;
+  }
+
   const brand = getSiteBrand();
   const settings = await getMembershipSettings();
 

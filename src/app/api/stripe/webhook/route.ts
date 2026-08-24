@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentClientId, isCurrentClientId } from "@/lib/client-context";
+import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { formatCurrencyFromCents } from "@/lib/contact-format";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
@@ -60,16 +60,49 @@ function isStripeSubscription(value: unknown): value is StripeSubscription {
   );
 }
 
-async function activateMembership(session: StripeCheckoutSessionCompleted) {
+function getWebhookClientId(value?: string | null) {
+  return value?.trim() || getCurrentClientId();
+}
+
+async function getContactByStripeCustomer({
+  customerId,
+  stripeAccountId,
+}: {
+  customerId: string;
+  stripeAccountId?: string;
+}) {
+  const supabase = createServerSupabaseClient();
+  let query = supabase
+    .from("contacts")
+    .select("id, client_id, paid_through")
+    .eq("stripe_customer_id", customerId);
+
+  if (stripeAccountId) {
+    query = query.eq("stripe_account_id", stripeAccountId);
+  } else {
+    query = query.eq("client_id", getCurrentClientId());
+  }
+
+  const { data, error } = await query.limit(1).maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data as
+    | { client_id: string; id: string; paid_through?: string | null }
+    | null;
+}
+
+async function activateMembership(
+  session: StripeCheckoutSessionCompleted,
+  stripeAccountId?: string,
+) {
   const contactId = session.metadata?.contact_id || session.client_reference_id;
-  const clientId = getCurrentClientId();
+  const clientId = getWebhookClientId(session.metadata?.client_id);
 
   if (!contactId) {
     throw new Error("Stripe session is missing contact metadata.");
-  }
-
-  if (session.metadata?.client_id && !isCurrentClientId(session.metadata.client_id)) {
-    throw new Error("Stripe session client did not match this deployment.");
   }
 
   const now = new Date().toISOString();
@@ -98,6 +131,7 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
     last_payment_at: now.slice(0, 10),
     membership_status: "Active Member",
     paid_through: paidThrough,
+    stripe_account_id: stripeAccountId ?? null,
     stripe_checkout_session_id: session.id,
     stripe_customer_id: session.customer ?? null,
   };
@@ -118,12 +152,14 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
           ? `Stripe membership completed. One-time gift ${formatCurrencyFromCents(additionalGiftAmountCents)}. Paid through ${paidThrough}.`
           : `Stripe membership completed. Paid through ${paidThrough}.`,
       contactId,
+      clientId,
       metadata: {
         amount_cents: totalAmountCents,
         additional_gift_amount_cents: additionalGiftAmountCents,
         membership_amount_cents: membershipAmountCents,
         paid_through: paidThrough,
         stripe_checkout_session_id: session.id,
+        stripe_account_id: stripeAccountId ?? null,
         stripe_customer_id: session.customer ?? null,
         stripe_livemode: session.livemode ?? false,
         stripe_subscription_id: session.subscription ?? null,
@@ -139,10 +175,12 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
   if (additionalGiftAmountCents > 0) {
     await logContactActivity({
       body: `One-time gift ${formatCurrencyFromCents(additionalGiftAmountCents)}.`,
+      clientId,
       contactId,
       metadata: {
         amount_cents: additionalGiftAmountCents,
         mode: "stripe",
+        stripe_account_id: stripeAccountId ?? null,
         stripe_checkout_session_id: session.id,
         stripe_customer_id: session.customer ?? null,
         stripe_livemode: session.livemode ?? false,
@@ -154,32 +192,30 @@ async function activateMembership(session: StripeCheckoutSessionCompleted) {
   }
 
   await runNewSignupAutomation({
+    clientId,
     contactId,
     source: "stripe",
   }).catch(() => undefined);
 }
 
-async function renewMembership(invoice: StripeInvoicePaid) {
+async function renewMembership(
+  invoice: StripeInvoicePaid,
+  stripeAccountId?: string,
+) {
   if (!invoice.customer || invoice.billing_reason === "subscription_create") {
     return;
   }
 
-  const clientId = getCurrentClientId();
   const supabase = createServerSupabaseClient();
-  const { data: contact, error: contactError } = await supabase
-    .from("contacts")
-    .select("id, paid_through")
-    .eq("client_id", clientId)
-    .eq("stripe_customer_id", invoice.customer)
-    .maybeSingle();
-
-  if (contactError) {
-    throw new Error(contactError.message);
-  }
+  const contact = await getContactByStripeCustomer({
+    customerId: invoice.customer,
+    stripeAccountId,
+  });
 
   if (!contact?.id) {
     return;
   }
+  const clientId = contact.client_id;
 
   const { data: existingRenewal, error: existingRenewalError } = await supabase
     .from("contact_activities")
@@ -223,6 +259,7 @@ async function renewMembership(invoice: StripeInvoicePaid) {
       amount_cents: invoice.amount_paid ?? 0,
       billing_reason: invoice.billing_reason ?? null,
       paid_through: paidThrough,
+      stripe_account_id: stripeAccountId ?? null,
       stripe_customer_id: invoice.customer,
       stripe_invoice_id: invoice.id,
       stripe_livemode: invoice.livemode ?? false,
@@ -230,6 +267,7 @@ async function renewMembership(invoice: StripeInvoicePaid) {
     },
     title: "Membership subscription renewed",
     type: "membership_subscription_renewed",
+    clientId,
   }).catch(() => undefined);
 }
 
@@ -241,36 +279,34 @@ function getDateFromStripeTimestamp(value?: number | null) {
   return new Date(value * 1000).toISOString().slice(0, 10);
 }
 
-async function recordSubscriptionUpdated(subscription: StripeSubscription) {
+async function recordSubscriptionUpdated(
+  subscription: StripeSubscription,
+  stripeAccountId?: string,
+) {
   if (!subscription.customer) {
     return;
   }
 
-  const clientId = getCurrentClientId();
-  const supabase = createServerSupabaseClient();
-  const { data: contact, error: contactError } = await supabase
-    .from("contacts")
-    .select("id")
-    .eq("client_id", clientId)
-    .eq("stripe_customer_id", subscription.customer)
-    .maybeSingle();
-
-  if (contactError) {
-    throw new Error(contactError.message);
-  }
+  const contact = await getContactByStripeCustomer({
+    customerId: subscription.customer,
+    stripeAccountId,
+  });
 
   if (!contact?.id || !subscription.cancel_at_period_end) {
     return;
   }
+  const clientId = contact.client_id;
 
   await logContactActivity({
     body: "Stripe subscription is set to cancel at the end of the current paid period.",
     contactId: contact.id,
+    clientId,
     metadata: {
       cancel_at_period_end: true,
       current_period_end: getDateFromStripeTimestamp(
         subscription.current_period_end,
       ),
+      stripe_account_id: stripeAccountId ?? null,
       stripe_customer_id: subscription.customer,
       stripe_livemode: subscription.livemode ?? false,
       stripe_subscription_id: subscription.id,
@@ -281,27 +317,24 @@ async function recordSubscriptionUpdated(subscription: StripeSubscription) {
   }).catch(() => undefined);
 }
 
-async function cancelMembership(subscription: StripeSubscription) {
+async function cancelMembership(
+  subscription: StripeSubscription,
+  stripeAccountId?: string,
+) {
   if (!subscription.customer) {
     return;
   }
 
-  const clientId = getCurrentClientId();
   const supabase = createServerSupabaseClient();
-  const { data: contact, error: contactError } = await supabase
-    .from("contacts")
-    .select("id")
-    .eq("client_id", clientId)
-    .eq("stripe_customer_id", subscription.customer)
-    .maybeSingle();
-
-  if (contactError) {
-    throw new Error(contactError.message);
-  }
+  const contact = await getContactByStripeCustomer({
+    customerId: subscription.customer,
+    stripeAccountId,
+  });
 
   if (!contact?.id) {
     return;
   }
+  const clientId = contact.client_id;
 
   const { error } = await supabase
     .from("contacts")
@@ -318,11 +351,13 @@ async function cancelMembership(subscription: StripeSubscription) {
   await logContactActivity({
     body: "Stripe subscription was canceled. Membership status set to Expired.",
     contactId: contact.id,
+    clientId,
     metadata: {
       canceled_at: getDateFromStripeTimestamp(subscription.canceled_at),
       current_period_end: getDateFromStripeTimestamp(
         subscription.current_period_end,
       ),
+      stripe_account_id: stripeAccountId ?? null,
       stripe_customer_id: subscription.customer,
       stripe_livemode: subscription.livemode ?? false,
       stripe_subscription_id: subscription.id,
@@ -351,6 +386,7 @@ export async function POST(request: Request) {
       signature: request.headers.get("stripe-signature"),
       webhookSecret,
     });
+    const stripeAccountId = event.account;
 
     if (event.type === "checkout.session.completed") {
       const session = event.data?.object;
@@ -359,7 +395,7 @@ export async function POST(request: Request) {
         throw new Error("Invalid Stripe Checkout Session payload.");
       }
 
-      await activateMembership(session);
+      await activateMembership(session, stripeAccountId);
     }
 
     if (
@@ -372,7 +408,7 @@ export async function POST(request: Request) {
         throw new Error("Invalid Stripe invoice payload.");
       }
 
-      await renewMembership(invoice);
+      await renewMembership(invoice, stripeAccountId);
     }
 
     if (event.type === "customer.subscription.updated") {
@@ -382,7 +418,7 @@ export async function POST(request: Request) {
         throw new Error("Invalid Stripe subscription payload.");
       }
 
-      await recordSubscriptionUpdated(subscription);
+      await recordSubscriptionUpdated(subscription, stripeAccountId);
     }
 
     if (event.type === "customer.subscription.deleted") {
@@ -392,7 +428,7 @@ export async function POST(request: Request) {
         throw new Error("Invalid Stripe subscription payload.");
       }
 
-      await cancelMembership(subscription);
+      await cancelMembership(subscription, stripeAccountId);
     }
 
     return NextResponse.json({ ok: true });

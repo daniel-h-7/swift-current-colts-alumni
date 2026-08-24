@@ -56,6 +56,7 @@ export type Contact = {
   gift_donation_amount_cents?: number | null;
   paid_through?: string | null;
   last_payment_at?: string | null;
+  stripe_account_id?: string | null;
   stripe_customer_id?: string | null;
   stripe_checkout_session_id?: string | null;
   created_at: string;

@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 type ClientRow = {
   custom_domain?: string | null;
   id: string;
+  launch_approved_at?: string | null;
   name: string;
   plan_key?: string | null;
   primary_domain: string | null;
@@ -46,7 +47,7 @@ async function getClientSummaries() {
   const expandedResult = await supabase
     .from("clients")
     .select(
-      "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, published_at",
+      "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at",
     )
     .order("name", { ascending: true });
 
@@ -126,7 +127,7 @@ export default async function HqHomePage() {
   );
   const configuredDomains = clients.filter((client) => client.primary_domain)
     .length;
-  const publishedClients = clients.filter((client) => client.published_at)
+  const publishedClients = clients.filter((client) => client.launch_approved_at)
     .length;
 
   return (
@@ -188,6 +189,7 @@ export default async function HqHomePage() {
                   <th className="px-5 py-3">Variant</th>
                   <th className="px-5 py-3">Plan</th>
                   <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Launch</th>
                   <th className="px-5 py-3">Domain</th>
                   <th className="px-5 py-3">Contacts</th>
                   <th className="px-5 py-3">Campaigns</th>
@@ -212,6 +214,17 @@ export default async function HqHomePage() {
                     </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">
                       {client.status ?? "active"}
+                    </td>
+                    <td className="px-5 py-4 font-semibold">
+                      <span
+                        className={
+                          client.launch_approved_at
+                            ? "text-emerald-700"
+                            : "text-amber-700"
+                        }
+                      >
+                        {client.launch_approved_at ? "Approved" : "Parked"}
+                      </span>
                     </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">
                       {client.custom_domain ||

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getClientIntegration } from "@/lib/client-integrations";
 import { getCurrentClientId } from "@/lib/client-context";
 import { getSiteBrand } from "@/lib/site-brand";
 import { getServerEnvValue } from "@/lib/supabase/server";
@@ -17,6 +18,7 @@ type StripeCheckoutSessionInput = {
 
 export type StripeCheckoutSession = {
   id: string;
+  stripeAccountId?: string;
   url: string | null;
 };
 
@@ -32,6 +34,7 @@ export type StripeCheckoutSessionCompleted = {
 };
 
 export type StripeWebhookEvent = {
+  account?: string;
   data?: {
     object?: unknown;
   };
@@ -80,12 +83,47 @@ export function getStripeWebhookSecret() {
   return getServerEnvValue("STRIPE_WEBHOOK_SECRET");
 }
 
-function getStripeConnectedAccountId() {
+async function getStripeConnectedAccountId(clientId: string) {
+  const integration = await getClientIntegration(clientId, "stripe_connect");
+
+  if (
+    integration?.status === "connected" &&
+    integration.external_account_id?.startsWith("acct_")
+  ) {
+    return integration.external_account_id;
+  }
+
   return getServerEnvValue("STRIPE_CONNECTED_ACCOUNT_ID");
 }
 
 function getStripeApplicationFeePercent() {
   return getServerEnvValue("STRIPE_APPLICATION_FEE_PERCENT");
+}
+
+async function getRequiredClientStripeAccountId(clientId: string) {
+  const connectedAccountId = await getStripeConnectedAccountId(clientId);
+
+  if (!connectedAccountId) {
+    throw new Error(
+      "Stripe is not connected for this site yet. Connect the client's Stripe account in Studio before opening membership checkout.",
+    );
+  }
+
+  return connectedAccountId;
+}
+
+function getStripeRequestHeaders({
+  connectedAccountId,
+  secretKey,
+}: {
+  connectedAccountId?: string | null;
+  secretKey: string;
+}) {
+  return {
+    Authorization: `Bearer ${secretKey}`,
+    "Content-Type": "application/x-www-form-urlencoded",
+    ...(connectedAccountId ? { "Stripe-Account": connectedAccountId } : {}),
+  };
 }
 
 export async function createStripeCheckoutSession({
@@ -105,7 +143,7 @@ export async function createStripeCheckoutSession({
 
   const brand = getSiteBrand();
   const clientId = getCurrentClientId();
-  const connectedAccountId = getStripeConnectedAccountId();
+  const connectedAccountId = await getRequiredClientStripeAccountId(clientId);
   const applicationFeePercent = getStripeApplicationFeePercent();
   const body = new URLSearchParams();
   body.set("cancel_url", cancelUrl);
@@ -139,18 +177,11 @@ export async function createStripeCheckoutSession({
   body.set("subscription_data[metadata][program]", brand.programName);
   body.set("subscription_data[metadata][site_variant]", brand.variant);
 
-  if (connectedAccountId) {
+  if (applicationFeePercent) {
     body.set(
-      "subscription_data[transfer_data][destination]",
-      connectedAccountId,
+      "subscription_data[application_fee_percent]",
+      applicationFeePercent,
     );
-
-    if (applicationFeePercent) {
-      body.set(
-        "subscription_data[application_fee_percent]",
-        applicationFeePercent,
-      );
-    }
   }
 
   body.set("submit_type", "subscribe");
@@ -171,10 +202,7 @@ export async function createStripeCheckoutSession({
 
   const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     body,
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: getStripeRequestHeaders({ connectedAccountId, secretKey }),
     method: "POST",
   });
   const payload = (await response.json().catch(() => null)) as
@@ -194,6 +222,7 @@ export async function createStripeCheckoutSession({
 
   return {
     id: payload.id,
+    stripeAccountId: connectedAccountId,
     url: payload.url,
   };
 }
@@ -214,13 +243,13 @@ export async function createStripeCustomerPortalSession({
   const body = new URLSearchParams();
   body.set("customer", customerId);
   body.set("return_url", returnUrl);
+  const connectedAccountId = await getRequiredClientStripeAccountId(
+    getCurrentClientId(),
+  );
 
   const response = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
     body,
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: getStripeRequestHeaders({ connectedAccountId, secretKey }),
     method: "POST",
   });
   const payload = (await response.json().catch(() => null)) as

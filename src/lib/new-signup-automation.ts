@@ -28,19 +28,24 @@ function getDefaultBlastCopy() {
 }
 
 type AutomationContext = {
+  clientId?: string;
   contactId: string;
   source: "admin" | "mock" | "stripe";
 };
 
-async function getContact(contactId: string) {
+function resolveClientId(clientId?: string) {
+  return clientId ?? getCurrentClientId();
+}
+
+async function getContact(contactId: string, clientId?: string) {
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const resolvedClientId = resolveClientId(clientId);
   const { data, error } = await supabase
     .from("contacts")
     .select(
       "id, first_name, last_name, email, phone, email_opt_in, sms_opt_in, graduation_year, relationship_type, sport, notes, created_at",
     )
-    .eq("client_id", clientId)
+    .eq("client_id", resolvedClientId)
     .eq("id", contactId)
     .maybeSingle();
 
@@ -65,13 +70,13 @@ async function getContact(contactId: string) {
   > | null;
 }
 
-async function getOrCreateCampaign() {
+async function getOrCreateCampaign(clientId?: string) {
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const resolvedClientId = resolveClientId(clientId);
   const { data: existing, error: existingError } = await supabase
     .from("campaigns")
     .select("id")
-    .eq("client_id", clientId)
+    .eq("client_id", resolvedClientId)
     .eq("title", campaignTitle)
     .maybeSingle();
 
@@ -86,7 +91,7 @@ async function getOrCreateCampaign() {
   const { data, error } = await supabase
     .from("campaigns")
     .insert({
-      client_id: clientId,
+      client_id: resolvedClientId,
       description:
         "Automatic thank-you message sent when a new supporter completes signup.",
       status: "Active",
@@ -102,14 +107,14 @@ async function getOrCreateCampaign() {
   return data.id as string;
 }
 
-async function getOrCreateBlast(campaignId: string) {
+async function getOrCreateBlast(campaignId: string, clientId?: string) {
   const defaultCopy = getDefaultBlastCopy();
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const resolvedClientId = resolveClientId(clientId);
   const { data: existing, error: existingError } = await supabase
     .from("campaign_blasts")
     .select("id, subject, preheader, html_content")
-    .eq("client_id", clientId)
+    .eq("client_id", resolvedClientId)
     .eq("campaign_id", campaignId)
     .order("updated_at", { ascending: false })
     .limit(1)
@@ -133,7 +138,7 @@ async function getOrCreateBlast(campaignId: string) {
     .insert({
       audience_filter: JSON.stringify({ email_opt_in: true }),
       campaign_id: campaignId,
-      client_id: clientId,
+      client_id: resolvedClientId,
       html_content: defaultCopy.html,
       preheader: defaultCopy.preheader,
       status: "Draft",
@@ -165,12 +170,17 @@ export async function ensureNewSignupAutomationCampaign() {
   };
 }
 
-async function hasAlreadySent(blastId: string, contactId: string, eventType: string) {
+async function hasAlreadySent(
+  blastId: string,
+  contactId: string,
+  eventType: string,
+  clientId?: string,
+) {
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
     .from("campaign_blast_events")
     .select("id")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", resolveClientId(clientId))
     .eq("blast_id", blastId)
     .eq("event_type", eventType)
     .contains("metadata", { contact_id: contactId })
@@ -185,25 +195,27 @@ async function hasAlreadySent(blastId: string, contactId: string, eventType: str
 
 async function recordBlastEvent({
   blastId,
+  clientId,
   email,
   eventType,
   metadata,
 }: {
   blastId: string;
+  clientId?: string;
   email?: string | null;
   eventType: string;
   metadata: Record<string, unknown>;
 }) {
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const resolvedClientId = resolveClientId(clientId);
   const { error } = await supabase.from("campaign_blast_events").insert({
     blast_id: blastId,
-    client_id: clientId,
+    client_id: resolvedClientId,
     email: email ?? null,
     event_type: eventType,
     metadata: {
       ...metadata,
-      client_id: clientId,
+      client_id: resolvedClientId,
     },
   });
 
@@ -213,22 +225,24 @@ async function recordBlastEvent({
 }
 
 export async function runNewSignupAutomation({
+  clientId,
   contactId,
   source,
 }: AutomationContext) {
-  const contact = await getContact(contactId);
+  const contact = await getContact(contactId, clientId);
 
   if (!contact) {
     return;
   }
 
-  const { campaignId, blastId } = await ensureNewSignupAutomationCampaign();
-  const blast = await getOrCreateBlast(campaignId);
+  const campaignId = await getOrCreateCampaign(clientId);
+  const blast = await getOrCreateBlast(campaignId, clientId);
+  const blastId = blast.id;
 
   if (contact.email_opt_in && contact.email) {
     const eventType = "new_signup_email_sent";
 
-    if (!(await hasAlreadySent(blastId, contact.id, eventType))) {
+    if (!(await hasAlreadySent(blastId, contact.id, eventType, clientId))) {
       const emailSettings = await getEmailSettings();
 
       try {
@@ -244,6 +258,7 @@ export async function runNewSignupAutomation({
 
         await recordBlastEvent({
           blastId,
+          clientId,
           email: contact.email,
           eventType,
           metadata: {
@@ -262,6 +277,7 @@ export async function runNewSignupAutomation({
 
         await recordBlastEvent({
           blastId,
+          clientId,
           email: contact.email,
           eventType: "new_signup_email_failed",
           metadata: {
@@ -273,6 +289,7 @@ export async function runNewSignupAutomation({
 
         await logContactActivity({
           body: message,
+          clientId,
           contactId: contact.id,
           metadata: {
             blast_id: blastId,
@@ -290,9 +307,10 @@ export async function runNewSignupAutomation({
   if (contact.sms_opt_in) {
     const eventType = "new_signup_sms_pending";
 
-    if (!(await hasAlreadySent(blastId, contact.id, eventType))) {
+    if (!(await hasAlreadySent(blastId, contact.id, eventType, clientId))) {
       await recordBlastEvent({
         blastId,
+        clientId,
         email: contact.email,
         eventType,
         metadata: {
@@ -307,6 +325,7 @@ export async function runNewSignupAutomation({
 
   await logContactActivity({
     body: "New signup automation processed.",
+    clientId,
     contactId: contact.id,
     metadata: {
       blast_id: blastId,

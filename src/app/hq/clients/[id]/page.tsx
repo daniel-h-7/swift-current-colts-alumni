@@ -23,6 +23,7 @@ type PageSearchParams = {
 type ClientRow = {
   custom_domain?: string | null;
   id: string;
+  launch_approved_at?: string | null;
   name: string;
   plan_key?: string | null;
   primary_domain: string | null;
@@ -83,7 +84,7 @@ async function getClientDetail(clientId: string) {
       supabase
         .from("clients")
         .select(
-          "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, support_notes, published_at",
+          "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, support_notes, published_at, launch_approved_at",
         )
         .eq("id", clientId)
         .maybeSingle(),
@@ -148,6 +149,7 @@ export default async function HqClientPage({
   const resendStatus = getIntegrationStatus(integrations, "resend");
   const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
   const stripeAccountId = getIntegrationAccountId(integrations, "stripe_connect");
+  const isLaunchApproved = Boolean(client.launch_approved_at);
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -376,6 +378,29 @@ export default async function HqClientPage({
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Platform Status</h2>
               <div className="mt-5 grid gap-3">
+                <div
+                  className={`border p-4 ${
+                    isLaunchApproved
+                      ? "border-emerald-200 bg-emerald-50"
+                      : "border-amber-200 bg-amber-50"
+                  }`}
+                >
+                  <p
+                    className={`text-xs font-black uppercase tracking-[0.18em] ${
+                      isLaunchApproved ? "text-emerald-700" : "text-amber-700"
+                    }`}
+                  >
+                    Launch Approval
+                  </p>
+                  <p className="mt-2 text-sm font-black text-slate-800">
+                    {isLaunchApproved ? "Approved" : "Not approved"}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">
+                    {isLaunchApproved
+                      ? `Approved ${formatDate(client.launch_approved_at ?? null)}`
+                      : "Public pages stay parked until HQ approves launch."}
+                  </p>
+                </div>
                 <div className="border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                     Client Stripe
@@ -539,10 +564,31 @@ export default async function HqClientPage({
               </p>
               <button
                 className="mt-5 w-full border border-blue-700 bg-blue-700 px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-blue-600"
+                name="intent"
                 type="submit"
+                value="save"
               >
                 Save Client
               </button>
+              {isLaunchApproved ? (
+                <button
+                  className="mt-3 w-full border border-amber-300 bg-amber-50 px-5 py-4 font-black uppercase tracking-[0.2em] text-amber-800 transition hover:bg-amber-100"
+                  name="intent"
+                  type="submit"
+                  value="unapprove_launch"
+                >
+                  Pause Public Launch
+                </button>
+              ) : (
+                <button
+                  className="mt-3 w-full border border-emerald-700 bg-emerald-700 px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-600"
+                  name="intent"
+                  type="submit"
+                  value="approve_launch"
+                >
+                  Approve Launch
+                </button>
+              )}
             </section>
           </aside>
         </form>

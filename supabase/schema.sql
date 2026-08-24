@@ -78,6 +78,7 @@ create table if not exists public.contacts (
   paid_through date,
   last_payment_at date,
   stripe_customer_id text,
+  stripe_account_id text,
   stripe_checkout_session_id text,
   created_at timestamptz not null default now()
 );

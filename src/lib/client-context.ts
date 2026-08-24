@@ -3,22 +3,15 @@ import "server-only";
 import { getSiteBrand } from "@/lib/site-brand";
 import { getServerEnvValue } from "@/lib/supabase/server";
 
-export type ClientId = "colts" | "demo" | "rmrfootball" | "bfbadgers";
-
-const allowedClientIds = new Set<ClientId>([
-  "colts",
-  "demo",
-  "rmrfootball",
-  "bfbadgers",
-]);
+export type ClientId = string;
 
 export function getCurrentClientId(): ClientId {
   const configuredClientId = getServerEnvValue("TEAMALUM_CLIENT_ID")
     ?.trim()
     .toLowerCase();
 
-  if (configuredClientId && allowedClientIds.has(configuredClientId as ClientId)) {
-    return configuredClientId as ClientId;
+  if (configuredClientId) {
+    return configuredClientId;
   }
 
   const brand = getSiteBrand();

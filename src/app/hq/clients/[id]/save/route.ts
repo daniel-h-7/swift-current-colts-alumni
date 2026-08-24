@@ -62,6 +62,7 @@ export async function POST(
     }
 
     const formData = await request.formData();
+    const intent = String(formData.get("intent") ?? "save");
     const amount = String(formData.get("annual_membership_amount") ?? "").trim();
     const parsedAmount = amount ? Number.parseFloat(amount) : 0;
 
@@ -118,16 +119,27 @@ export async function POST(
       );
     }
 
+    const platformClientUpdates: Record<string, string | null> = {
+      custom_domain: cleanNullable(formData.get("custom_domain")),
+      plan_key: String(formData.get("plan_key") ?? "starter").trim(),
+      status: String(formData.get("status") ?? "active").trim(),
+      subdomain: cleanNullable(formData.get("subdomain")),
+      support_notes: cleanNullable(formData.get("support_notes")),
+      updated_at: updatedAt,
+    };
+
+    if (intent === "approve_launch") {
+      platformClientUpdates.launch_approved_at = updatedAt;
+      platformClientUpdates.published_at = updatedAt;
+    }
+
+    if (intent === "unapprove_launch") {
+      platformClientUpdates.launch_approved_at = null;
+    }
+
     const { error: platformClientError } = await supabase
       .from("clients")
-      .update({
-        custom_domain: cleanNullable(formData.get("custom_domain")),
-        plan_key: String(formData.get("plan_key") ?? "starter").trim(),
-        status: String(formData.get("status") ?? "active").trim(),
-        subdomain: cleanNullable(formData.get("subdomain")),
-        support_notes: cleanNullable(formData.get("support_notes")),
-        updated_at: updatedAt,
-      })
+      .update(platformClientUpdates)
       .eq("id", id);
 
     if (

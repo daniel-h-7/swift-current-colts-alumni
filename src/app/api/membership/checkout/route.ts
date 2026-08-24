@@ -108,6 +108,7 @@ export async function POST(request: Request) {
       await supabase
         .from("contacts")
         .update({
+          stripe_account_id: checkoutSession.stripeAccountId ?? null,
           stripe_checkout_session_id: checkoutSession.id,
         })
         .eq("client_id", clientId)
