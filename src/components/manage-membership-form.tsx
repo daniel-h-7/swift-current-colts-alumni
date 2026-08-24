@@ -16,7 +16,8 @@ export function ManageMembershipForm() {
     setStatus("submitting");
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
     try {
       const response = await fetch("/api/membership/portal", {
@@ -41,7 +42,7 @@ export function ManageMembershipForm() {
       setMessage(
         "If that email has an active Stripe membership, a secure management link has been sent.",
       );
-      event.currentTarget.reset();
+      form.reset();
     } catch (error) {
       setStatus("error");
       setMessage(

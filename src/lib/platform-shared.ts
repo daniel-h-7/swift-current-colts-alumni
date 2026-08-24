@@ -33,7 +33,7 @@ const featureLabels: Record<ClientFeatureKey, string> = {
   memberships: "Memberships",
   sponsors: "Sponsors",
   spotlights: "Spotlights",
-  stripe_connect: "Stripe Connect",
+  stripe_connect: "Client Stripe",
 };
 
 const featureDescriptions: Record<ClientFeatureKey, string> = {
@@ -47,7 +47,7 @@ const featureDescriptions: Record<ClientFeatureKey, string> = {
   sponsors: "Sponsor logos, links, and partner placement on the public site.",
   spotlights: "Alumni profiles, photos, class years, and spotlight copy.",
   stripe_connect:
-    "Payment onboarding through Stripe Connect. HQ manages this for now.",
+    "Client-owned Stripe account status. TeamAlum tracks setup without holding client funds.",
 };
 
 export function isClientToggleableFeature(featureKey: ClientFeatureKey) {
@@ -60,7 +60,7 @@ export function getFeatureManagementLabel(featureKey: ClientFeatureKey) {
   }
 
   if (featureKey === "stripe_connect") {
-    return "HQ Managed";
+    return "Client Owned";
   }
 
   return "Client Toggle";

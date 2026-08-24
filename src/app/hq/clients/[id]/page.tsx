@@ -60,6 +60,16 @@ function formatDate(value: string | null) {
   }).format(new Date(value));
 }
 
+function getIntegrationAccountId(
+  integrations: Awaited<ReturnType<typeof getClientIntegrations>>,
+  integrationKey: "stripe_connect" | "resend" | "custom_domain",
+) {
+  return (
+    integrations.find((integration) => integration.integration_key === integrationKey)
+      ?.external_account_id ?? ""
+  );
+}
+
 async function getClientDetail(clientId: string) {
   const supabase = createServerSupabaseClient();
   const [
@@ -135,7 +145,9 @@ export default async function HqClientPage({
     await getClientDetail(id);
   const membershipAmount = ((settings?.annual_membership_amount_cents ?? 10000) / 100).toFixed(2);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
+  const resendStatus = getIntegrationStatus(integrations, "resend");
   const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
+  const stripeAccountId = getIntegrationAccountId(integrations, "stripe_connect");
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -366,10 +378,18 @@ export default async function HqClientPage({
               <div className="mt-5 grid gap-3">
                 <div className="border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                    Stripe Connect
+                    Client Stripe
                   </p>
                   <p className="mt-2 text-sm font-black text-slate-800">
                     {stripeStatus.replaceAll("_", " ")}
+                  </p>
+                </div>
+                <div className="border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                    TeamAlum Email
+                  </p>
+                  <p className="mt-2 text-sm font-black text-slate-800">
+                    {resendStatus.replaceAll("_", " ")}
                   </p>
                 </div>
                 <div className="border border-slate-200 bg-slate-50 p-4">
@@ -388,6 +408,63 @@ export default async function HqClientPage({
                     {formatDate(client.published_at ?? null)}
                   </p>
                 </div>
+              </div>
+            </section>
+
+            <section className="border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-lg font-black">Integrations</h2>
+              <div className="mt-5 space-y-5">
+                <label className="block text-sm font-bold text-slate-700">
+                  Client Stripe Status
+                  <select
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="integration:stripe_connect:status"
+                    defaultValue={stripeStatus}
+                  >
+                    <option value="not_connected">Not connected</option>
+                    <option value="pending">Pending</option>
+                    <option value="connected">Connected</option>
+                    <option value="needs_attention">Needs attention</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </label>
+                <label className="block text-sm font-bold text-slate-700">
+                  Client Stripe Account ID
+                  <input
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="integration:stripe_connect:external_account_id"
+                    placeholder="acct_..."
+                    defaultValue={stripeAccountId}
+                  />
+                </label>
+                <label className="block text-sm font-bold text-slate-700">
+                  TeamAlum Email Status
+                  <select
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="integration:resend:status"
+                    defaultValue={resendStatus}
+                  >
+                    <option value="not_connected">Not connected</option>
+                    <option value="pending">Pending</option>
+                    <option value="connected">Connected</option>
+                    <option value="needs_attention">Needs attention</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </label>
+                <label className="block text-sm font-bold text-slate-700">
+                  Custom Domain Status
+                  <select
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    name="integration:custom_domain:status"
+                    defaultValue={customDomainStatus}
+                  >
+                    <option value="not_connected">Not connected</option>
+                    <option value="pending">Pending</option>
+                    <option value="connected">Connected</option>
+                    <option value="needs_attention">Needs attention</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </label>
               </div>
             </section>
 

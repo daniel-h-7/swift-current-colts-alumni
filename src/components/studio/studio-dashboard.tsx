@@ -217,7 +217,7 @@ export async function StudioDashboard({
               </div>
               <div className="border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                  Stripe Connect
+                  Client Stripe
                 </p>
                 <p
                   className={`mt-2 text-sm font-bold ${
@@ -228,6 +228,12 @@ export async function StudioDashboard({
                 >
                   {stripeStatus.replaceAll("_", " ")}
                 </p>
+                <Link
+                  className="mt-4 inline-flex border border-emerald-700 bg-emerald-700 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-emerald-600"
+                  href={`/studio/${encodeURIComponent(client.id)}/payments`}
+                >
+                  Manage Payments
+                </Link>
               </div>
               <div className="border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">

@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
-import { sendCampaignTestEmail } from "@/lib/email-provider";
+import {
+  isEmailDeliveryConfigured,
+  sendCampaignTestEmail,
+} from "@/lib/email-provider";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createStripeCustomerPortalSession, isStripeConfigured } from "@/lib/stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -42,6 +45,16 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Stripe membership management is not configured yet." },
         { status: 500 },
+      );
+    }
+
+    if (!isEmailDeliveryConfigured()) {
+      return NextResponse.json(
+        {
+          error:
+            "Membership management links are ready, but email delivery is not connected yet. Add RESEND_API_KEY in Vercel, redeploy, then try again.",
+        },
+        { status: 503 },
       );
     }
 

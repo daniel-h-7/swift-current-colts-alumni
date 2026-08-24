@@ -49,6 +49,14 @@ export function getEmailProviderMode(): EmailProviderMode {
     : "resend";
 }
 
+export function isEmailDeliveryConfigured() {
+  if (getEmailProviderMode() === "smtp-demo") {
+    return Boolean(process.env.SMTP_HOST);
+  }
+
+  return Boolean(process.env.RESEND_API_KEY);
+}
+
 function getRequiredResendEnv() {
   const apiKey = process.env.RESEND_API_KEY;
 

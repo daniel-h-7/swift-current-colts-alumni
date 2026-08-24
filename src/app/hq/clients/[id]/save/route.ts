@@ -1,7 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isHqAuthenticated } from "@/lib/hq-auth";
-import { defaultClientFeatures } from "@/lib/platform-data";
+import {
+  ClientIntegrationKey,
+  defaultClientFeatures,
+  defaultClientIntegrations,
+} from "@/lib/platform-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type RouteParams = {
@@ -25,6 +29,24 @@ function isMissingPlatformColumn(message: string) {
     message.includes("column") ||
     message.includes("client_features")
   );
+}
+
+function getIntegrationStatusValue(
+  formData: FormData,
+  integrationKey: ClientIntegrationKey,
+) {
+  const value = String(
+    formData.get(`integration:${integrationKey}:status`) ?? "not_connected",
+  ).trim();
+  const allowedStatuses = new Set([
+    "not_connected",
+    "pending",
+    "connected",
+    "needs_attention",
+    "disabled",
+  ]);
+
+  return allowedStatuses.has(value) ? value : "not_connected";
 }
 
 export async function POST(
@@ -166,6 +188,31 @@ export async function POST(
       return redirectTo(
         request,
         `${clientPath}?error=${encodeURIComponent(featuresError.message)}`,
+      );
+    }
+
+    const integrationRows = defaultClientIntegrations.map((integration) => ({
+      client_id: id,
+      external_account_id: cleanNullable(
+        formData.get(`integration:${integration.integration_key}:external_account_id`),
+      ),
+      integration_key: integration.integration_key,
+      status: getIntegrationStatusValue(formData, integration.integration_key),
+      updated_at: updatedAt,
+    }));
+    const { error: integrationsError } = await supabase
+      .from("client_integrations")
+      .upsert(integrationRows, {
+        onConflict: "client_id,integration_key",
+      });
+
+    if (
+      integrationsError &&
+      !isMissingPlatformColumn(integrationsError.message)
+    ) {
+      return redirectTo(
+        request,
+        `${clientPath}?error=${encodeURIComponent(integrationsError.message)}`,
       );
     }
 
