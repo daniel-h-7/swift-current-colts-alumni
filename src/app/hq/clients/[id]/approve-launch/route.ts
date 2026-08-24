@@ -12,6 +12,7 @@ function redirectTo(request: Request, path: string) {
 }
 
 export async function POST(
+  request: Request,
   { params }: { params: Promise<RouteParams> },
 ) {
   const { id } = await params;
