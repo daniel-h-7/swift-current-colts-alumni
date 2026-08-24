@@ -67,10 +67,11 @@ export function PlatformHome() {
             Alumni engagement for teams
           </p>
           <h1 className="mt-5 max-w-5xl text-5xl font-black leading-[0.96] md:text-7xl">
-            Fundraise without the frantic ask.
+            Turn pride into momentum.
           </h1>
           <p className="mt-6 max-w-2xl text-lg font-semibold leading-8 text-slate-600">
-            TeamAlum gives every program a polished home, a practical alumni
+            TeamAlum gives every program a polished home to collect alumni
+            memberships that boost funds for your program, a practical alumni
             CRM, and a built-in mailer so supporters stay close all year.
           </p>
 
@@ -283,7 +284,12 @@ export function PlatformHome() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <p className="text-lg font-semibold leading-8 text-slate-600">
+            TeamAlum is for real programs with real pride, limited time, and no
+            appetite for overpriced donor software. Launch fast, look sharp, and
+            keep the alumni machine moving.
+          </p>
           <div>
             <p className="text-sm font-black uppercase text-emerald-700">
               Built to be affordable
@@ -292,11 +298,6 @@ export function PlatformHome() {
               Professional tools, minus the enterprise mess.
             </h2>
           </div>
-          <p className="text-lg font-semibold leading-8 text-slate-600">
-            TeamAlum is for real programs with real pride, limited time, and no
-            appetite for overpriced donor software. Launch fast, look sharp, and
-            keep the alumni machine moving.
-          </p>
         </div>
       </section>
 
@@ -307,7 +308,7 @@ export function PlatformHome() {
               TeamAlum
             </p>
             <h2 className="mt-3 text-4xl font-black leading-tight md:text-6xl">
-              Turn pride into momentum.
+              Fundraise without the frantic ask.
             </h2>
           </div>
           <div className="flex flex-wrap gap-3">

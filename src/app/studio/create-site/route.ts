@@ -9,6 +9,7 @@ import {
   createStudioSession,
   createStudioUser,
 } from "@/lib/studio-auth";
+import { isStudioStartUnlocked } from "@/lib/studio-start-gate";
 
 function redirectTo(request: Request, path: string) {
   return NextResponse.redirect(new URL(path, request.url), 303);
@@ -16,6 +17,13 @@ function redirectTo(request: Request, path: string) {
 
 export async function POST(request: Request) {
   try {
+    if (!(await isStudioStartUnlocked())) {
+      return redirectTo(
+        request,
+        "/studio/start?error=This%20feature%20is%20coming%20soon.",
+      );
+    }
+
     const formData = await request.formData();
     const name = String(formData.get("name") ?? "").trim();
     const subdomain = normalizeClientId(String(formData.get("subdomain") ?? ""));

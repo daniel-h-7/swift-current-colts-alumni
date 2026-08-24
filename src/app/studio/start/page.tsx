@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { StudioHeader } from "@/components/studio-header";
+import {
+  isStudioStartPasswordConfigured,
+  isStudioStartUnlocked,
+} from "@/lib/studio-start-gate";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +20,76 @@ export default async function StudioStartPage({
   searchParams: Promise<StartSearchParams>;
 }) {
   const params = await searchParams;
+  const isUnlocked = await isStudioStartUnlocked();
+
+  if (!isUnlocked) {
+    return (
+      <main className="min-h-screen bg-slate-100 text-slate-950">
+        <StudioHeader
+          actions={[
+            { href: "/", label: "TeamAlum" },
+            { href: "/studio/login", label: "Log In" },
+          ]}
+          subtitle="Self-serve site launch is almost ready."
+          title="Start Building"
+        />
+
+        <section className="mx-auto grid max-w-5xl gap-6 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="text-sm font-black uppercase text-emerald-700">
+              Coming Soon
+            </p>
+            <h1 className="mt-4 text-4xl font-black leading-tight md:text-6xl">
+              Public site creation is opening soon.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base font-semibold leading-8 text-slate-600">
+              We are keeping launches private while we finish the onboarding,
+              billing, and publishing flow. Existing clients can still log in
+              and manage their TeamAlum site.
+            </p>
+            <Link
+              className="mt-7 inline-flex rounded-full bg-slate-950 px-6 py-4 text-sm font-black uppercase text-white transition hover:bg-emerald-700"
+              href="/studio/login"
+            >
+              Log In to Studio
+            </Link>
+          </div>
+
+          <aside className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-black">Private Beta</h2>
+            <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+              Have the early access password? Unlock the site creation form.
+            </p>
+
+            {params.error ? (
+              <div className="mt-5 rounded-[8px] border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
+                {params.error}
+              </div>
+            ) : null}
+
+            <form action="/studio/start/unlock" className="mt-5" method="post">
+              <label className="text-sm font-bold text-slate-700">
+                Password
+                <input
+                  className={fieldClass}
+                  disabled={!isStudioStartPasswordConfigured()}
+                  name="password"
+                  type="password"
+                />
+              </label>
+              <button
+                className="mt-4 w-full rounded-full border border-emerald-700 bg-emerald-700 px-5 py-4 font-black uppercase text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-500"
+                disabled={!isStudioStartPasswordConfigured()}
+                type="submit"
+              >
+                Unlock
+              </button>
+            </form>
+          </aside>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
