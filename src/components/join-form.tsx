@@ -37,11 +37,13 @@ function getGiftAmountCents(formData: FormData) {
 }
 
 export function JoinForm({
+  checkoutPath = "/api/membership/checkout",
   headline = "Support Colts Football",
   isOpen = true,
   programName = "the Colts",
   subtext = "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
 }: {
+  checkoutPath?: string;
   headline?: string;
   isOpen?: boolean;
   programName?: string;
@@ -91,7 +93,7 @@ export function JoinForm({
     };
 
     try {
-      const response = await fetch("/api/membership/checkout", {
+      const response = await fetch(checkoutPath, {
         body: JSON.stringify(checkoutPayload),
         headers: {
           "Content-Type": "application/json",

@@ -1,0 +1,17 @@
+import { ClientSitePublic } from "@/components/site/client-site-public";
+
+export const dynamic = "force-dynamic";
+
+type PageParams = {
+  clientId: string;
+};
+
+export default async function ClientSiteJoinPage({
+  params,
+}: {
+  params: Promise<PageParams>;
+}) {
+  const { clientId } = await params;
+
+  return <ClientSitePublic clientId={clientId} showJoin />;
+}

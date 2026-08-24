@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const demoCookieName = "teamalum_demo_session";
+const reservedSubdomains = new Set(["app", "www", "teamalum"]);
 
 function isBypassedPath(pathname: string) {
   return (
@@ -16,6 +17,39 @@ function isBypassedPath(pathname: string) {
   );
 }
 
+function getTeamAlumSubdomain(hostHeader: string | null) {
+  const host = (hostHeader ?? "").split(":")[0].toLowerCase();
+  const rootDomain = process.env.TEAMALUM_ROOT_DOMAIN ?? "teamalum.com";
+
+  if (!host.endsWith(`.${rootDomain}`)) {
+    return null;
+  }
+
+  const subdomain = host.slice(0, -`.${rootDomain}`.length);
+
+  if (!subdomain || reservedSubdomains.has(subdomain)) {
+    return null;
+  }
+
+  return subdomain;
+}
+
+function getClientRewritePath(clientId: string, pathname: string) {
+  if (pathname === "/") {
+    return `/site/${clientId}`;
+  }
+
+  if (pathname === "/join") {
+    return `/site/${clientId}/join`;
+  }
+
+  if (pathname === "/membership/success") {
+    return `/site/${clientId}/membership/success`;
+  }
+
+  return null;
+}
+
 async function createDemoToken(password: string, secret: string) {
   const encoder = new TextEncoder();
   const digest = await crypto.subtle.digest(
@@ -29,6 +63,18 @@ async function createDemoToken(password: string, secret: string) {
 }
 
 export async function middleware(request: NextRequest) {
+  const clientId = getTeamAlumSubdomain(request.headers.get("host"));
+  const rewritePath = clientId
+    ? getClientRewritePath(clientId, request.nextUrl.pathname)
+    : null;
+
+  if (rewritePath) {
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = rewritePath;
+
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
   const demoPassword = process.env.DEMO_PASSWORD;
 
   if (!demoPassword || isBypassedPath(request.nextUrl.pathname)) {

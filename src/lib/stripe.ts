@@ -9,10 +9,13 @@ import { getServerEnvValue } from "@/lib/supabase/server";
 type StripeCheckoutSessionInput = {
   additionalGiftAmountCents?: number;
   cancelUrl: string;
+  clientId?: string;
   contactId: string;
   customerEmail: string;
   membershipAmountCents: number;
   membershipLabel: string;
+  programName?: string;
+  siteVariant?: string;
   successUrl: string;
 };
 
@@ -129,10 +132,13 @@ function getStripeRequestHeaders({
 export async function createStripeCheckoutSession({
   additionalGiftAmountCents = 0,
   cancelUrl,
+  clientId: inputClientId,
   contactId,
   customerEmail,
   membershipAmountCents,
   membershipLabel,
+  programName,
+  siteVariant,
   successUrl,
 }: StripeCheckoutSessionInput) {
   const secretKey = getStripeSecretKey();
@@ -142,7 +148,7 @@ export async function createStripeCheckoutSession({
   }
 
   const brand = getSiteBrand();
-  const clientId = getCurrentClientId();
+  const clientId = inputClientId ?? getCurrentClientId();
   const connectedAccountId = await getRequiredClientStripeAccountId(clientId);
   const applicationFeePercent = getStripeApplicationFeePercent();
   const body = new URLSearchParams();
@@ -165,8 +171,8 @@ export async function createStripeCheckoutSession({
   body.set("metadata[contact_id]", contactId);
   body.set("metadata[membership_amount_cents]", String(membershipAmountCents));
   body.set("metadata[membership_label]", membershipLabel);
-  body.set("metadata[program]", brand.programName);
-  body.set("metadata[site_variant]", brand.variant);
+  body.set("metadata[program]", programName ?? brand.programName);
+  body.set("metadata[site_variant]", siteVariant ?? brand.variant);
   body.set("mode", "subscription");
   body.set("subscription_data[metadata][client_id]", clientId);
   body.set("subscription_data[metadata][contact_id]", contactId);
@@ -174,8 +180,8 @@ export async function createStripeCheckoutSession({
     "subscription_data[metadata][membership_amount_cents]",
     String(membershipAmountCents),
   );
-  body.set("subscription_data[metadata][program]", brand.programName);
-  body.set("subscription_data[metadata][site_variant]", brand.variant);
+  body.set("subscription_data[metadata][program]", programName ?? brand.programName);
+  body.set("subscription_data[metadata][site_variant]", siteVariant ?? brand.variant);
 
   if (applicationFeePercent) {
     body.set(
@@ -191,7 +197,7 @@ export async function createStripeCheckoutSession({
     body.set("line_items[1][price_data][currency]", "cad");
     body.set(
       "line_items[1][price_data][product_data][name]",
-      `Additional one-time gift to ${brand.programName}`,
+      `Additional one-time gift to ${programName ?? brand.programName}`,
     );
     body.set(
       "line_items[1][price_data][unit_amount]",
