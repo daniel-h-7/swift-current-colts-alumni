@@ -12,7 +12,10 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getCurrentClientId } from "@/lib/client-context";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import { getSiteBrand } from "@/lib/site-brand";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  createServerSupabaseClient,
+  getServerEnvValue,
+} from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin-header";
 import { AdminContactsTable } from "@/components/admin-contacts-table";
 
@@ -58,6 +61,7 @@ const sortableColumns = [
 
 type SortKey = (typeof sortableColumns)[number]["key"];
 type SortDirection = "asc" | "desc";
+type SummaryStat = { label: string; value: number };
 
 function getSort(filters: SearchParams): {
   sortBy: SortKey;
@@ -94,6 +98,14 @@ function getErrorMessage(error: unknown, fallback: string) {
       return "Supabase is not connected for this deployment yet. Add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy.";
     }
 
+    if (
+      message.includes("fetch failed") ||
+      message.includes("Failed to fetch") ||
+      message.includes("TypeError")
+    ) {
+      return "The admin backend cannot reach Supabase from this deployment. Check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, make sure the Supabase URL has no extra spaces or quotes, then redeploy.";
+    }
+
     return message;
   };
 
@@ -113,77 +125,63 @@ function getErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-async function getCount(
-  column?: string,
-  operator?: "eq" | "gte" | "lt" | "is",
-  value?: string | boolean | null,
-) {
-  const supabase = createServerSupabaseClient();
-  let query = supabase
-    .from("contacts")
-    .select("id", { count: "exact", head: true })
-    .eq("client_id", getCurrentClientId());
-
-  if (column && operator) {
-    if (operator === "is") {
-      query = query.is(column, value);
-    } else if (operator === "eq") {
-      query = query.eq(column, value);
-    } else if (operator === "gte") {
-      query = query.gte(column, value);
-    } else {
-      query = query.lt(column, value);
-    }
+function createAdminDashboardSupabaseClient() {
+  if (!getServerEnvValue("SUPABASE_SERVICE_ROLE_KEY")) {
+    throw new Error(
+      "Admin backend setup needed. Add SUPABASE_SERVICE_ROLE_KEY to this Vercel project so the admin portal can read contacts, members, and summary counts securely.",
+    );
   }
 
-  const { count, error } = await query;
+  return createServerSupabaseClient();
+}
+
+async function getSummaryStats() {
+  const today = getTodayDate();
+  const supabase = createAdminDashboardSupabaseClient();
+  const { data, error } = await supabase
+    .from("contacts")
+    .select("membership_status, paid_through, email_opt_in, sms_opt_in")
+    .eq("client_id", getCurrentClientId());
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return count ?? 0;
-}
+  const rows = data ?? [];
 
-async function getSafeCount(
-  label: string,
-  column?: string,
-  operator?: "eq" | "gte" | "lt" | "is",
-  value?: string | boolean | null,
-) {
-  try {
-    return {
-      error: "",
-      label,
-      value: await getCount(column, operator, value),
-    };
-  } catch (error) {
-    return {
-      error: getErrorMessage(error, `Unable to load ${label}.`),
-      label,
-      value: 0,
-    };
-  }
-}
-
-async function getSummaryStats() {
-  const today = getTodayDate();
-
-  return Promise.all([
-    getSafeCount("Total Contacts"),
-    getSafeCount("Active Members", "membership_status", "eq", "Active Member"),
-    getSafeCount("Expired Memberships", "paid_through", "lt", today),
-    getSafeCount("Missing Paid Through", "paid_through", "is", null),
-    getSafeCount("Email Opt-Ins", "email_opt_in", "eq", true),
-    getSafeCount("SMS Opt-Ins", "sms_opt_in", "eq", true),
-  ]);
+  return [
+    { label: "Total Contacts", value: rows.length },
+    {
+      label: "Active Members",
+      value: rows.filter((contact) => contact.membership_status === "Active Member")
+        .length,
+    },
+    {
+      label: "Expired Memberships",
+      value: rows.filter(
+        (contact) => contact.paid_through && contact.paid_through < today,
+      ).length,
+    },
+    {
+      label: "Missing Paid Through",
+      value: rows.filter((contact) => !contact.paid_through).length,
+    },
+    {
+      label: "Email Opt-Ins",
+      value: rows.filter((contact) => contact.email_opt_in).length,
+    },
+    {
+      label: "SMS Opt-Ins",
+      value: rows.filter((contact) => contact.sms_opt_in).length,
+    },
+  ] satisfies SummaryStat[];
 }
 
 async function getContacts(filters: SearchParams) {
   const { sortBy, sortDir } = getSort(filters);
   const ascending = sortDir === "asc";
   const searchTerm = filters.q?.trim().replaceAll(",", " ");
-  const supabase = createServerSupabaseClient();
+  const supabase = createAdminDashboardSupabaseClient();
   let query = supabase
     .from("contacts")
     .select("*")
@@ -351,7 +349,7 @@ export default async function AdminPage({
 
   const filters = await searchParams;
   let contacts: Contact[] = [];
-  let summaryStats: Array<{ error: string; label: string; value: number }> = [];
+  let summaryStats: SummaryStat[] = [];
   let errorMessage = "";
   let summaryErrorMessage = "";
 
@@ -375,7 +373,6 @@ export default async function AdminPage({
 
   const brand = getSiteBrand();
   const backendSetupMessage =
-    summaryStats.find((stat) => stat.error)?.error ||
     errorMessage ||
     summaryErrorMessage;
 
@@ -416,11 +413,6 @@ export default async function AdminPage({
                   <p className="mt-3 text-3xl font-black text-white">
                     {stat.value}
                   </p>
-                  {stat.error ? (
-                    <p className="mt-3 text-xs font-bold leading-5 text-red-300">
-                      Backend setup needed.
-                    </p>
-                  ) : null}
                 </div>
               ))
             : null}
