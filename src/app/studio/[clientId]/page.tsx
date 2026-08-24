@@ -11,6 +11,8 @@ type PageParams = {
 
 type PageSearchParams = {
   created?: string;
+  error?: string;
+  review_submitted?: string;
 };
 
 export default async function ClientStudioPage({
@@ -37,5 +39,12 @@ export default async function ClientStudioPage({
     notFound();
   }
 
-  return <StudioDashboard client={client} isCreated={query.created === "1"} />;
+  return (
+    <StudioDashboard
+      client={client}
+      errorMessage={query.error}
+      isCreated={query.created === "1"}
+      isReviewSubmitted={query.review_submitted === "1"}
+    />
+  );
 }

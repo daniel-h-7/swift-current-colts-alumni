@@ -10,6 +10,7 @@ type ClientRow = {
   custom_domain?: string | null;
   id: string;
   launch_approved_at?: string | null;
+  launch_review_requested_at?: string | null;
   name: string;
   plan_key?: string | null;
   primary_domain: string | null;
@@ -24,6 +25,7 @@ type ClientRow = {
 type ClientSummary = ClientRow & {
   campaignCount: number;
   contactCount: number;
+  ownerEmail: string | null;
   settingsUpdatedAt: string | null;
 };
 
@@ -47,7 +49,7 @@ async function getClientSummaries() {
   const expandedResult = await supabase
     .from("clients")
     .select(
-      "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at",
+      "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at",
     )
     .order("name", { ascending: true });
 
@@ -72,7 +74,7 @@ async function getClientSummaries() {
 
   return Promise.all(
     clients.map(async (client) => {
-      const [contacts, campaigns, settings] = await Promise.all([
+      const [contacts, campaigns, settings, owner] = await Promise.all([
         supabase
           .from("contacts")
           .select("id", { count: "exact", head: true })
@@ -87,12 +89,21 @@ async function getClientSummaries() {
           .eq("client_id", client.id)
           .eq("id", "default")
           .maybeSingle(),
+        supabase
+          .from("client_users")
+          .select("email")
+          .eq("client_id", client.id)
+          .eq("role", "owner")
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle(),
       ]);
 
       return {
         ...client,
         campaignCount: campaigns.count ?? 0,
         contactCount: contacts.count ?? 0,
+        ownerEmail: owner.data?.email ?? null,
         settingsUpdatedAt: settings.data?.updated_at ?? null,
       } satisfies ClientSummary;
     }),
@@ -129,6 +140,10 @@ export default async function HqHomePage() {
     .length;
   const publishedClients = clients.filter((client) => client.launch_approved_at)
     .length;
+  const awaitingApprovalClients = clients.filter(
+    (client) =>
+      client.launch_review_requested_at && !client.launch_approved_at,
+  );
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -174,6 +189,82 @@ export default async function HqHomePage() {
             </p>
             <p className="mt-2 text-3xl font-black">{publishedClients}</p>
           </div>
+        </div>
+
+        <div className="mt-8 border border-amber-200 bg-white shadow-sm">
+          <div className="border-b border-amber-200 bg-amber-50 px-5 py-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700">
+                  Launch Queue
+                </p>
+                <h2 className="mt-1 text-lg font-black">
+                  Awaiting TeamAlum Approval
+                </h2>
+              </div>
+              <p className="text-sm font-black text-amber-800">
+                {awaitingApprovalClients.length} pending
+              </p>
+            </div>
+          </div>
+
+          {awaitingApprovalClients.length ? (
+            <div className="divide-y divide-slate-200">
+              {awaitingApprovalClients.map((client) => (
+                <div
+                  className="grid gap-4 px-5 py-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(180px,0.7fr)_minmax(260px,auto)] lg:items-center"
+                  key={client.id}
+                >
+                  <div>
+                    <p className="font-black text-slate-950">{client.name}</p>
+                    <p className="mt-1 font-mono text-xs text-slate-500">
+                      {client.id}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-slate-600">
+                      Owner: {client.ownerEmail ?? "Not assigned"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                      Submitted
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-slate-700">
+                      {formatDate(client.launch_review_requested_at ?? null)}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <Link
+                      className="inline-flex border border-slate-300 bg-white px-3 py-2 font-black text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                      href={`/preview/${encodeURIComponent(client.id)}`}
+                    >
+                      Preview
+                    </Link>
+                    <Link
+                      className="inline-flex border border-blue-200 bg-blue-50 px-3 py-2 font-black text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                      href={`/hq/clients/${encodeURIComponent(client.id)}`}
+                    >
+                      Open
+                    </Link>
+                    <form
+                      action={`/hq/clients/${encodeURIComponent(client.id)}/approve-launch`}
+                      method="post"
+                    >
+                      <button
+                        className="inline-flex border border-emerald-700 bg-emerald-700 px-3 py-2 font-black text-white transition hover:bg-emerald-600"
+                        type="submit"
+                      >
+                        Approve
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="px-5 py-8 text-center text-sm font-bold text-slate-500">
+              No sites are waiting for launch approval.
+            </div>
+          )}
         </div>
 
         <div className="mt-8 overflow-hidden border border-slate-200 bg-white shadow-sm">

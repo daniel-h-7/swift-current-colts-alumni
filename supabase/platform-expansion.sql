@@ -9,6 +9,7 @@ alter table public.clients
   add column if not exists custom_domain text,
   add column if not exists support_notes text,
   add column if not exists launch_approved_at timestamptz,
+  add column if not exists launch_review_requested_at timestamptz,
   add column if not exists published_at timestamptz;
 
 do $$

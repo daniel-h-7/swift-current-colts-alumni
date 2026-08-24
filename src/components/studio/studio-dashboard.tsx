@@ -24,12 +24,23 @@ const setupItems = [
   "Publish domain",
 ];
 
+type LaunchChecklistItem = {
+  href?: string;
+  isComplete: boolean;
+  label: string;
+  note: string;
+};
+
 export async function StudioDashboard({
   client,
+  errorMessage,
   isCreated = false,
+  isReviewSubmitted = false,
 }: {
   client: PlatformClient;
+  errorMessage?: string;
   isCreated?: boolean;
+  isReviewSubmitted?: boolean;
 }) {
   const [settings, emailSettings, siteContent, features, integrations, sections] =
     await Promise.all([
@@ -42,10 +53,62 @@ export async function StudioDashboard({
     ]);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
   const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
+  const previewHref = `/preview/${encodeURIComponent(client.id)}`;
+  const enabledFeatures = features.filter((feature) => feature.is_enabled);
+  const hasHomepageContent = Boolean(
+    siteContent.brand.siteTitle &&
+      siteContent.brand.heroTitle &&
+      siteContent.brand.heroBody,
+  );
+  const hasVisualIdentity = Boolean(
+    siteContent.brand.logoUrl || siteContent.brand.heroImageUrl,
+  );
+  const hasPublicAddress = Boolean(
+    client.subdomain || client.custom_domain || client.primary_domain,
+  );
+  const isReviewRequested = Boolean(client.launch_review_requested_at);
+  const isLaunchApproved = Boolean(client.launch_approved_at);
+  const checklist: LaunchChecklistItem[] = [
+    {
+      href: `/studio/${encodeURIComponent(client.id)}/content`,
+      isComplete: hasHomepageContent,
+      label: "Homepage copy",
+      note: "Site title, hero headline, and intro copy are filled in.",
+    },
+    {
+      href: `/studio/${encodeURIComponent(client.id)}/content`,
+      isComplete: hasVisualIdentity,
+      label: "Logo and imagery",
+      note: "Logo or hero image is ready for review.",
+    },
+    {
+      isComplete: enabledFeatures.length > 0,
+      label: "Feature selection",
+      note: "At least one public site feature is enabled.",
+    },
+    {
+      href: `/studio/${encodeURIComponent(client.id)}/payments`,
+      isComplete: stripeStatus === "connected",
+      label: "Client Stripe",
+      note: "Membership payments are connected to the client Stripe account.",
+    },
+    {
+      isComplete: hasPublicAddress,
+      label: "Public address",
+      note: "A TeamAlum subdomain or custom domain is assigned.",
+    },
+    {
+      href: previewHref,
+      isComplete: true,
+      label: "Preview available",
+      note: "Review the parked site before submitting.",
+    },
+  ];
+  const completedChecklistItems = checklist.filter((item) => item.isComplete)
+    .length;
   const completedSetup =
     3 + (stripeStatus === "connected" ? 1 : 0) +
     (customDomainStatus === "connected" ? 1 : 0);
-  const previewHref = `/preview/${encodeURIComponent(client.id)}`;
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -64,6 +127,16 @@ export async function StudioDashboard({
           {isCreated ? (
             <div className="border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
               Site workspace created. Continue setup below.
+            </div>
+          ) : null}
+          {isReviewSubmitted ? (
+            <div className="border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+              Your site has been submitted to TeamAlum for launch review.
+            </div>
+          ) : null}
+          {errorMessage ? (
+            <div className="border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
+              {errorMessage}
             </div>
           ) : null}
 
@@ -160,6 +233,81 @@ export async function StudioDashboard({
         </div>
 
         <aside className="space-y-6">
+          <section className="border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-black">Launch Checklist</h2>
+            <p className="mt-2 text-sm font-semibold text-slate-500">
+              {completedChecklistItems} of {checklist.length} ready
+            </p>
+            <div className="mt-5 space-y-3">
+              {checklist.map((item) => {
+                const content = (
+                  <>
+                    <span className="text-sm font-black text-slate-800">
+                      {item.label}
+                    </span>
+                    <span
+                      className={`text-xs font-black uppercase tracking-[0.16em] ${
+                        item.isComplete ? "text-emerald-700" : "text-amber-700"
+                      }`}
+                    >
+                      {item.isComplete ? "Ready" : "Needed"}
+                    </span>
+                  </>
+                );
+
+                return (
+                  <div
+                    className="border border-slate-200 bg-slate-50 p-4"
+                    key={item.label}
+                  >
+                    {item.href ? (
+                      <Link
+                        className="flex items-center justify-between gap-3"
+                        href={item.href}
+                      >
+                        {content}
+                      </Link>
+                    ) : (
+                      <div className="flex items-center justify-between gap-3">
+                        {content}
+                      </div>
+                    )}
+                    <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
+                      {item.note}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                Review Status
+              </p>
+              <p className="mt-2 text-sm font-black text-slate-800">
+                {isLaunchApproved
+                  ? "Approved for launch"
+                  : isReviewRequested
+                    ? "Submitted to TeamAlum"
+                    : "Not submitted yet"}
+              </p>
+            </div>
+
+            <form
+              action={`/studio/${encodeURIComponent(client.id)}/submit-review`}
+              className="mt-5"
+              method="post"
+            >
+              <button
+                className="w-full border border-blue-700 bg-blue-700 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-blue-600"
+                disabled={isLaunchApproved}
+                type="submit"
+              >
+                {isReviewRequested ? "Resubmit For Review" : "Submit For Review"}
+              </button>
+            </form>
+          </section>
+
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">Setup</h2>
             <p className="mt-2 text-sm font-semibold text-slate-500">

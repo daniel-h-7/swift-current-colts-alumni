@@ -24,6 +24,7 @@ type ClientRow = {
   custom_domain?: string | null;
   id: string;
   launch_approved_at?: string | null;
+  launch_review_requested_at?: string | null;
   name: string;
   plan_key?: string | null;
   primary_domain: string | null;
@@ -84,7 +85,7 @@ async function getClientDetail(clientId: string) {
       supabase
         .from("clients")
         .select(
-          "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, support_notes, published_at, launch_approved_at",
+          "id, name, site_variant, primary_domain, created_at, updated_at, status, plan_key, subdomain, custom_domain, support_notes, published_at, launch_approved_at, launch_review_requested_at",
         )
         .eq("id", clientId)
         .maybeSingle(),
@@ -398,7 +399,9 @@ export default async function HqClientPage({
                   <p className="mt-1 text-xs font-semibold text-slate-500">
                     {isLaunchApproved
                       ? `Approved ${formatDate(client.launch_approved_at ?? null)}`
-                      : "Public pages stay parked until HQ approves launch."}
+                      : client.launch_review_requested_at
+                        ? `Submitted ${formatDate(client.launch_review_requested_at)}`
+                        : "Public pages stay parked until HQ approves launch."}
                   </p>
                 </div>
                 <div className="border border-slate-200 bg-slate-50 p-4">

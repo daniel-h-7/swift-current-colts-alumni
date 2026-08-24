@@ -19,6 +19,7 @@ export type PlatformClient = {
   custom_domain?: string | null;
   id: string;
   launch_approved_at?: string | null;
+  launch_review_requested_at?: string | null;
   name: string;
   plan_key?: string | null;
   primary_domain?: string | null;
@@ -60,7 +61,7 @@ export async function getPlatformClient(clientId: string) {
     const expandedResult = await supabase
       .from("clients")
       .select(
-        "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at",
+        "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at",
       )
       .eq("id", clientId)
       .maybeSingle();
