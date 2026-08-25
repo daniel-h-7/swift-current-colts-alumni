@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     await createTeamAlumClient({
       annualMembershipAmountCents: Math.round(parsedAmount * 100),
       clientId: id,
-      customDomain: cleanNullable(formData.get("custom_domain")),
+      customDomain: null,
       joinBody,
       joinHeadline,
       membershipYearLabel,

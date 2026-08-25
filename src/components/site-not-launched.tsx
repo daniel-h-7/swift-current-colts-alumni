@@ -21,7 +21,7 @@ export function SiteNotLaunched({
         <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-slate-300 md:text-lg">
           This site is being reviewed before going public. The program team can
           keep editing in Studio, and TeamAlum HQ will approve launch once
-          content, payments, email, and domain settings are ready.
+          content, payments, email, and launch settings are ready.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link

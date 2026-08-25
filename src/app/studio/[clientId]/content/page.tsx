@@ -468,7 +468,7 @@ export default async function StudioContentSetupPage({
             <h2 className="text-lg font-black">Finish</h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
               Preview the site, then launch once uploads, content, Stripe, and
-              domain setup are complete.
+              TeamAlum review are complete.
             </p>
             <div className="mt-5 grid gap-3">
               <Link

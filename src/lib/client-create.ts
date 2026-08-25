@@ -52,10 +52,11 @@ export async function createTeamAlumClient(input: CreateClientInput) {
     "Annual Football Alumni and Booster Club";
   const annualMembershipAmountCents =
     input.annualMembershipAmountCents ?? 10000;
+  const subdomain = input.subdomain || input.clientId;
   const baseClient = {
     id: input.clientId,
     name: input.name,
-    primary_domain: input.customDomain,
+    primary_domain: `${subdomain}.teamalum.com`,
     site_variant: siteVariant,
     updated_at: now,
   };
@@ -65,7 +66,7 @@ export async function createTeamAlumClient(input: CreateClientInput) {
     custom_domain: input.customDomain,
     plan_key: planKey,
     status,
-    subdomain: input.subdomain,
+    subdomain,
     support_notes: null,
   });
 

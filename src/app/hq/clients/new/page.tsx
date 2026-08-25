@@ -82,21 +82,16 @@ export default async function NewHqClientPage({
                     required
                   />
                 </label>
-                <label className="text-sm font-bold text-slate-700">
-                  Subdomain
+                <label className="text-sm font-bold text-slate-700 md:col-span-2">
+                  TeamAlum Subdomain
                   <input
                     className={fieldClass}
                     name="subdomain"
                     placeholder="colts"
                   />
-                </label>
-                <label className="text-sm font-bold text-slate-700">
-                  Custom Domain
-                  <input
-                    className={fieldClass}
-                    name="custom_domain"
-                    placeholder="coltsfootball.com"
-                  />
+                  <span className="mt-2 block text-xs font-semibold text-slate-500">
+                    This becomes client.teamalum.com after launch approval.
+                  </span>
                 </label>
                 <label className="text-sm font-bold text-slate-700">
                   Plan
@@ -180,7 +175,9 @@ export default async function NewHqClientPage({
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Feature Access</h2>
               <div className="mt-5 space-y-3">
-                {defaultClientFeatures.map((feature) => (
+                {defaultClientFeatures
+                  .filter((feature) => feature.feature_key !== "custom_domain")
+                  .map((feature) => (
                   <label
                     className="block border border-slate-200 bg-slate-50 p-4"
                     key={feature.feature_key}

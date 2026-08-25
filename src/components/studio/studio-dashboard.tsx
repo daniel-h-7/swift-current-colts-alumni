@@ -21,7 +21,7 @@ const setupItems = [
   "Add homepage content",
   "Upload logo and photos",
   "Connect Stripe",
-  "Publish domain",
+  "Submit for review",
 ];
 
 type LaunchChecklistItem = {
@@ -52,8 +52,8 @@ export async function StudioDashboard({
       getSiteSections(client.id),
     ]);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
-  const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
   const previewHref = `/preview/${encodeURIComponent(client.id)}`;
+  const liveUrl = `https://${client.subdomain || client.id}.teamalum.com`;
   const enabledFeatures = features.filter((feature) => feature.is_enabled);
   const hasHomepageContent = Boolean(
     siteContent.brand.siteTitle &&
@@ -64,7 +64,7 @@ export async function StudioDashboard({
     siteContent.brand.logoUrl || siteContent.brand.heroImageUrl,
   );
   const hasPublicAddress = Boolean(
-    client.subdomain || client.custom_domain || client.primary_domain,
+    client.subdomain || client.id,
   );
   const isReviewRequested = Boolean(client.launch_review_requested_at);
   const isLaunchApproved = Boolean(client.launch_approved_at);
@@ -94,8 +94,8 @@ export async function StudioDashboard({
     },
     {
       isComplete: hasPublicAddress,
-      label: "Public address",
-      note: "A TeamAlum subdomain or custom domain is assigned.",
+      label: "TeamAlum URL",
+      note: "A client.teamalum.com address is assigned.",
     },
     {
       href: previewHref,
@@ -108,7 +108,7 @@ export async function StudioDashboard({
     .length;
   const completedSetup =
     3 + (stripeStatus === "connected" ? 1 : 0) +
-    (customDomainStatus === "connected" ? 1 : 0);
+    (isReviewRequested ? 1 : 0);
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -148,9 +148,7 @@ export async function StudioDashboard({
                 </p>
                 <h2 className="mt-2 text-2xl font-black">{client.name}</h2>
                 <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
-                  {client.subdomain
-                    ? `${client.subdomain}.teamalum.com`
-                    : client.custom_domain || client.primary_domain || client.id}
+                  {liveUrl}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -169,6 +167,14 @@ export async function StudioDashboard({
                 >
                   Preview Site
                 </Link>
+                {isLaunchApproved ? (
+                  <Link
+                    className="inline-flex border border-emerald-700 bg-emerald-700 px-4 py-3 text-sm font-black text-white transition hover:bg-emerald-600"
+                    href={liveUrl}
+                  >
+                    Live Site
+                  </Link>
+                ) : null}
               </div>
             </div>
 
@@ -203,6 +209,49 @@ export async function StudioDashboard({
             features={features}
             sections={sections}
           />
+
+          <section className="border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-black">Site URLs</h2>
+            <div className="mt-4 space-y-3">
+              <div className="border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  Preview
+                </p>
+                <Link
+                  className="mt-2 block break-all text-sm font-black text-blue-700 hover:text-blue-600"
+                  href={previewHref}
+                >
+                  {previewHref}
+                </Link>
+              </div>
+              <div
+                className={`border p-4 ${
+                  isLaunchApproved
+                    ? "border-emerald-200 bg-emerald-50"
+                    : "border-amber-200 bg-amber-50"
+                }`}
+              >
+                <p
+                  className={`text-xs font-black uppercase tracking-[0.18em] ${
+                    isLaunchApproved ? "text-emerald-700" : "text-amber-700"
+                  }`}
+                >
+                  Live
+                </p>
+                <Link
+                  className="mt-2 block break-all text-sm font-black text-slate-800 hover:text-emerald-700"
+                  href={liveUrl}
+                >
+                  {liveUrl}
+                </Link>
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-600">
+                  {isLaunchApproved
+                    ? "Approved and ready to share."
+                    : "Parked until TeamAlum approves launch."}
+                </p>
+              </div>
+            </div>
+          </section>
 
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <div>
@@ -382,20 +431,6 @@ export async function StudioDashboard({
                 >
                   Manage Payments
                 </Link>
-              </div>
-              <div className="border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                  Domain
-                </p>
-                <p
-                  className={`mt-2 text-sm font-bold ${
-                    customDomainStatus === "connected"
-                      ? "text-emerald-700"
-                      : "text-amber-700"
-                  }`}
-                >
-                  {customDomainStatus.replaceAll("_", " ")}
-                </p>
               </div>
             </div>
           </section>

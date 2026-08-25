@@ -101,12 +101,14 @@ export async function POST(
 
     const supabase = createServerSupabaseClient();
     const updatedAt = new Date().toISOString();
+    const subdomain = cleanNullable(formData.get("subdomain")) ?? id;
+    const primaryDomain = `${subdomain}.teamalum.com`;
 
     const { error: clientError } = await supabase
       .from("clients")
       .update({
         name,
-        primary_domain: cleanNullable(formData.get("primary_domain")),
+        primary_domain: primaryDomain,
         site_variant: siteVariant,
         updated_at: updatedAt,
       })
@@ -120,10 +122,10 @@ export async function POST(
     }
 
     const platformClientUpdates: Record<string, string | null> = {
-      custom_domain: cleanNullable(formData.get("custom_domain")),
+      custom_domain: null,
       plan_key: String(formData.get("plan_key") ?? "starter").trim(),
       status: String(formData.get("status") ?? "active").trim(),
-      subdomain: cleanNullable(formData.get("subdomain")),
+      subdomain,
       support_notes: cleanNullable(formData.get("support_notes")),
       updated_at: updatedAt,
     };

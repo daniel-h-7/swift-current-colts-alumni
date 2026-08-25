@@ -136,7 +136,7 @@ export default async function HqHomePage() {
     (total, client) => total + client.contactCount,
     0,
   );
-  const configuredDomains = clients.filter((client) => client.primary_domain)
+  const configuredDomains = clients.filter((client) => client.subdomain || client.id)
     .length;
   const publishedClients = clients.filter((client) => client.launch_approved_at)
     .length;
@@ -179,7 +179,7 @@ export default async function HqHomePage() {
           </div>
           <div className="border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
-              Domains
+              TeamAlum URLs
             </p>
             <p className="mt-2 text-3xl font-black">{configuredDomains}</p>
           </div>
@@ -281,7 +281,7 @@ export default async function HqHomePage() {
                   <th className="px-5 py-3">Plan</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3">Launch</th>
-                  <th className="px-5 py-3">Domain</th>
+                  <th className="px-5 py-3">TeamAlum URL</th>
                   <th className="px-5 py-3">Contacts</th>
                   <th className="px-5 py-3">Campaigns</th>
                   <th className="px-5 py-3">Settings</th>
@@ -318,11 +318,7 @@ export default async function HqHomePage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">
-                      {client.custom_domain ||
-                        client.primary_domain ||
-                        (client.subdomain
-                          ? `${client.subdomain}.teamalum.com`
-                          : "Not set")}
+                      {`${client.subdomain || client.id}.teamalum.com`}
                     </td>
                     <td className="px-5 py-4 font-black">
                       {client.contactCount}

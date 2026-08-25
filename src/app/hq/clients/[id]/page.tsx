@@ -148,9 +148,10 @@ export default async function HqClientPage({
   const membershipAmount = ((settings?.annual_membership_amount_cents ?? 10000) / 100).toFixed(2);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
   const resendStatus = getIntegrationStatus(integrations, "resend");
-  const customDomainStatus = getIntegrationStatus(integrations, "custom_domain");
   const stripeAccountId = getIntegrationAccountId(integrations, "stripe_connect");
   const isLaunchApproved = Boolean(client.launch_approved_at);
+  const liveUrl = `https://${client.subdomain || client.id}.teamalum.com`;
+  const previewUrl = `/preview/${encodeURIComponent(client.id)}`;
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -208,6 +209,48 @@ export default async function HqClientPage({
           </div>
         </div>
 
+        <section className="mt-8 border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
+                Preview URL
+              </p>
+              <a
+                className="mt-2 block break-all text-sm font-black text-blue-700 hover:text-blue-600"
+                href={previewUrl}
+              >
+                {previewUrl}
+              </a>
+            </div>
+            <div
+              className={`border p-4 ${
+                isLaunchApproved
+                  ? "border-emerald-200 bg-emerald-50"
+                  : "border-amber-200 bg-amber-50"
+              }`}
+            >
+              <p
+                className={`text-xs font-black uppercase tracking-[0.22em] ${
+                  isLaunchApproved ? "text-emerald-700" : "text-amber-700"
+                }`}
+              >
+                Live TeamAlum URL
+              </p>
+              <a
+                className="mt-2 block break-all text-sm font-black text-slate-800 hover:text-emerald-700"
+                href={liveUrl}
+              >
+                {liveUrl}
+              </a>
+              <p className="mt-2 text-xs font-semibold text-slate-600">
+                {isLaunchApproved
+                  ? "Approved and shareable."
+                  : "Parked until TeamAlum approves launch."}
+              </p>
+            </div>
+          </div>
+        </section>
+
         <form
           action={`/hq/clients/${encodeURIComponent(client.id)}/save`}
           className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]"
@@ -216,6 +259,11 @@ export default async function HqClientPage({
           <div className="space-y-6">
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Client Metadata</h2>
+              <input
+                name="primary_domain"
+                type="hidden"
+                value={`${client.subdomain || client.id}.teamalum.com`}
+              />
               <div className="mt-5 grid gap-5 md:grid-cols-2">
                 <label className="text-sm font-bold text-slate-700">
                   Client ID
@@ -244,12 +292,11 @@ export default async function HqClientPage({
                   />
                 </label>
                 <label className="text-sm font-bold text-slate-700">
-                  Primary Domain
+                  TeamAlum URL
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
-                    name="primary_domain"
-                    placeholder="club.teamalum.com"
-                    defaultValue={client.primary_domain ?? ""}
+                    className="mt-2 w-full border border-slate-300 bg-slate-100 px-4 py-3 text-slate-500"
+                    disabled
+                    value={`${client.subdomain || client.id}.teamalum.com`}
                   />
                 </label>
                 <label className="text-sm font-bold text-slate-700">
@@ -259,15 +306,6 @@ export default async function HqClientPage({
                     name="subdomain"
                     placeholder="club"
                     defaultValue={client.subdomain ?? ""}
-                  />
-                </label>
-                <label className="text-sm font-bold text-slate-700">
-                  Custom Domain
-                  <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
-                    name="custom_domain"
-                    placeholder="clubfootball.com"
-                    defaultValue={client.custom_domain ?? ""}
                   />
                 </label>
                 <label className="text-sm font-bold text-slate-700">
@@ -422,14 +460,6 @@ export default async function HqClientPage({
                 </div>
                 <div className="border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                    Custom Domain
-                  </p>
-                  <p className="mt-2 text-sm font-black text-slate-800">
-                    {customDomainStatus.replaceAll("_", " ")}
-                  </p>
-                </div>
-                <div className="border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                     Published
                   </p>
                   <p className="mt-2 text-sm font-black text-slate-800">
@@ -479,27 +509,15 @@ export default async function HqClientPage({
                     <option value="disabled">Disabled</option>
                   </select>
                 </label>
-                <label className="block text-sm font-bold text-slate-700">
-                  Custom Domain Status
-                  <select
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
-                    name="integration:custom_domain:status"
-                    defaultValue={customDomainStatus}
-                  >
-                    <option value="not_connected">Not connected</option>
-                    <option value="pending">Pending</option>
-                    <option value="connected">Connected</option>
-                    <option value="needs_attention">Needs attention</option>
-                    <option value="disabled">Disabled</option>
-                  </select>
-                </label>
               </div>
             </section>
 
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Feature Access</h2>
               <div className="mt-5 space-y-3">
-                {features.map((feature) => (
+                {features
+                  .filter((feature) => feature.feature_key !== "custom_domain")
+                  .map((feature) => (
                   <label
                     className="flex items-center justify-between gap-3 border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700"
                     key={feature.feature_key}

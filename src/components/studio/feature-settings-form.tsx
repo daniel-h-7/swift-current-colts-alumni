@@ -78,6 +78,9 @@ export function FeatureSettingsForm({
   const [draggedSection, setDraggedSection] = useState<SiteSectionKey | null>(
     null,
   );
+  const visibleFeatures = features.filter(
+    (feature) => feature.feature_key !== "custom_domain",
+  );
   const enabledOrderedSections = useMemo(
     () =>
       orderedSections.filter(
@@ -185,7 +188,7 @@ export function FeatureSettingsForm({
         </div>
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">
-          {features.map((feature) => {
+          {visibleFeatures.map((feature) => {
             const toggleable = isClientToggleableFeature(feature.feature_key);
 
             return (
