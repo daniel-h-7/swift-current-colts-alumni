@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventsSlider } from "@/components/events-slider";
+import { JoinForm } from "@/components/join-form";
 import { SponsorScroll } from "@/components/sponsor-scroll";
 import { getMembershipSettingsForClient } from "@/lib/membership-settings";
 import {
@@ -101,19 +102,23 @@ export default async function ClientPreviewPage({
 
     if (sectionKey === "memberships") {
       return (
-        <section id="join" className="mx-auto max-w-4xl px-6 py-16 text-center" key={sectionKey}>
-          <div className="border border-white/10 bg-zinc-950 p-8">
-            <p className="program-kicker">Membership</p>
-            <h2 className="mt-3 text-4xl font-black">{settings.join_headline}</h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sm font-semibold leading-7 text-gray-400">
-              {settings.membership_year_label}
+        <section id="join" className="mx-auto max-w-5xl px-6 py-16" key={sectionKey}>
+          <div className="border border-white/10 bg-zinc-950 p-6 md:p-8">
+            <p className="program-kicker">Preview Checkout</p>
+            <h2 className="mt-3 text-4xl font-black">Membership Payment</h2>
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-gray-400">
+              Use this form to test the membership payment flow before the site
+              is approved for public launch.
             </p>
-            <Link
-              className="mt-7 inline-flex rounded-full border border-white/15 bg-white/10 px-6 py-4 text-sm font-black uppercase text-white"
-              href={`/studio/${previewClient.id}/content`}
-            >
-              Continue Editing
-            </Link>
+            <div className="mt-7">
+              <JoinForm
+                checkoutPath={`/preview/${encodeURIComponent(previewClient.id)}/api/membership/checkout`}
+                headline={settings.join_headline}
+                isOpen={settings.join_is_open}
+                programName={previewClient.name}
+                subtext={settings.join_body}
+              />
+            </div>
           </div>
         </section>
       );
