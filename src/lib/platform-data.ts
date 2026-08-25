@@ -52,6 +52,9 @@ export const defaultClientIntegrations: ClientIntegration[] = [
   { integration_key: "custom_domain", status: "not_connected" },
 ];
 
+const expandedClientSelect =
+  "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at";
+
 export async function getPlatformClient(clientId: string) {
   try {
     const supabase = createServerSupabaseClient();
@@ -60,9 +63,7 @@ export async function getPlatformClient(clientId: string) {
 
     const expandedResult = await supabase
       .from("clients")
-      .select(
-        "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at",
-      )
+      .select(expandedClientSelect)
       .eq("id", clientId)
       .maybeSingle();
 
@@ -85,6 +86,31 @@ export async function getPlatformClient(clientId: string) {
     }
 
     return clientData;
+  } catch {
+    return null;
+  }
+}
+
+export async function getPlatformClientByStudioSlug(slug: string) {
+  const directClient = await getPlatformClient(slug);
+
+  if (directClient) {
+    return directClient;
+  }
+
+  try {
+    const supabase = createServerSupabaseClient();
+    const { data, error } = await supabase
+      .from("clients")
+      .select(expandedClientSelect)
+      .eq("subdomain", slug)
+      .maybeSingle();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data as PlatformClient;
   } catch {
     return null;
   }

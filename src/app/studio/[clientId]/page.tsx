@@ -1,6 +1,6 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { StudioDashboard } from "@/components/studio/studio-dashboard";
-import { getPlatformClient } from "@/lib/platform-data";
+import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
 import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
 
 export const dynamic = "force-dynamic";
@@ -29,14 +29,24 @@ export default async function ClientStudioPage({
     redirect(`/studio/login?error=${encodeURIComponent("Log in to manage your site.")}`);
   }
 
-  if (!(await canAccessStudioClient(clientId))) {
+  const client = await getPlatformClientByStudioSlug(clientId);
+
+  if (!client) {
+    redirect(
+      `/studio/login?error=${encodeURIComponent("We could not find that TeamAlum site yet. Try logging in again or check the site URL.")}`,
+    );
+  }
+
+  if (!(await canAccessStudioClient(client.id))) {
     redirect(`/studio/login?error=${encodeURIComponent("That site is not connected to your login.")}`);
   }
 
-  const client = await getPlatformClient(clientId);
-
-  if (!client) {
-    notFound();
+  if (client.id !== clientId) {
+    redirect(
+      `/studio/${encodeURIComponent(client.id)}${
+        query.created ? "?created=1" : ""
+      }`,
+    );
   }
 
   return (
