@@ -7,13 +7,33 @@ import {
 import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
 import {
   addStudioClientUser,
+  canUserAccessStudioClient,
   createStudioSession,
   createStudioUser,
+  signInStudioUser,
 } from "@/lib/studio-auth";
 import { isStudioStartUnlocked } from "@/lib/studio-start-gate";
 
 function redirectTo(request: Request, path: string) {
   return NextResponse.redirect(new URL(path, request.url), 303);
+}
+
+async function getOrCreateStudioUser(email: string, password: string) {
+  try {
+    return await createStudioUser(email, password);
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+    if (
+      message.includes("already") ||
+      message.includes("registered") ||
+      message.includes("exists")
+    ) {
+      return signInStudioUser(email, password);
+    }
+
+    throw error;
+  }
 }
 
 export async function POST(request: Request) {
@@ -58,7 +78,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const studioUser = await createStudioUser(adminEmail, password);
+    const existingClient = await getPlatformClientByStudioSlug(clientId);
+
+    if (existingClient) {
+      try {
+        const studioUser = await signInStudioUser(adminEmail, password);
+
+        if (
+          await canUserAccessStudioClient(studioUser.authUserId, existingClient.id)
+        ) {
+          await createStudioSession(studioUser);
+
+          return redirectTo(
+            request,
+            `/studio/${encodeURIComponent(existingClient.id)}?created=1`,
+          );
+        }
+      } catch {
+        // Fall through to the friendly taken-message below.
+      }
+
+      return redirectTo(
+        request,
+        `/studio/start?error=${encodeURIComponent("That TeamAlum URL is already taken. Log in with the owner email for that site, or choose a different site URL.")}`,
+      );
+    }
+
+    const studioUser = await getOrCreateStudioUser(adminEmail, password);
 
     await createTeamAlumClient({
       annualMembershipAmountCents: Math.round(parsedAmount * 100),

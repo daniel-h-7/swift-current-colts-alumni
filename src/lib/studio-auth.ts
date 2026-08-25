@@ -205,6 +205,21 @@ export async function getStudioClientIdsForUser(authUserId: string) {
     .filter((clientId): clientId is string => typeof clientId === "string");
 }
 
+export async function canUserAccessStudioClient(
+  authUserId: string,
+  clientId: string,
+) {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("client_users")
+    .select("client_id")
+    .eq("auth_user_id", authUserId)
+    .eq("client_id", clientId)
+    .maybeSingle();
+
+  return Boolean(!error && data);
+}
+
 export async function canAccessStudioClient(clientId: string) {
   const session = await getStudioSession();
 
@@ -212,13 +227,5 @@ export async function canAccessStudioClient(clientId: string) {
     return false;
   }
 
-  const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("client_users")
-    .select("client_id")
-    .eq("auth_user_id", session.authUserId)
-    .eq("client_id", clientId)
-    .maybeSingle();
-
-  return Boolean(!error && data);
+  return canUserAccessStudioClient(session.authUserId, clientId);
 }
