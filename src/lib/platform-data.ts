@@ -70,7 +70,7 @@ export async function getPlatformClient(clientId: string) {
     clientData = expandedResult.data as PlatformClient | null;
     queryError = expandedResult.error;
 
-    if (queryError && queryError.message.includes("schema cache")) {
+    if (queryError) {
       const fallback = await supabase
         .from("clients")
         .select("id, name, site_variant, primary_domain")
@@ -106,7 +106,21 @@ export async function getPlatformClientByStudioSlug(slug: string) {
       .eq("subdomain", slug)
       .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
+      const fallback = await supabase
+        .from("clients")
+        .select("id, name, site_variant, primary_domain")
+        .eq("subdomain", slug)
+        .maybeSingle();
+
+      if (fallback.error || !fallback.data) {
+        return null;
+      }
+
+      return fallback.data as PlatformClient;
+    }
+
+    if (!data) {
       return null;
     }
 

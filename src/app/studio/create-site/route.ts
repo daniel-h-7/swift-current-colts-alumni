@@ -4,6 +4,7 @@ import {
   createTeamAlumClient,
   normalizeClientId,
 } from "@/lib/client-create";
+import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
 import {
   addStudioClientUser,
   createStudioSession,
@@ -77,6 +78,14 @@ export async function POST(request: Request) {
       fullName: name,
       role: "owner",
     });
+    const createdClient = await getPlatformClientByStudioSlug(clientId);
+
+    if (!createdClient) {
+      throw new Error(
+        "Your login was created, but the team site was not saved. Please contact TeamAlum before trying again with the same email.",
+      );
+    }
+
     await createStudioSession(studioUser);
 
     revalidatePath("/hq");
