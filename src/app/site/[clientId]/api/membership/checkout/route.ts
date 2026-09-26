@@ -3,7 +3,7 @@ import { logContactActivity } from "@/lib/contact-activity";
 import { ContactInsert } from "@/lib/contact-options";
 import { isValidContact } from "@/lib/contact-validation";
 import { getMembershipSettingsForClient } from "@/lib/membership-settings";
-import { getPlatformClient } from "@/lib/platform-data";
+import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
 import {
   createStripeCheckoutSession,
   getStripeMode,
@@ -31,7 +31,7 @@ export async function POST(
 ) {
   try {
     const { clientId } = await params;
-    const client = await getPlatformClient(clientId);
+    const client = await getPlatformClientByStudioSlug(clientId);
 
     if (!client?.launch_approved_at) {
       return NextResponse.json(
@@ -55,7 +55,7 @@ export async function POST(
       );
     }
 
-    const settings = await getMembershipSettingsForClient(clientId);
+    const settings = await getMembershipSettingsForClient(client.id);
 
     if (!settings.join_is_open) {
       return NextResponse.json(
@@ -71,7 +71,7 @@ export async function POST(
         {
           ...contact,
           annual_dues_amount_cents: settings.annual_membership_amount_cents,
-          client_id: clientId,
+          client_id: client.id,
           membership_status: "Pending Payment",
         },
         { onConflict: "client_id,email" },
@@ -85,7 +85,7 @@ export async function POST(
 
     await logContactActivity({
       body: `${settings.membership_year_label} started. Amount: ${settings.annual_membership_amount_cents} cents.`,
-      clientId,
+      clientId: client.id,
       contactId: data.id,
       metadata: {
         amount_cents: settings.annual_membership_amount_cents,
@@ -102,7 +102,7 @@ export async function POST(
       const checkoutSession = await createStripeCheckoutSession({
         additionalGiftAmountCents,
         cancelUrl: `${origin}/join`,
-        clientId,
+        clientId: client.id,
         contactId: data.id,
         customerEmail: contact.email,
         membershipAmountCents: settings.annual_membership_amount_cents,
@@ -118,7 +118,7 @@ export async function POST(
           stripe_account_id: checkoutSession.stripeAccountId ?? null,
           stripe_checkout_session_id: checkoutSession.id,
         })
-        .eq("client_id", clientId)
+        .eq("client_id", client.id)
         .eq("id", data.id);
 
       return NextResponse.json({

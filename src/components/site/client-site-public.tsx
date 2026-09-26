@@ -5,7 +5,7 @@ import { getMembershipSettingsForClient } from "@/lib/membership-settings";
 import {
   ClientFeature,
   getClientFeatures,
-  getPlatformClient,
+  getPlatformClientByStudioSlug,
 } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
 import { getSiteSections, SiteSectionKey } from "@/lib/site-sections";
@@ -39,7 +39,7 @@ export async function ClientSitePublic({
   clientId: string;
   showJoin?: boolean;
 }) {
-  const client = await getPlatformClient(clientId);
+  const client = await getPlatformClientByStudioSlug(clientId);
 
   if (!client?.launch_approved_at) {
     return <SiteNotLaunched siteName={client?.name} />;

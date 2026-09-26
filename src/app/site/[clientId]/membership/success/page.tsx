@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SiteNotLaunched } from "@/components/site-not-launched";
-import { getPlatformClient } from "@/lib/platform-data";
+import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export default async function ClientMembershipSuccessPage({
   params: Promise<PageParams>;
 }) {
   const { clientId } = await params;
-  const client = await getPlatformClient(clientId);
+  const client = await getPlatformClientByStudioSlug(clientId);
 
   if (!client?.launch_approved_at) {
     return <SiteNotLaunched siteName={client?.name} />;
