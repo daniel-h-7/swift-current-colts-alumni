@@ -62,6 +62,7 @@ export default async function ClientPreviewPage({
   const brand = siteContent.brand;
   const heroImage = brand.heroImageUrl || "/images/stadium.jpg";
   const joinHref = isSectionVisible("memberships") ? "#join" : `/studio/${previewClient.id}/content`;
+  const kickerStyle = { color: brand.accentColor };
 
   function renderSection(sectionKey: SiteSectionKey) {
     if (sectionKey === "sponsors") {
@@ -70,7 +71,7 @@ export default async function ClientPreviewPage({
           <div className="rounded-[8px] border border-white/10 bg-zinc-950 p-8">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="program-kicker">Community Powered</p>
+                <p className="program-kicker" style={kickerStyle}>Community Powered</p>
                 <h2 className="mt-2 text-3xl font-black">Sponsors</h2>
               </div>
               <p className="max-w-xl text-sm font-semibold leading-6 text-gray-400">
@@ -88,7 +89,7 @@ export default async function ClientPreviewPage({
         <section id="events" className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="program-kicker">Gather Again</p>
+              <p className="program-kicker" style={kickerStyle}>Gather Again</p>
               <h2 className="mt-3 text-4xl font-black">Upcoming Events</h2>
             </div>
             <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
@@ -104,7 +105,7 @@ export default async function ClientPreviewPage({
       return (
         <section id="join" className="mx-auto max-w-5xl px-6 py-16" key={sectionKey}>
           <div className="border border-white/10 bg-zinc-950 p-6 md:p-8">
-            <p className="program-kicker">Preview Checkout</p>
+            <p className="program-kicker" style={kickerStyle}>Preview Checkout</p>
             <h2 className="mt-3 text-4xl font-black">Membership Payment</h2>
             <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-gray-400">
               Use this form to test the membership payment flow before the site
@@ -129,7 +130,7 @@ export default async function ClientPreviewPage({
         <section className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="program-kicker">Alumni</p>
+              <p className="program-kicker" style={kickerStyle}>Alumni</p>
               <h2 className="mt-3 text-4xl font-black">Spotlights</h2>
             </div>
             <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
@@ -154,7 +155,7 @@ export default async function ClientPreviewPage({
       return (
         <section className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
           <div className="rounded-[8px] border border-white/10 bg-zinc-950 p-8">
-            <p className="program-kicker">Campaigns</p>
+            <p className="program-kicker" style={kickerStyle}>Campaigns</p>
             <h2 className="mt-3 text-4xl font-black">Campaign Goals</h2>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {siteContent.fundraisingCampaigns.map((campaign) => (

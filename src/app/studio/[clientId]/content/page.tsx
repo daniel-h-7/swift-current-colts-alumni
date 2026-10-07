@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ColorSettingField } from "@/components/studio/color-setting-field";
 import { StudioHeader } from "@/components/studio-header";
 import { getPlatformClient } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
@@ -118,11 +119,11 @@ export default async function StudioContentSetupPage({
           ...(isHqEditing
             ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }]
             : []),
-          { href: `/studio/${client.id}`, label: "Builder" },
+          { href: `/studio/${client.id}`, label: "Builder Dashboard" },
           { href: previewHref, label: "Preview Site", tone: "primary" },
         ]}
         subtitle="Add the brand assets and homepage content needed to launch."
-        title={`${client.name} Content Setup`}
+        title={`${client.name} Site Content`}
       />
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -215,60 +216,27 @@ export default async function StudioContentSetupPage({
                   placeholder="/images/stadium.jpg"
                 />
               </label>
-              <label className="text-sm font-bold text-slate-700">
-                Primary Color
-                <div className="mt-2 grid grid-cols-[56px_minmax(0,1fr)] border border-slate-300 bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/25">
-                  <input
-                    aria-label="Primary color picker"
-                    className="h-full min-h-12 w-full border-r border-slate-300 bg-white p-1"
-                    defaultValue={brand.primaryColor.startsWith("#") ? brand.primaryColor : "#047857"}
-                    name="primary_color_picker"
-                    type="color"
-                  />
-                  <input
-                    className="min-w-0 px-4 py-3 text-slate-950 outline-none"
-                    defaultValue={brand.primaryColor}
-                    name="primary_color"
-                    placeholder="#047857 or rgb(4, 120, 87)"
-                  />
-                </div>
-              </label>
-              <label className="text-sm font-bold text-slate-700">
-                Secondary Color
-                <div className="mt-2 grid grid-cols-[56px_minmax(0,1fr)] border border-slate-300 bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/25">
-                  <input
-                    aria-label="Secondary color picker"
-                    className="h-full min-h-12 w-full border-r border-slate-300 bg-white p-1"
-                    defaultValue={brand.secondaryColor.startsWith("#") ? brand.secondaryColor : "#0f172a"}
-                    name="secondary_color_picker"
-                    type="color"
-                  />
-                  <input
-                    className="min-w-0 px-4 py-3 text-slate-950 outline-none"
-                    defaultValue={brand.secondaryColor}
-                    name="secondary_color"
-                    placeholder="#0f172a or rgb(15, 23, 42)"
-                  />
-                </div>
-              </label>
-              <label className="text-sm font-bold text-slate-700">
-                Accent Color
-                <div className="mt-2 grid grid-cols-[56px_minmax(0,1fr)] border border-slate-300 bg-white focus-within:border-emerald-500 focus-within:ring-2 focus:ring-emerald-500/25">
-                  <input
-                    aria-label="Accent color picker"
-                    className="h-full min-h-12 w-full border-r border-slate-300 bg-white p-1"
-                    defaultValue={brand.accentColor.startsWith("#") ? brand.accentColor : "#10b981"}
-                    name="accent_color_picker"
-                    type="color"
-                  />
-                  <input
-                    className="min-w-0 px-4 py-3 text-slate-950 outline-none"
-                    defaultValue={brand.accentColor}
-                    name="accent_color"
-                    placeholder="#10b981 or rgb(16, 185, 129)"
-                  />
-                </div>
-              </label>
+              <ColorSettingField
+                fallback="#047857"
+                label="Primary Color"
+                name="primary_color"
+                placeholder="#047857 or rgb(4, 120, 87)"
+                value={brand.primaryColor}
+              />
+              <ColorSettingField
+                fallback="#0f172a"
+                label="Secondary Color"
+                name="secondary_color"
+                placeholder="#0f172a or rgb(15, 23, 42)"
+                value={brand.secondaryColor}
+              />
+              <ColorSettingField
+                fallback="#10b981"
+                label="Accent Color"
+                name="accent_color"
+                placeholder="#10b981 or rgb(16, 185, 129)"
+                value={brand.accentColor}
+              />
             </div>
           </section>
 

@@ -609,15 +609,16 @@ export async function getSiteContentForClient(clientId: string) {
 
 export function createStarterSiteContent(clientName: string): SiteContent {
   const name = cleanText(clientName) || "Your Program";
+  const supporterName = `${name} Alumni and Boosters`;
 
   return {
     brand: {
       accentColor: "#10b981",
       heroBody:
-        "Connect alumni, families, sponsors, and supporters around the stories and moments that keep the program moving.",
+        `${name} now has one home for alumni, families, sponsors, and supporters to reconnect, stay informed, and help keep the program moving forward.`,
       heroImageUrl: "/images/stadium.jpg",
-      heroKicker: "Alumni and Booster Club",
-      heroTitle: `${name} Alumni`,
+      heroKicker: supporterName,
+      heroTitle: `Support ${name}`,
       logoUrl: "",
       primaryColor: "#047857",
       secondaryColor: "#0f172a",

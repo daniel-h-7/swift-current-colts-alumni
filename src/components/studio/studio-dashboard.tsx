@@ -117,12 +117,12 @@ export async function StudioDashboard({
       <StudioHeader
         actions={[
           ...(isHqEditing ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }] : []),
-          { href: `/studio/${client.id}`, label: "Builder", tone: "primary" },
+          { href: `/studio/${client.id}`, label: "Builder Dashboard", tone: "primary" },
           { href: "/studio/start", label: "Start Site" },
           { href: "/studio/logout", label: "Log Out" },
         ]}
         subtitle="The client-facing workspace for building and managing a TeamAlum site."
-        title={`${client.name} Site Builder`}
+        title={`${client.name} Builder Dashboard`}
       />
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_360px]">

@@ -158,8 +158,8 @@ export default async function HqClientPage({
       <HqHeader
         actions={[
           { href: "/hq", label: "Clients" },
-          { href: `/studio/${id}`, label: "Open Studio" },
-          { href: `/studio/${id}/content`, label: "Edit Content" },
+          { href: `/studio/${id}`, label: "Builder Dashboard" },
+          { href: `/studio/${id}/content`, label: "Edit Site Content" },
           { href: previewUrl, label: "Preview Site" },
           { href: "/hq/logout", label: "Log Out", tone: "danger" },
         ]}
