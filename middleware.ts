@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const demoCookieName = "teamalum_demo_session";
 const reservedSubdomains = new Set(["app", "www", "teamalum"]);
+const clientSubdomainAliases: Record<string, string> = {
+  rmramsfootball: "rmrfootball",
+};
 
 function isBypassedPath(pathname: string) {
   return (
@@ -31,7 +34,7 @@ function getTeamAlumSubdomain(hostHeader: string | null) {
     return null;
   }
 
-  return subdomain;
+  return clientSubdomainAliases[subdomain] ?? subdomain;
 }
 
 function getClientRewritePath(clientId: string, pathname: string) {
