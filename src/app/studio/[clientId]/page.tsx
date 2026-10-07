@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { StudioDashboard } from "@/components/studio/studio-dashboard";
 import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
-import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
+import { canAccessStudioClient, hasStudioOrHqSession, isHqStudioAccess } from "@/lib/studio-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -23,9 +23,8 @@ export default async function ClientStudioPage({
   searchParams: Promise<PageSearchParams>;
 }) {
   const [{ clientId }, query] = await Promise.all([params, searchParams]);
-  const session = await getStudioSession();
 
-  if (!session) {
+  if (!(await hasStudioOrHqSession())) {
     redirect(`/studio/login?error=${encodeURIComponent("Log in to manage your site.")}`);
   }
 
@@ -53,6 +52,7 @@ export default async function ClientStudioPage({
     <StudioDashboard
       client={client}
       errorMessage={query.error}
+      isHqEditing={await isHqStudioAccess()}
       isCreated={query.created === "1"}
       isReviewSubmitted={query.review_submitted === "1"}
     />

@@ -35,11 +35,13 @@ export async function StudioDashboard({
   client,
   errorMessage,
   isCreated = false,
+  isHqEditing = false,
   isReviewSubmitted = false,
 }: {
   client: PlatformClient;
   errorMessage?: string;
   isCreated?: boolean;
+  isHqEditing?: boolean;
   isReviewSubmitted?: boolean;
 }) {
   const [settings, emailSettings, siteContent, features, integrations, sections] =
@@ -114,6 +116,7 @@ export async function StudioDashboard({
     <main className="min-h-screen bg-slate-100 text-slate-950">
       <StudioHeader
         actions={[
+          ...(isHqEditing ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }] : []),
           { href: `/studio/${client.id}`, label: "Builder", tone: "primary" },
           { href: "/studio/start", label: "Start Site" },
           { href: "/studio/logout", label: "Log Out" },
@@ -137,6 +140,12 @@ export async function StudioDashboard({
           {errorMessage ? (
             <div className="border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
               {errorMessage}
+            </div>
+          ) : null}
+          {isHqEditing ? (
+            <div className="border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+              HQ admin editing this client site. Client access remains limited
+              to assigned users.
             </div>
           ) : null}
 

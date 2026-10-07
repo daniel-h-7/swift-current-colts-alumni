@@ -3,6 +3,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { isHqAuthenticated } from "@/lib/hq-auth";
 import { createServerSupabaseClient, getServerEnvValue } from "@/lib/supabase/server";
 
 const studioCookieName = "teamalum_studio_session";
@@ -221,6 +222,10 @@ export async function canUserAccessStudioClient(
 }
 
 export async function canAccessStudioClient(clientId: string) {
+  if (await isHqAuthenticated()) {
+    return true;
+  }
+
   const session = await getStudioSession();
 
   if (!session) {
@@ -228,4 +233,12 @@ export async function canAccessStudioClient(clientId: string) {
   }
 
   return canUserAccessStudioClient(session.authUserId, clientId);
+}
+
+export async function hasStudioOrHqSession() {
+  return Boolean((await getStudioSession()) || (await isHqAuthenticated()));
+}
+
+export async function isHqStudioAccess() {
+  return isHqAuthenticated();
 }

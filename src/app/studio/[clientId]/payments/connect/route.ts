@@ -38,7 +38,7 @@ async function createOnboardingRedirect(
   if (!session) {
     return redirectTo(
       request,
-      `/studio/login?error=${encodeURIComponent("Log in to connect Stripe.")}`,
+      `${paymentsPath}?error=${encodeURIComponent("Stripe onboarding must be started by the client owner from their Studio login.")}`,
     );
   }
 

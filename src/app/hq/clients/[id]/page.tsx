@@ -159,6 +159,8 @@ export default async function HqClientPage({
         actions={[
           { href: "/hq", label: "Clients" },
           { href: `/studio/${id}`, label: "Open Studio" },
+          { href: `/studio/${id}/content`, label: "Edit Content" },
+          { href: previewUrl, label: "Preview Site" },
           { href: "/hq/logout", label: "Log Out", tone: "danger" },
         ]}
         subtitle={`${client.id} in the shared Supabase database.`}

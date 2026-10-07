@@ -6,7 +6,7 @@ import {
 } from "@/lib/client-integrations";
 import { formatMembershipAmount, getMembershipSettingsForClient } from "@/lib/membership-settings";
 import { getPlatformClient } from "@/lib/platform-data";
-import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
+import { canAccessStudioClient, hasStudioOrHqSession, isHqStudioAccess } from "@/lib/studio-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,9 @@ export default async function StudioPaymentsPage({
 }) {
   const [{ clientId }, query] = await Promise.all([params, searchParams]);
 
-  if (!(await getStudioSession())) {
+  const isHqEditing = await isHqStudioAccess();
+
+  if (!(await hasStudioOrHqSession())) {
     redirect(`/studio/login?error=${encodeURIComponent("Log in to manage payments.")}`);
   }
 
@@ -65,6 +67,9 @@ export default async function StudioPaymentsPage({
     <main className="min-h-screen bg-slate-100 text-slate-950">
       <StudioHeader
         actions={[
+          ...(isHqEditing
+            ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }]
+            : []),
           { href: `/studio/${client.id}`, label: "Builder" },
           { href: `/studio/${client.id}/content`, label: "Edit Content" },
           { href: "/studio/logout", label: "Log Out" },
@@ -85,6 +90,12 @@ export default async function StudioPaymentsPage({
             <div className="border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
               Stripe setup checked. If Stripe still needs information, continue
               onboarding below.
+            </div>
+          ) : null}
+          {isHqEditing ? (
+            <div className="border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+              HQ admin viewing this client payment setup. Stripe onboarding
+              should still be completed by the client owner.
             </div>
           ) : null}
 

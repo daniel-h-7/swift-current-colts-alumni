@@ -7,7 +7,7 @@ import {
   getStripeAccountStatus,
   retrieveConnectedAccount,
 } from "@/lib/stripe-connect";
-import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
+import { canAccessStudioClient, hasStudioOrHqSession } from "@/lib/studio-auth";
 
 type RouteParams = {
   clientId: string;
@@ -24,7 +24,7 @@ export async function GET(
   const { clientId } = await params;
   const paymentsPath = `/studio/${encodeURIComponent(clientId)}/payments`;
 
-  if (!(await getStudioSession())) {
+  if (!(await hasStudioOrHqSession())) {
     return redirectTo(
       request,
       `/studio/login?error=${encodeURIComponent("Log in to finish Stripe setup.")}`,

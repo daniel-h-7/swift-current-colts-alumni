@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
+import { canAccessStudioClient, hasStudioOrHqSession } from "@/lib/studio-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type RouteParams = {
@@ -18,7 +18,7 @@ export async function POST(
   const { clientId } = await params;
   const studioPath = `/studio/${encodeURIComponent(clientId)}`;
 
-  if (!(await getStudioSession())) {
+  if (!(await hasStudioOrHqSession())) {
     return redirectTo(
       request,
       `/studio/login?error=${encodeURIComponent("Log in to submit your site for review.")}`,

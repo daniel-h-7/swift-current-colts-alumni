@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { StudioHeader } from "@/components/studio-header";
 import { getPlatformClient } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
-import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
+import { canAccessStudioClient, hasStudioOrHqSession, isHqStudioAccess } from "@/lib/studio-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -52,9 +52,9 @@ export default async function StudioContentSetupPage({
 }) {
   const { clientId } = await params;
   const { error, saved } = await searchParams;
-  const session = await getStudioSession();
+  const isHqEditing = await isHqStudioAccess();
 
-  if (!session) {
+  if (!(await hasStudioOrHqSession())) {
     redirect(`/studio/login?error=${encodeURIComponent("Log in to edit your site.")}`);
   }
 
@@ -115,6 +115,9 @@ export default async function StudioContentSetupPage({
     <main className="min-h-screen bg-slate-100 text-slate-950">
       <StudioHeader
         actions={[
+          ...(isHqEditing
+            ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }]
+            : []),
           { href: `/studio/${client.id}`, label: "Builder" },
           { href: previewHref, label: "Preview Site", tone: "primary" },
         ]}
@@ -132,6 +135,11 @@ export default async function StudioContentSetupPage({
           {error ? (
             <div className="rounded-[8px] border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
               {error}
+            </div>
+          ) : null}
+          {isHqEditing ? (
+            <div className="rounded-[8px] border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+              HQ admin editing this client content.
             </div>
           ) : null}
 
