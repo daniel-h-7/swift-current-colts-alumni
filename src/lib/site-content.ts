@@ -45,6 +45,7 @@ export type SiteFundraisingCampaign = {
 export type SiteBrandContent = {
   accentColor: string;
   heroBody: string;
+  heroImagePosition: string;
   heroImageUrl: string;
   heroKicker: string;
   heroTitle: string;
@@ -81,6 +82,7 @@ function createDefaultBrandContent(): SiteBrandContent {
   return {
     accentColor,
     heroBody: brand.heroBody,
+    heroImagePosition: "50% 50%",
     heroImageUrl: brand.heroImage,
     heroKicker: brand.heroKicker,
     heroTitle: `${brand.heroLineOne} ${brand.heroLineTwo}`.trim(),
@@ -416,6 +418,8 @@ function normalizeBrandContent(value: unknown): SiteBrandContent {
   return {
     accentColor: cleanColor(item.accentColor, defaults.accentColor),
     heroBody: cleanText(item.heroBody) || defaults.heroBody,
+    heroImagePosition:
+      cleanText(item.heroImagePosition) || defaults.heroImagePosition,
     heroImageUrl: cleanText(item.heroImageUrl) || defaults.heroImageUrl,
     heroKicker: cleanText(item.heroKicker) || defaults.heroKicker,
     heroTitle: cleanText(item.heroTitle) || defaults.heroTitle,
@@ -616,6 +620,7 @@ export function createStarterSiteContent(clientName: string): SiteContent {
       accentColor: "#10b981",
       heroBody:
         `${name} now has one home for alumni, families, sponsors, and supporters to reconnect, stay informed, and help keep the program moving forward.`,
+      heroImagePosition: "50% 50%",
       heroImageUrl: "/images/stadium.jpg",
       heroKicker: supporterName,
       heroTitle: `Support ${name}`,

@@ -105,8 +105,22 @@ export default async function JoinPage() {
             </div>
 
             <JoinForm
+              accentColor={
+                brand.variant === "rmrfootball"
+                  ? "#CEB74C"
+                  : brand.variant === "bfbadgers"
+                    ? "#bfdbfe"
+                    : "#ffffff"
+              }
               headline={brand.joinHeadline}
               isOpen={settings.join_is_open}
+              primaryColor={
+                brand.variant === "rmrfootball"
+                  ? "#CEB74C"
+                  : brand.variant === "bfbadgers"
+                    ? "#1d4ed8"
+                    : "#dc2626"
+              }
               programName={brand.joinProgramName}
               subtext={brand.joinSubtext}
             />

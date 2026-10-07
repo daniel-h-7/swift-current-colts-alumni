@@ -9,7 +9,19 @@ export function SponsorScroll({ sponsors }: { sponsors: SiteSponsor[] }) {
         {[...sponsorItems, ...sponsorItems].map((sponsor, index) => {
           const card = (
             <div className="flex h-20 min-w-56 items-center justify-center border border-blue-100/20 bg-black/42 px-6 text-center text-sm font-black uppercase tracking-[2px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-blue-100/45 hover:bg-black/60">
-              {sponsor.name}
+              {sponsor.imageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt={`${sponsor.name} logo`}
+                    className="max-h-12 max-w-40 object-contain"
+                    src={sponsor.imageUrl}
+                  />
+                  <span className="sr-only">{sponsor.name}</span>
+                </>
+              ) : (
+                sponsor.name
+              )}
             </div>
           );
 

@@ -61,6 +61,7 @@ export default async function ClientPreviewPage({
   );
   const brand = siteContent.brand;
   const heroImage = brand.heroImageUrl || "/images/stadium.jpg";
+  const heroImagePosition = brand.heroImagePosition || "50% 50%";
   const joinHref = isSectionVisible("memberships") ? "#join" : `/studio/${previewClient.id}/content`;
   const kickerStyle = { color: brand.accentColor };
 
@@ -114,8 +115,10 @@ export default async function ClientPreviewPage({
             <div className="mt-7">
               <JoinForm
                 checkoutPath={`/preview/${encodeURIComponent(previewClient.id)}/api/membership/checkout`}
+                accentColor={brand.accentColor}
                 headline={settings.join_headline}
                 isOpen={settings.join_is_open}
+                primaryColor={brand.primaryColor}
                 programName={previewClient.name}
                 subtext={settings.join_body}
               />
@@ -189,7 +192,10 @@ export default async function ClientPreviewPage({
           aria-label="Site hero image"
           className="absolute inset-0 bg-cover bg-center opacity-55 saturate-125"
           role="img"
-          style={{ backgroundImage: `url("${heroImage}")` }}
+          style={{
+            backgroundImage: `url("${heroImage}")`,
+            backgroundPosition: heroImagePosition,
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/72 to-black" />
         <div className="absolute inset-0 premium-grid opacity-35" />

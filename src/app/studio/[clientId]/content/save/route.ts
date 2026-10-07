@@ -9,6 +9,7 @@ import {
   SiteSponsor,
   SiteSpotlight,
 } from "@/lib/site-content";
+import { createServerSupabaseClient, getServerEnvValue } from "@/lib/supabase/server";
 import { canAccessStudioClient } from "@/lib/studio-auth";
 
 type RouteParams = {
@@ -37,6 +38,78 @@ function color(formData: FormData, key: string, fallback: string) {
   return fallback;
 }
 
+function imagePosition(formData: FormData, key: string, fallback: string) {
+  const value = text(formData, key);
+
+  if (/^\d{1,3}%\s+\d{1,3}%$/.test(value)) {
+    return value;
+  }
+
+  return fallback;
+}
+
+function extensionForFile(file: File) {
+  if (file.type === "image/png") {
+    return "png";
+  }
+
+  if (file.type === "image/jpeg") {
+    return "jpg";
+  }
+
+  if (file.type === "image/webp") {
+    return "webp";
+  }
+
+  if (file.type === "image/svg+xml") {
+    return "svg";
+  }
+
+  return null;
+}
+
+async function uploadImageFile({
+  clientId,
+  file,
+  kind,
+}: {
+  clientId: string;
+  file: File | null;
+  kind: string;
+}) {
+  if (!file || file.size <= 0) {
+    return "";
+  }
+
+  const extension = extensionForFile(file);
+
+  if (!extension) {
+    throw new Error("Upload PNG, JPG, WEBP, or SVG images only.");
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Images must be 5MB or smaller.");
+  }
+
+  const supabase = createServerSupabaseClient();
+  const bucket = getServerEnvValue("TEAMALUM_SITE_ASSETS_BUCKET") ?? "site-assets";
+  const path = `${clientId}/${kind}-${Date.now()}.${extension}`;
+  const { error } = await supabase.storage.from(bucket).upload(path, file, {
+    contentType: file.type,
+    upsert: true,
+  });
+
+  if (error) {
+    throw new Error(
+      `Unable to upload ${kind.replaceAll("-", " ")}. Make sure the ${bucket} Supabase Storage bucket exists and is public.`,
+    );
+  }
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
 function percent(formData: FormData, key: string, fallback: number) {
   const value = Number(text(formData, key));
 
@@ -58,6 +131,29 @@ function sponsor(formData: FormData, index: number): SiteSponsor | null {
     imageUrl: text(formData, `sponsor_${index}_image_url`),
     linkUrl: text(formData, `sponsor_${index}_link_url`),
     name,
+  };
+}
+
+async function sponsorWithUpload(
+  formData: FormData,
+  clientId: string,
+  index: number,
+) {
+  const item = sponsor(formData, index);
+
+  if (!item) {
+    return null;
+  }
+
+  const uploadedImageUrl = await uploadImageFile({
+    clientId,
+    file: formData.get(`sponsor_${index}_image_file`) as File | null,
+    kind: `sponsor-${index}`,
+  });
+
+  return {
+    ...item,
+    imageUrl: uploadedImageUrl || item.imageUrl,
   };
 }
 
@@ -136,14 +232,38 @@ export async function POST(
     const siteTitle = text(formData, "site_title") || starter.brand.siteTitle;
     const heroTitle = text(formData, "hero_title") || starter.brand.heroTitle;
     const heroBody = text(formData, "hero_body") || starter.brand.heroBody;
+    const [uploadedLogoUrl, uploadedHeroImageUrl, sponsor1, sponsor2, sponsor3] =
+      await Promise.all([
+        uploadImageFile({
+          clientId,
+          file: formData.get("logo_file") as File | null,
+          kind: "logo",
+        }),
+        uploadImageFile({
+          clientId,
+          file: formData.get("hero_image_file") as File | null,
+          kind: "hero",
+        }),
+        sponsorWithUpload(formData, clientId, 1),
+        sponsorWithUpload(formData, clientId, 2),
+        sponsorWithUpload(formData, clientId, 3),
+      ]);
     const content: SiteContent = {
       brand: {
         accentColor: color(formData, "accent_color", starter.brand.accentColor),
         heroBody,
-        heroImageUrl: text(formData, "hero_image_url") || starter.brand.heroImageUrl,
+        heroImagePosition: imagePosition(
+          formData,
+          "hero_image_position",
+          starter.brand.heroImagePosition,
+        ),
+        heroImageUrl:
+          uploadedHeroImageUrl ||
+          text(formData, "hero_image_url") ||
+          starter.brand.heroImageUrl,
         heroKicker: text(formData, "hero_kicker") || starter.brand.heroKicker,
         heroTitle,
-        logoUrl: text(formData, "logo_url"),
+        logoUrl: uploadedLogoUrl || text(formData, "logo_url"),
         primaryColor: color(formData, "primary_color", starter.brand.primaryColor),
         secondaryColor: color(
           formData,
@@ -157,9 +277,7 @@ export async function POST(
       ) as SiteEvent[],
       fundraisingCampaigns: campaign(formData),
       impactStats: [],
-      sponsors: [sponsor(formData, 1), sponsor(formData, 2), sponsor(formData, 3)].filter(
-        Boolean,
-      ) as SiteSponsor[],
+      sponsors: [sponsor1, sponsor2, sponsor3].filter(Boolean) as SiteSponsor[],
       spotlights: spotlight(formData),
     };
 

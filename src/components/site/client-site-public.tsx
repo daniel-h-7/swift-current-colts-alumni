@@ -62,6 +62,7 @@ export async function ClientSitePublic({
   );
   const brand = siteContent.brand;
   const heroImage = brand.heroImageUrl || "/images/stadium.jpg";
+  const heroImagePosition = brand.heroImagePosition || "50% 50%";
   const kickerStyle = { color: brand.accentColor };
   const visibleSections = sections.filter((section) =>
     isSectionVisible({
@@ -83,7 +84,10 @@ export async function ClientSitePublic({
             aria-label="Site hero image"
             className="absolute inset-0 bg-cover bg-center opacity-45 saturate-125"
             role="img"
-            style={{ backgroundImage: `url("${heroImage}")` }}
+            style={{
+              backgroundImage: `url("${heroImage}")`,
+              backgroundPosition: heroImagePosition,
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/82 to-black" />
           <div
@@ -158,8 +162,10 @@ export async function ClientSitePublic({
 
               <JoinForm
                 checkoutPath={`/site/${encodeURIComponent(client.id)}/api/membership/checkout`}
+                accentColor={brand.accentColor}
                 headline={settings.join_headline}
                 isOpen={settings.join_is_open}
+                primaryColor={brand.primaryColor}
                 programName={client.name}
                 subtext={settings.join_body}
               />
@@ -180,7 +186,10 @@ export async function ClientSitePublic({
           aria-label="Site hero image"
           className="absolute inset-0 bg-cover bg-center opacity-60 saturate-125"
           role="img"
-          style={{ backgroundImage: `url("${heroImage}")` }}
+          style={{
+            backgroundImage: `url("${heroImage}")`,
+            backgroundPosition: heroImagePosition,
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/72 to-black" />
         <div className="absolute inset-0 premium-grid opacity-30" />
@@ -257,11 +266,38 @@ export async function ClientSitePublic({
                 <p className="program-kicker" style={kickerStyle}>Community Powered</p>
                 <h2 className="mt-3 text-4xl font-black">Sponsors</h2>
                 <div className="mt-8 grid gap-3 md:grid-cols-4">
-                  {siteContent.sponsors.map((sponsor) => (
-                    <div className="border border-white/10 bg-white/[0.04] p-4 font-black" key={sponsor.name}>
-                      {sponsor.name}
-                    </div>
-                  ))}
+                  {siteContent.sponsors.map((sponsor) => {
+                    const card = (
+                      <div className="flex min-h-24 items-center justify-center border border-white/10 bg-white/[0.04] p-4 text-center font-black">
+                        {sponsor.imageUrl ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              alt={`${sponsor.name} logo`}
+                              className="max-h-14 max-w-full object-contain"
+                              src={sponsor.imageUrl}
+                            />
+                            <span className="sr-only">{sponsor.name}</span>
+                          </>
+                        ) : (
+                          sponsor.name
+                        )}
+                      </div>
+                    );
+
+                    return sponsor.linkUrl ? (
+                      <a
+                        href={sponsor.linkUrl}
+                        key={sponsor.name}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        {card}
+                      </a>
+                    ) : (
+                      <div key={sponsor.name}>{card}</div>
+                    );
+                  })}
                 </div>
               </section>
             );
@@ -287,25 +323,6 @@ export async function ClientSitePublic({
                     </div>
                   ))}
                 </div>
-              </section>
-            );
-          }
-
-          if (section.section_key === "memberships") {
-            return (
-              <section className="mx-auto max-w-4xl px-6 py-16 text-center" key={section.section_key}>
-                <p className="program-kicker" style={kickerStyle}>Membership</p>
-                <h2 className="mt-3 text-4xl font-black">{settings.join_headline}</h2>
-                <p className="mx-auto mt-4 max-w-2xl text-sm font-semibold leading-7 text-gray-400">
-                  {settings.membership_year_label}
-                </p>
-                <Link
-                  className="mt-7 inline-flex rounded-full px-6 py-4 text-sm font-black uppercase text-white"
-                  href={joinPath}
-                  style={{ backgroundColor: brand.primaryColor }}
-                >
-                  Join Now
-                </Link>
               </section>
             );
           }

@@ -37,15 +37,19 @@ function getGiftAmountCents(formData: FormData) {
 }
 
 export function JoinForm({
+  accentColor = "#ffffff",
   checkoutPath = "/api/membership/checkout",
   headline = "Support Colts Football",
   isOpen = true,
+  primaryColor = "#dc2626",
   programName = "the Colts",
   subtext = "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
 }: {
+  accentColor?: string;
   checkoutPath?: string;
   headline?: string;
   isOpen?: boolean;
+  primaryColor?: string;
   programName?: string;
   subtext?: string;
 }) {
@@ -138,13 +142,13 @@ export function JoinForm({
     <form
       id="join"
       onSubmit={handleSubmit}
-      className="border border-white/10 bg-zinc-950/90 p-6 shadow-[0_28px_90px_rgba(37,99,235,0.16)] backdrop-blur md:p-8"
+      className="border border-white/10 bg-zinc-950/90 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.24)] backdrop-blur md:p-8"
     >
       <div>
-        <p className="program-kicker">
+        <p className="program-kicker" style={{ color: accentColor }}>
           Help Build the Legacy
         </p>
-        <h2 className="mt-3 text-4xl font-black text-blue-400">
+        <h2 className="mt-3 text-4xl font-black text-white">
           {headline}
         </h2>
         <p className="mt-4 text-gray-400">
@@ -210,9 +214,10 @@ export function JoinForm({
       <div className="mt-5 grid gap-3 border border-white/10 bg-white/[0.04] p-4 md:grid-cols-2">
         <label className="flex items-start gap-3 text-sm font-bold text-gray-200">
           <input
-            className="mt-1 h-4 w-4 border-white/20 accent-blue-600"
+            className="mt-1 h-4 w-4 border-white/20"
             defaultChecked
             name="email_opt_in"
+            style={{ accentColor: primaryColor }}
             type="checkbox"
           />
           Email opt-in
@@ -220,8 +225,9 @@ export function JoinForm({
 
         <label className="flex items-start gap-3 text-sm font-bold text-gray-200">
           <input
-            className="mt-1 h-4 w-4 border-white/20 accent-red-600"
+            className="mt-1 h-4 w-4 border-white/20"
             name="sms_opt_in"
+            style={{ accentColor: primaryColor }}
             type="checkbox"
           />
           SMS opt-in
@@ -254,14 +260,19 @@ export function JoinForm({
             ["other", "Other"],
           ].map(([value, label]) => (
             <button
-              className={`rounded-xl border px-4 py-4 font-black transition ${
-                giftOption === value
-                  ? "border-red-500 bg-red-600 text-white"
-                  : "border-white/10 bg-black/35 text-gray-200 hover:border-red-500/60"
-              }`}
+              className="rounded-xl border px-4 py-4 font-black text-gray-200 transition hover:bg-white/10"
               key={value}
               onClick={() =>
                 setGiftOption(giftOption === value ? "none" : (value as GiftOption))
+              }
+              style={
+                giftOption === value
+                  ? {
+                      backgroundColor: primaryColor,
+                      borderColor: accentColor,
+                      color: "#ffffff",
+                    }
+                  : { borderColor: "rgba(255,255,255,0.1)" }
               }
               type="button"
             >
@@ -298,8 +309,9 @@ export function JoinForm({
       ) : null}
 
       <button
-        className="premium-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 w-full px-5 py-4 font-black uppercase text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={status === "submitting" || !isOpen}
+        style={{ backgroundColor: primaryColor }}
         type="submit"
       >
         {status === "submitting"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ColorSettingField } from "@/components/studio/color-setting-field";
+import { ImageUploadField } from "@/components/studio/image-upload-field";
 import { StudioHeader } from "@/components/studio-header";
 import { getPlatformClient } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
@@ -127,7 +128,7 @@ export default async function StudioContentSetupPage({
       />
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <form action={action} className="space-y-6" method="post">
+        <form action={action} className="space-y-6" encType="multipart/form-data" method="post">
           {saved ? (
             <div className="rounded-[8px] border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
               Site content saved. Preview is updated.
@@ -198,24 +199,24 @@ export default async function StudioContentSetupPage({
                   placeholder="A short paragraph that explains why alumni should join, give, sponsor, or come back."
                 />
               </label>
-              <label className="text-sm font-bold text-slate-700">
-                Logo URL
-                <input
-                  className={fieldClass}
-                  defaultValue={brand.logoUrl}
-                  name="logo_url"
-                  placeholder="/images/team-gridiron-shield.svg"
-                />
-              </label>
-              <label className="text-sm font-bold text-slate-700">
-                Hero Image URL
-                <input
-                  className={fieldClass}
-                  defaultValue={brand.heroImageUrl}
-                  name="hero_image_url"
-                  placeholder="/images/stadium.jpg"
-                />
-              </label>
+              <ImageUploadField
+                help="Upload a square logo, or paste an existing logo URL."
+                label="Logo Image"
+                name="logo_file"
+                previewMode="logo"
+                urlName="logo_url"
+                urlValue={brand.logoUrl}
+              />
+              <ImageUploadField
+                focusName="hero_image_position"
+                focusValue={brand.heroImagePosition}
+                help="Upload a wide hero photo, then move the focus sliders to frame the crop."
+                label="Hero Image"
+                name="hero_image_file"
+                previewMode="hero"
+                urlName="hero_image_url"
+                urlValue={brand.heroImageUrl}
+              />
               <ColorSettingField
                 fallback="#047857"
                 label="Primary Color"
@@ -265,25 +266,43 @@ export default async function StudioContentSetupPage({
                 <h3 className="font-black">Sponsors</h3>
                 <div className="mt-4 grid gap-4">
                   {sponsors.map((sponsor, index) => (
-                    <div className="grid gap-3 md:grid-cols-3" key={index}>
-                      <input
-                        className={fieldClass}
-                        defaultValue={sponsor.name}
-                        name={`sponsor_${index + 1}_name`}
-                        placeholder={`Sponsor ${index + 1} name`}
-                      />
-                      <input
-                        className={fieldClass}
-                        defaultValue={sponsor.linkUrl}
-                        name={`sponsor_${index + 1}_link_url`}
-                        placeholder="Website URL"
-                      />
-                      <input
-                        className={fieldClass}
-                        defaultValue={sponsor.imageUrl}
-                        name={`sponsor_${index + 1}_image_url`}
-                        placeholder="Logo URL"
-                      />
+                    <div className="grid gap-3 md:grid-cols-4" key={index}>
+                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                        Name
+                        <input
+                          className={fieldClass}
+                          defaultValue={sponsor.name}
+                          name={`sponsor_${index + 1}_name`}
+                          placeholder={`Sponsor ${index + 1} name`}
+                        />
+                      </label>
+                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                        Website
+                        <input
+                          className={fieldClass}
+                          defaultValue={sponsor.linkUrl}
+                          name={`sponsor_${index + 1}_link_url`}
+                          placeholder="Website URL"
+                        />
+                      </label>
+                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                        Logo URL
+                        <input
+                          className={fieldClass}
+                          defaultValue={sponsor.imageUrl}
+                          name={`sponsor_${index + 1}_image_url`}
+                          placeholder="Logo URL"
+                        />
+                      </label>
+                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                        Logo Upload
+                        <input
+                          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                          className={fieldClass}
+                          name={`sponsor_${index + 1}_image_file`}
+                          type="file"
+                        />
+                      </label>
                     </div>
                   ))}
                 </div>
