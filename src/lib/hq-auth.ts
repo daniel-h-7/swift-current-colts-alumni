@@ -79,7 +79,7 @@ export async function createHqSession() {
   cookieStore.set(hqCookieName, token, {
     httpOnly: true,
     maxAge: 60 * 60 * 12,
-    path: "/hq",
+    path: "/",
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
   });
@@ -89,4 +89,11 @@ export async function clearHqSession() {
   const cookieStore = await cookies();
 
   cookieStore.delete(hqCookieName);
+  cookieStore.set(hqCookieName, "", {
+    httpOnly: true,
+    maxAge: 0,
+    path: "/hq",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
 }
