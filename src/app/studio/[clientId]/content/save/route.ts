@@ -91,6 +91,12 @@ async function uploadImageFile({
     throw new Error("Images must be 5MB or smaller.");
   }
 
+  if (!getServerEnvValue("SUPABASE_SERVICE_ROLE_KEY")) {
+    throw new Error(
+      "Missing SUPABASE_SERVICE_ROLE_KEY. Add it in Vercel Environment Variables, then redeploy before uploading images.",
+    );
+  }
+
   const supabase = createServerSupabaseClient();
   const bucket = getServerEnvValue("TEAMALUM_SITE_ASSETS_BUCKET") ?? "site-assets";
   const path = `${clientId}/${kind}-${Date.now()}.${extension}`;
