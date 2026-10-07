@@ -72,7 +72,7 @@ export default async function StudioPaymentsPage({
             : []),
           { href: `/studio/${client.id}`, label: "Builder Dashboard" },
           { href: `/studio/${client.id}/content`, label: "Edit Site Content" },
-          { href: "/studio/logout", label: "Log Out" },
+          { href: isHqEditing ? "/hq/logout" : "/studio/logout", label: "Log Out" },
         ]}
         subtitle="Connect your own Stripe account so membership money goes directly to your program."
         title="Payments"

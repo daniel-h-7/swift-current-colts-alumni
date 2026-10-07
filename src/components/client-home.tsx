@@ -133,13 +133,17 @@ export default async function Home() {
       ) : null}
 
       <section id="sponsors" className="section-rule relative isolate overflow-hidden px-6 py-16">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)]" />
-        <div className="absolute inset-0 premium-grid opacity-20" />
+        <div className="absolute inset-0 bg-[#141414]" />
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className={`text-sm font-black uppercase tracking-[5px] ${brand.variant === "rmrfootball" ? "text-[#CEB74C]" : "text-blue-100/80"}`}>{brand.sponsorEyebrow}</p>
-              <h2 className="mt-2 text-3xl font-black text-white md:text-4xl">{brand.sponsorTitle}</h2>
+              <h2
+                className="mt-2 text-3xl font-black md:text-4xl"
+                style={{ color: siteContent.brand.accentColor }}
+              >
+                {brand.sponsorTitle}
+              </h2>
             </div>
             <p className={`max-w-xl text-sm font-semibold leading-6 ${brand.variant === "rmrfootball" ? "text-[#f0e6ad]" : "text-blue-50/85"}`}>
               {brand.sponsorCopy}
@@ -281,14 +285,21 @@ export default async function Home() {
       ) : null}
 
       <section id="events" className="section-rule relative isolate overflow-hidden px-6 py-16">
-        <div className="absolute inset-0 bg-zinc-950" />
-        <div className="absolute inset-x-0 top-0 h-2 bg-red-600" />
-        <div className="absolute inset-0 premium-grid opacity-20" />
+        <div className="absolute inset-0 bg-[#141414]" />
+        <div
+          className="absolute inset-x-0 top-0 h-2"
+          style={{ backgroundColor: siteContent.brand.accentColor }}
+        />
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="program-kicker">Gather Again</p>
-              <h2 className="mt-3 text-4xl font-black md:text-5xl">Upcoming Events</h2>
+              <h2
+                className="mt-3 text-4xl font-black md:text-5xl"
+                style={{ color: siteContent.brand.accentColor }}
+              >
+                Upcoming Events
+              </h2>
             </div>
             <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
               Keep the alumni network moving with clean, scannable event listings.

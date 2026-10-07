@@ -12,7 +12,7 @@ export function EventsSlider({
   const visibleEvents = events.length ? events : [];
 
   return (
-    <div className="mt-9 overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
+    <div className="mt-9 overflow-hidden py-2">
       <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4">
         {visibleEvents.map((event) => (
           <article

@@ -92,6 +92,13 @@ export async function clearHqSession() {
   cookieStore.set(hqCookieName, "", {
     httpOnly: true,
     maxAge: 0,
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+  cookieStore.set(hqCookieName, "", {
+    httpOnly: true,
+    maxAge: 0,
     path: "/hq",
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

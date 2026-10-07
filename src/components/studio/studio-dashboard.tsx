@@ -119,7 +119,7 @@ export async function StudioDashboard({
           ...(isHqEditing ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }] : []),
           { href: `/studio/${client.id}`, label: "Builder Dashboard", tone: "primary" },
           { href: "/studio/start", label: "Start Site" },
-          { href: "/studio/logout", label: "Log Out" },
+          { href: isHqEditing ? "/hq/logout" : "/studio/logout", label: "Log Out" },
         ]}
         subtitle="The client-facing workspace for building and managing a TeamAlum site."
         title={`${client.name} Builder Dashboard`}

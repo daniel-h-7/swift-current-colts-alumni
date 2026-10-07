@@ -265,19 +265,17 @@ export async function ClientSitePublic({
           if (section.section_key === "sponsors") {
             return (
               <section className="relative isolate overflow-hidden px-6 py-16" id="sponsors" key={section.section_key}>
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 opacity-95"
-                  style={{
-                    background: `linear-gradient(105deg, ${brand.primaryColor} 0%, ${brand.secondaryColor} 44%, #050505 100%)`,
-                  }}
-                />
-                <div className="absolute inset-0 premium-grid opacity-20" />
+                <div className="absolute inset-0 bg-[#141414]" />
                 <div className="relative mx-auto max-w-7xl">
                   <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
                       <p className="program-kicker" style={kickerStyle}>Community Powered</p>
-                      <h2 className="mt-3 text-4xl font-black">Sponsors</h2>
+                      <h2
+                        className="mt-3 text-4xl font-black"
+                        style={{ color: brand.accentColor }}
+                      >
+                        Sponsors
+                      </h2>
                     </div>
                     <p className="max-w-xl text-sm font-semibold leading-6 text-gray-300">
                       Showcase the partners helping the program move forward.
@@ -292,18 +290,22 @@ export async function ClientSitePublic({
           if (section.section_key === "events") {
             return (
               <section className="relative isolate overflow-hidden px-6 py-16" id="events" key={section.section_key}>
-                <div className="absolute inset-0 bg-zinc-950" />
+                <div className="absolute inset-0 bg-[#141414]" />
                 <div
                   aria-hidden="true"
                   className="absolute inset-x-0 top-0 h-2"
                   style={{ backgroundColor: brand.accentColor }}
                 />
-                <div className="absolute inset-0 premium-grid opacity-20" />
                 <div className="relative mx-auto max-w-7xl">
                   <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
                       <p className="program-kicker" style={kickerStyle}>Gather Again</p>
-                      <h2 className="mt-3 text-4xl font-black">Events</h2>
+                      <h2
+                        className="mt-3 text-4xl font-black"
+                        style={{ color: brand.accentColor }}
+                      >
+                        Events
+                      </h2>
                     </div>
                     <p className="max-w-md text-sm font-semibold leading-6 text-gray-300">
                       Keep the alumni network moving with clean event listings.
