@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { EventsSlider } from "@/components/events-slider";
 import { JoinForm } from "@/components/join-form";
 import { SiteNotLaunched } from "@/components/site-not-launched";
+import { SponsorScroll } from "@/components/sponsor-scroll";
 import {
   formatMembershipAmount,
   getMembershipSettingsForClient,
@@ -262,42 +264,26 @@ export async function ClientSitePublic({
       {visibleSections.map((section) => {
           if (section.section_key === "sponsors") {
             return (
-              <section className="mx-auto max-w-7xl px-6 py-16" id="sponsors" key={section.section_key}>
-                <p className="program-kicker" style={kickerStyle}>Community Powered</p>
-                <h2 className="mt-3 text-4xl font-black">Sponsors</h2>
-                <div className="mt-8 grid gap-3 md:grid-cols-4">
-                  {siteContent.sponsors.map((sponsor) => {
-                    const card = (
-                      <div className="flex min-h-24 items-center justify-center border border-white/10 bg-white/[0.04] p-4 text-center font-black">
-                        {sponsor.imageUrl ? (
-                          <>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              alt={`${sponsor.name} logo`}
-                              className="max-h-14 max-w-full object-contain"
-                              src={sponsor.imageUrl}
-                            />
-                            <span className="sr-only">{sponsor.name}</span>
-                          </>
-                        ) : (
-                          sponsor.name
-                        )}
-                      </div>
-                    );
-
-                    return sponsor.linkUrl ? (
-                      <a
-                        href={sponsor.linkUrl}
-                        key={sponsor.name}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        {card}
-                      </a>
-                    ) : (
-                      <div key={sponsor.name}>{card}</div>
-                    );
-                  })}
+              <section className="relative isolate overflow-hidden px-6 py-16" id="sponsors" key={section.section_key}>
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 opacity-95"
+                  style={{
+                    background: `linear-gradient(105deg, ${brand.primaryColor} 0%, ${brand.secondaryColor} 44%, #050505 100%)`,
+                  }}
+                />
+                <div className="absolute inset-0 premium-grid opacity-20" />
+                <div className="relative mx-auto max-w-7xl">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                    <div>
+                      <p className="program-kicker" style={kickerStyle}>Community Powered</p>
+                      <h2 className="mt-3 text-4xl font-black">Sponsors</h2>
+                    </div>
+                    <p className="max-w-xl text-sm font-semibold leading-6 text-gray-300">
+                      Showcase the partners helping the program move forward.
+                    </p>
+                  </div>
+                  <SponsorScroll sponsors={siteContent.sponsors} />
                 </div>
               </section>
             );
@@ -305,23 +291,28 @@ export async function ClientSitePublic({
 
           if (section.section_key === "events") {
             return (
-              <section className="mx-auto max-w-7xl px-6 py-16" id="events" key={section.section_key}>
-                <p className="program-kicker" style={kickerStyle}>Gather Again</p>
-                <h2 className="mt-3 text-4xl font-black">Events</h2>
-                <div className="mt-8 grid gap-3 md:grid-cols-3">
-                  {siteContent.events.map((event) => (
-                    <div className="border border-white/10 bg-white/[0.04] p-5" key={`${event.date}-${event.title}`}>
-                      <p className="text-sm font-black" style={{ color: brand.accentColor }}>
-                        {event.date}
-                      </p>
-                      <h3 className="mt-2 text-xl font-black">{event.title}</h3>
-                      {event.notes ? (
-                        <p className="mt-2 text-sm font-semibold text-gray-400">
-                          {event.notes}
-                        </p>
-                      ) : null}
+              <section className="relative isolate overflow-hidden px-6 py-16" id="events" key={section.section_key}>
+                <div className="absolute inset-0 bg-zinc-950" />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-x-0 top-0 h-2"
+                  style={{ backgroundColor: brand.accentColor }}
+                />
+                <div className="absolute inset-0 premium-grid opacity-20" />
+                <div className="relative mx-auto max-w-7xl">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                      <p className="program-kicker" style={kickerStyle}>Gather Again</p>
+                      <h2 className="mt-3 text-4xl font-black">Events</h2>
                     </div>
-                  ))}
+                    <p className="max-w-md text-sm font-semibold leading-6 text-gray-300">
+                      Keep the alumni network moving with clean event listings.
+                    </p>
+                  </div>
+                  <EventsSlider
+                    events={siteContent.events}
+                    fallbackImage={heroImage}
+                  />
                 </div>
               </section>
             );

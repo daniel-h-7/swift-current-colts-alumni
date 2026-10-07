@@ -82,6 +82,7 @@ export default async function StudioContentSetupPage({
   const events = [
     row(siteContent.events, 0, {
       date: "",
+      imageUrl: "",
       linkLabel: "Details",
       linkUrl: "",
       notes: "",
@@ -89,6 +90,7 @@ export default async function StudioContentSetupPage({
     }),
     row(siteContent.events, 1, {
       date: "",
+      imageUrl: "",
       linkLabel: "Details",
       linkUrl: "",
       notes: "",
@@ -325,6 +327,12 @@ export default async function StudioContentSetupPage({
                           defaultValue={event.notes}
                           name={`event_${index + 1}_notes`}
                           placeholder="Short event description"
+                        />
+                        <input
+                          className={fieldClass}
+                          defaultValue={event.imageUrl}
+                          name={`event_${index + 1}_image_url`}
+                          placeholder="Event image URL"
                         />
                       </div>
                       <div>

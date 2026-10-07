@@ -99,9 +99,10 @@ export async function POST(
 
     if (isStripeConfigured()) {
       const origin = getOrigin(request);
+      const previewJoinUrl = `${origin}/preview/${encodeURIComponent(clientId)}/join`;
       const checkoutSession = await createStripeCheckoutSession({
         additionalGiftAmountCents,
-        cancelUrl: `${origin}/preview/${encodeURIComponent(clientId)}#join`,
+        cancelUrl: previewJoinUrl,
         clientId,
         contactId: data.id,
         customerEmail: contact.email,
@@ -109,7 +110,7 @@ export async function POST(
         membershipLabel: "Annual Membership",
         programName: client.name,
         siteVariant: client.site_variant,
-        successUrl: `${origin}/preview/${encodeURIComponent(clientId)}?checkout=success&contact_id=${data.id}&session_id={CHECKOUT_SESSION_ID}`,
+        successUrl: `${previewJoinUrl}?checkout=success&contact_id=${data.id}&session_id={CHECKOUT_SESSION_ID}`,
       });
 
       await supabase

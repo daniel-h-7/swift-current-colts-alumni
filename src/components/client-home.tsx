@@ -132,8 +132,10 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section id="sponsors" className="section-rule mx-auto max-w-7xl px-6 pb-20 pt-8">
-        <div className="overflow-hidden border border-blue-300/25 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)] p-8 shadow-[0_28px_90px_rgba(37,99,235,0.22)]">
+      <section id="sponsors" className="section-rule relative isolate overflow-hidden px-6 py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(37,99,235,0.94)_0%,rgba(18,42,105,0.92)_36%,rgba(8,12,24,0.98)_73%,rgba(0,0,0,0.98)_100%)]" />
+        <div className="absolute inset-0 premium-grid opacity-20" />
+        <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className={`text-sm font-black uppercase tracking-[5px] ${brand.variant === "rmrfootball" ? "text-[#CEB74C]" : "text-blue-100/80"}`}>{brand.sponsorEyebrow}</p>
@@ -278,18 +280,23 @@ export default async function Home() {
       </section>
       ) : null}
 
-      <section id="events" className="section-rule mx-auto max-w-7xl px-6 py-24">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="program-kicker">Gather Again</p>
-            <h2 className="mt-3 text-4xl font-black md:text-5xl">Upcoming Events</h2>
+      <section id="events" className="section-rule relative isolate overflow-hidden px-6 py-16">
+        <div className="absolute inset-0 bg-zinc-950" />
+        <div className="absolute inset-x-0 top-0 h-2 bg-red-600" />
+        <div className="absolute inset-0 premium-grid opacity-20" />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="program-kicker">Gather Again</p>
+              <h2 className="mt-3 text-4xl font-black md:text-5xl">Upcoming Events</h2>
+            </div>
+            <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
+              Keep the alumni network moving with clean, scannable event listings.
+            </p>
           </div>
-          <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
-            Keep the alumni network moving with clean, scannable event listings.
-          </p>
-        </div>
 
-        <EventsSlider events={siteContent.events} />
+          <EventsSlider events={siteContent.events} fallbackImage={siteContent.brand.heroImageUrl} />
+        </div>
       </section>
 
       <footer className="border-t border-white/10 px-6 py-12 text-center text-gray-500">

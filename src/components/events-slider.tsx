@@ -1,64 +1,51 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { SiteEvent } from "@/lib/site-content";
 
-export function EventsSlider({ events }: { events: SiteEvent[] }) {
-  const [page, setPage] = useState(0);
-  const pages = useMemo(() => {
-    const chunks: SiteEvent[][] = [];
-
-    for (let index = 0; index < events.length; index += 3) {
-      chunks.push(events.slice(index, index + 3));
-    }
-
-    return chunks.length ? chunks : [[]];
-  }, [events]);
-  const currentPage = Math.min(page, pages.length - 1);
-  const visibleEvents = pages[currentPage] ?? [];
-
-  function move(direction: -1 | 1) {
-    setPage((current) => {
-      const next = current + direction;
-
-      if (next < 0) {
-        return pages.length - 1;
-      }
-
-      if (next >= pages.length) {
-        return 0;
-      }
-
-      return next;
-    });
-  }
+export function EventsSlider({
+  events,
+  fallbackImage = "/images/stadium.jpg",
+}: {
+  events: SiteEvent[];
+  fallbackImage?: string;
+}) {
+  const visibleEvents = events.length ? events : [];
 
   return (
-    <div className="mt-10">
-      <div className="grid gap-6 md:grid-cols-3">
+    <div className="mt-9 overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
+      <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4">
         {visibleEvents.map((event) => (
-          <div
-            className="flex min-h-64 flex-col border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.86),rgba(9,9,11,0.96))] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.28)]"
+          <article
+            className="group w-[19rem] shrink-0 snap-start bg-white text-zinc-950 shadow-[0_20px_52px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 md:w-[22rem]"
             key={`${event.title}-${event.date}`}
           >
-            <div>
-              <h3 className="text-2xl font-black leading-tight">{event.title}</h3>
+            <div className="relative aspect-[16/10] overflow-hidden bg-zinc-900">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt={`${event.title} event image`}
+                className="h-full w-full object-cover transition duration-500 group-hover:scale-105 group-hover:opacity-80"
+                src={event.imageUrl || fallbackImage}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/38 via-transparent to-transparent" />
+            </div>
+
+            <div className="min-h-44 border-x border-b border-zinc-200 px-5 py-5">
               {event.date ? (
-                <p className="mt-4 border-l-2 border-red-500 pl-3 text-sm font-bold uppercase tracking-[2px] text-gray-300">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
                   {event.date}
                 </p>
               ) : null}
-            </div>
-
-            <div className="mt-auto grid gap-5 pt-8">
+              <h3 className="mt-2 text-xl font-black leading-tight text-zinc-950">
+                {event.title}
+              </h3>
               {event.notes ? (
-                <p className="text-sm leading-6 text-gray-400">
+                <p className="mt-3 line-clamp-3 text-sm font-semibold leading-6 text-zinc-600">
                   {event.notes}
                 </p>
               ) : null}
               {event.linkUrl ? (
                 <a
-                  className="justify-self-start border border-blue-400/40 bg-blue-700 px-4 py-2 text-sm font-black text-white transition hover:bg-blue-600 md:justify-self-end"
+                  className="mt-5 inline-flex border border-zinc-950 bg-zinc-950 px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
                   href={event.linkUrl}
                   rel="noreferrer"
                   target="_blank"
@@ -67,31 +54,9 @@ export function EventsSlider({ events }: { events: SiteEvent[] }) {
                 </a>
               ) : null}
             </div>
-          </div>
+          </article>
         ))}
       </div>
-
-      {pages.length > 1 ? (
-        <div className="mt-6 flex items-center justify-between">
-          <button
-            className="border border-white/15 bg-black/35 px-4 py-3 font-black text-gray-200 transition hover:border-blue-500 hover:text-white"
-            onClick={() => move(-1)}
-            type="button"
-          >
-            Previous
-          </button>
-          <p className="text-sm font-bold text-gray-500">
-            {currentPage + 1} / {pages.length}
-          </p>
-          <button
-            className="border border-white/15 bg-black/35 px-4 py-3 font-black text-gray-200 transition hover:border-blue-500 hover:text-white"
-            onClick={() => move(1)}
-            type="button"
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

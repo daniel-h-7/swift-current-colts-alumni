@@ -68,6 +68,19 @@ function extensionForFile(file: File) {
   return null;
 }
 
+function fileFromCroppedLogo(formData: FormData, key: string) {
+  const value = text(formData, key);
+  const match = value.match(/^data:(image\/png);base64,([a-zA-Z0-9+/=]+)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const bytes = Buffer.from(match[2], "base64");
+
+  return new File([bytes], "cropped-logo.png", { type: match[1] });
+}
+
 async function uploadImageFile({
   clientId,
   file,
@@ -172,6 +185,7 @@ function event(formData: FormData, index: number): SiteEvent | null {
 
   return {
     date: text(formData, `event_${index}_date`),
+    imageUrl: text(formData, `event_${index}_image_url`),
     linkLabel: text(formData, `event_${index}_link_label`) || "Details",
     linkUrl: text(formData, `event_${index}_link_url`),
     notes: text(formData, `event_${index}_notes`),
@@ -238,11 +252,15 @@ export async function POST(
     const siteTitle = text(formData, "site_title") || starter.brand.siteTitle;
     const heroTitle = text(formData, "hero_title") || starter.brand.heroTitle;
     const heroBody = text(formData, "hero_body") || starter.brand.heroBody;
+    const croppedLogoFile = fileFromCroppedLogo(
+      formData,
+      "logo_file_cropped_data_url",
+    );
     const [uploadedLogoUrl, uploadedHeroImageUrl, sponsor1, sponsor2, sponsor3] =
       await Promise.all([
         uploadImageFile({
           clientId,
-          file: formData.get("logo_file") as File | null,
+          file: croppedLogoFile || (formData.get("logo_file") as File | null),
           kind: "logo",
         }),
         uploadImageFile({

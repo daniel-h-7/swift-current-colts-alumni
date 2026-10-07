@@ -4,23 +4,29 @@ export function SponsorScroll({ sponsors }: { sponsors: SiteSponsor[] }) {
   const sponsorItems = sponsors.length ? sponsors : [];
 
   return (
-    <div className="mb-2 mt-11 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-      <div className="flex w-max animate-[sponsor-scroll_28s_linear_infinite] gap-4">
+    <div className="mb-1 mt-9 overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+      <div className="flex w-max animate-[sponsor-scroll_32s_linear_infinite] gap-5">
         {[...sponsorItems, ...sponsorItems].map((sponsor, index) => {
           const card = (
-            <div className="flex h-20 min-w-56 items-center justify-center border border-blue-100/20 bg-black/42 px-6 text-center text-sm font-black uppercase tracking-[2px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-blue-100/45 hover:bg-black/60">
+            <div className="group relative h-48 w-72 overflow-hidden border border-white/15 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-white/40">
               {sponsor.imageUrl ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     alt={`${sponsor.name} logo`}
-                    className="max-h-12 max-w-40 object-contain"
+                    className="h-full w-full object-contain p-8 transition duration-300 group-hover:scale-105 group-hover:opacity-28"
                     src={sponsor.imageUrl}
                   />
-                  <span className="sr-only">{sponsor.name}</span>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/70 px-6 text-center opacity-0 transition duration-300 group-hover:opacity-100">
+                    <span className="text-sm font-black uppercase tracking-[0.18em] text-white">
+                      {sponsor.name}
+                    </span>
+                  </div>
                 </>
               ) : (
-                sponsor.name
+                <div className="flex h-full w-full items-center justify-center bg-zinc-950 px-6 text-center text-sm font-black uppercase tracking-[0.18em] text-white">
+                  {sponsor.name}
+                </div>
               )}
             </div>
           );

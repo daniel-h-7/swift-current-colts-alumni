@@ -16,6 +16,7 @@ const fieldClass =
 function blankEvent(): SiteEvent {
   return {
     date: "",
+    imageUrl: "",
     linkLabel: "Details",
     linkUrl: "",
     notes: "",

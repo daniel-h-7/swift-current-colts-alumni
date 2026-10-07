@@ -14,6 +14,7 @@ export type SiteSpotlight = {
 
 export type SiteEvent = {
   date: string;
+  imageUrl: string;
   linkLabel: string;
   linkUrl: string;
   notes: string;
@@ -98,6 +99,7 @@ const coltsDefaultSiteContent: SiteContent = {
   events: [
     {
       date: "June 21, 2026",
+      imageUrl: "",
       linkLabel: "",
       linkUrl: "",
       notes: "",
@@ -105,6 +107,7 @@ const coltsDefaultSiteContent: SiteContent = {
     },
     {
       date: "September 18, 2026",
+      imageUrl: "",
       linkLabel: "",
       linkUrl: "",
       notes: "",
@@ -112,6 +115,7 @@ const coltsDefaultSiteContent: SiteContent = {
     },
     {
       date: "November 7, 2026",
+      imageUrl: "",
       linkLabel: "",
       linkUrl: "",
       notes: "",
@@ -153,6 +157,7 @@ const demoDefaultSiteContent: SiteContent = {
   events: [
     {
       date: "August 28, 2026",
+      imageUrl: "",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "Kick off the season with alumni, sponsors, and supporters under the lights.",
@@ -160,6 +165,7 @@ const demoDefaultSiteContent: SiteContent = {
     },
     {
       date: "September 19, 2026",
+      imageUrl: "",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "A demo event built for ticket links, registration pages, or external event details.",
@@ -167,6 +173,7 @@ const demoDefaultSiteContent: SiteContent = {
     },
     {
       date: "November 14, 2026",
+      imageUrl: "",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "Recognize legacy players, volunteers, sponsors, and the people behind the program.",
@@ -174,6 +181,7 @@ const demoDefaultSiteContent: SiteContent = {
     },
     {
       date: "January 16, 2027",
+      imageUrl: "",
       linkLabel: "Preview",
       linkUrl: "",
       notes: "A clean offseason touchpoint for fundraising, alumni updates, and campaign follow-up.",
@@ -231,6 +239,7 @@ const ramsDefaultSiteContent: SiteContent = {
   events: [
     {
       date: "September 12, 2026",
+      imageUrl: "",
       linkLabel: "",
       linkUrl: "",
       notes: "Bring alumni, families, and boosters together for the first Rams home feature night.",
@@ -238,6 +247,7 @@ const ramsDefaultSiteContent: SiteContent = {
     },
     {
       date: "October 3, 2026",
+      imageUrl: "",
       linkLabel: "",
       linkUrl: "",
       notes: "A community game-day event built around sponsors, families, and future Rams.",
@@ -245,6 +255,7 @@ const ramsDefaultSiteContent: SiteContent = {
     },
     {
       date: "November 21, 2026",
+      imageUrl: "",
       linkLabel: "",
       linkUrl: "",
       notes: "Celebrate the people supporting Rams Football on and off the field.",
@@ -297,6 +308,7 @@ const bfBadgersDefaultSiteContent: SiteContent = {
   events: [
     {
       date: "August 28, 2026",
+      imageUrl: "",
       linkLabel: "Details",
       linkUrl: "",
       notes: "Bring alumni, families, and sponsors together for a football Friday in Bonners Ferry.",
@@ -304,6 +316,7 @@ const bfBadgersDefaultSiteContent: SiteContent = {
     },
     {
       date: "September 25, 2026",
+      imageUrl: "",
       linkLabel: "Details",
       linkUrl: "",
       notes: "A homecoming-style gathering built around football, school pride, and alumni connection.",
@@ -311,6 +324,7 @@ const bfBadgersDefaultSiteContent: SiteContent = {
     },
     {
       date: "November 13, 2026",
+      imageUrl: "",
       linkLabel: "Details",
       linkUrl: "",
       notes: "Celebrate players, volunteers, sponsors, and the people helping the program move forward.",
@@ -318,6 +332,7 @@ const bfBadgersDefaultSiteContent: SiteContent = {
     },
     {
       date: "January 22, 2027",
+      imageUrl: "",
       linkLabel: "Details",
       linkUrl: "",
       notes: "An offseason supporter event for campaign updates, future goals, and community momentum.",
@@ -465,6 +480,7 @@ function normalizeEvent(value: unknown): SiteEvent | null {
 
   return {
     date: cleanText(item.date),
+    imageUrl: cleanText(item.imageUrl),
     linkLabel: cleanText(item.linkLabel),
     linkUrl: cleanText(item.linkUrl),
     notes: cleanText(item.notes),
@@ -632,6 +648,7 @@ export function createStarterSiteContent(clientName: string): SiteContent {
     events: [
       {
         date: "September 18, 2026",
+        imageUrl: "",
         linkLabel: "Details",
         linkUrl: "",
         notes: "Bring alumni, families, and supporters together for a game-day gathering.",

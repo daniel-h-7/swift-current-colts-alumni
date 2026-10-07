@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventsSlider } from "@/components/events-slider";
-import { JoinForm } from "@/components/join-form";
 import { SponsorScroll } from "@/components/sponsor-scroll";
-import { getMembershipSettingsForClient } from "@/lib/membership-settings";
 import {
   getClientFeatures,
   getPlatformClient,
@@ -31,9 +29,8 @@ export default async function ClientPreviewPage({
   }
 
   const previewClient = client;
-  const [siteContent, settings, features, sections] = await Promise.all([
+  const [siteContent, features, sections] = await Promise.all([
     getSiteContentForClient(previewClient.id),
-    getMembershipSettingsForClient(previewClient.id),
     getClientFeatures(previewClient.id),
     getSiteSections(previewClient.id),
   ]);
@@ -62,14 +59,24 @@ export default async function ClientPreviewPage({
   const brand = siteContent.brand;
   const heroImage = brand.heroImageUrl || "/images/stadium.jpg";
   const heroImagePosition = brand.heroImagePosition || "50% 50%";
-  const joinHref = isSectionVisible("memberships") ? "#join" : `/studio/${previewClient.id}/content`;
+  const joinHref = isSectionVisible("memberships")
+    ? `/preview/${encodeURIComponent(previewClient.id)}/join`
+    : `/studio/${previewClient.id}/content`;
   const kickerStyle = { color: brand.accentColor };
 
   function renderSection(sectionKey: SiteSectionKey) {
     if (sectionKey === "sponsors") {
       return (
-        <section id="sponsors" className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
-          <div className="rounded-[8px] border border-white/10 bg-zinc-950 p-8">
+        <section id="sponsors" className="relative isolate overflow-hidden px-6 py-16" key={sectionKey}>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 opacity-95"
+            style={{
+              background: `linear-gradient(105deg, ${brand.primaryColor} 0%, ${brand.secondaryColor} 44%, #050505 100%)`,
+            }}
+          />
+          <div className="absolute inset-0 premium-grid opacity-20" />
+          <div className="relative mx-auto max-w-7xl">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="program-kicker" style={kickerStyle}>Community Powered</p>
@@ -87,42 +94,25 @@ export default async function ClientPreviewPage({
 
     if (sectionKey === "events") {
       return (
-        <section id="events" className="mx-auto max-w-7xl px-6 py-16" key={sectionKey}>
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="program-kicker" style={kickerStyle}>Gather Again</p>
-              <h2 className="mt-3 text-4xl font-black">Upcoming Events</h2>
+        <section id="events" className="relative isolate overflow-hidden px-6 py-16" key={sectionKey}>
+          <div className="absolute inset-0 bg-zinc-950" />
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-2"
+            style={{ backgroundColor: brand.accentColor }}
+          />
+          <div className="absolute inset-0 premium-grid opacity-20" />
+          <div className="relative mx-auto max-w-7xl">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="program-kicker" style={kickerStyle}>Gather Again</p>
+                <h2 className="mt-3 text-4xl font-black">Upcoming Events</h2>
+              </div>
+              <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
+                Keep the alumni network moving with clean event listings.
+              </p>
             </div>
-            <p className="max-w-md text-sm font-semibold leading-6 text-gray-400">
-              Keep the alumni network moving with clean event listings.
-            </p>
-          </div>
-          <EventsSlider events={siteContent.events} />
-        </section>
-      );
-    }
-
-    if (sectionKey === "memberships") {
-      return (
-        <section id="join" className="mx-auto max-w-5xl px-6 py-16" key={sectionKey}>
-          <div className="border border-white/10 bg-zinc-950 p-6 md:p-8">
-            <p className="program-kicker" style={kickerStyle}>Preview Checkout</p>
-            <h2 className="mt-3 text-4xl font-black">Membership Payment</h2>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-gray-400">
-              Use this form to test the membership payment flow before the site
-              is approved for public launch.
-            </p>
-            <div className="mt-7">
-              <JoinForm
-                checkoutPath={`/preview/${encodeURIComponent(previewClient.id)}/api/membership/checkout`}
-                accentColor={brand.accentColor}
-                headline={settings.join_headline}
-                isOpen={settings.join_is_open}
-                primaryColor={brand.primaryColor}
-                programName={previewClient.name}
-                subtext={settings.join_body}
-              />
-            </div>
+            <EventsSlider events={siteContent.events} fallbackImage={heroImage} />
           </div>
         </section>
       );
@@ -228,7 +218,7 @@ export default async function ClientPreviewPage({
           <nav className="hidden gap-5 text-sm font-black uppercase text-gray-300 md:flex">
             {isSectionVisible("sponsors") ? <a href="#sponsors">Sponsors</a> : null}
             {isSectionVisible("events") ? <a href="#events">Events</a> : null}
-            {isSectionVisible("memberships") ? <a href="#join">Join</a> : null}
+            {isSectionVisible("memberships") ? <Link href={joinHref}>Join</Link> : null}
           </nav>
         </header>
 
