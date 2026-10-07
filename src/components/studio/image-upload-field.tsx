@@ -8,7 +8,7 @@ type ImageUploadFieldProps = {
   help: string;
   label: string;
   name: string;
-  previewMode: "logo" | "hero";
+  previewMode: "event" | "hero" | "logo";
   urlName: string;
   urlValue: string;
 };
@@ -38,23 +38,26 @@ export function ImageUploadField({
 }: ImageUploadFieldProps) {
   const initialFocus = parseFocus(focusValue);
   const [previewUrl, setPreviewUrl] = useState(urlValue);
-  const [selectedLogoDataUrl, setSelectedLogoDataUrl] = useState("");
-  const [croppedLogoDataUrl, setCroppedLogoDataUrl] = useState("");
+  const [selectedCropDataUrl, setSelectedCropDataUrl] = useState("");
+  const [croppedImageDataUrl, setCroppedImageDataUrl] = useState("");
   const [focusX, setFocusX] = useState(initialFocus.x);
   const [focusY, setFocusY] = useState(initialFocus.y);
-  const [logoZoom, setLogoZoom] = useState(100);
+  const [cropZoom, setCropZoom] = useState(100);
   const objectPosition = `${focusX}% ${focusY}%`;
-  const isLogoCropper = previewMode === "logo" && selectedLogoDataUrl;
+  const isCropper =
+    (previewMode === "event" || previewMode === "logo") && selectedCropDataUrl;
   const frameClass = useMemo(
     () =>
       previewMode === "hero"
         ? "aspect-[16/7] w-full overflow-hidden border border-slate-200 bg-slate-950"
-        : "flex aspect-square w-36 items-center justify-center overflow-hidden border border-slate-200 bg-slate-950",
+        : previewMode === "event"
+          ? "aspect-[16/10] w-full overflow-hidden border border-slate-200 bg-slate-950"
+          : "flex aspect-square w-36 items-center justify-center overflow-hidden border border-slate-200 bg-slate-950",
     [previewMode],
   );
 
   useEffect(() => {
-    if (!isLogoCropper) {
+    if (!isCropper) {
       return;
     }
 
@@ -66,39 +69,43 @@ export function ImageUploadField({
         return;
       }
 
-      const size = 512;
+      const width = previewMode === "event" ? 800 : 512;
+      const height = previewMode === "event" ? 500 : 512;
       const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = width;
+      canvas.height = height;
       const context = canvas.getContext("2d");
 
       if (!context) {
         return;
       }
 
-      context.clearRect(0, 0, size, size);
+      context.clearRect(0, 0, width, height);
 
-      const baseScale = Math.min(size / image.naturalWidth, size / image.naturalHeight);
-      const scale = baseScale * (logoZoom / 100);
+      const baseScale = Math.max(
+        width / image.naturalWidth,
+        height / image.naturalHeight,
+      );
+      const scale = baseScale * (cropZoom / 100);
       const drawWidth = image.naturalWidth * scale;
       const drawHeight = image.naturalHeight * scale;
-      const overflowX = Math.max(0, drawWidth - size);
-      const overflowY = Math.max(0, drawHeight - size);
-      const insetX = Math.max(0, size - drawWidth) / 2;
-      const insetY = Math.max(0, size - drawHeight) / 2;
+      const overflowX = Math.max(0, drawWidth - width);
+      const overflowY = Math.max(0, drawHeight - height);
+      const insetX = Math.max(0, width - drawWidth) / 2;
+      const insetY = Math.max(0, height - drawHeight) / 2;
       const x = insetX - overflowX * (focusX / 100);
       const y = insetY - overflowY * (focusY / 100);
 
       context.drawImage(image, x, y, drawWidth, drawHeight);
-      setCroppedLogoDataUrl(canvas.toDataURL("image/png"));
+      setCroppedImageDataUrl(canvas.toDataURL("image/png"));
     };
 
-    image.src = selectedLogoDataUrl;
+    image.src = selectedCropDataUrl;
 
     return () => {
       isCancelled = true;
     };
-  }, [focusX, focusY, isLogoCropper, logoZoom, selectedLogoDataUrl]);
+  }, [cropZoom, focusX, focusY, isCropper, previewMode, selectedCropDataUrl]);
 
   return (
     <div className="space-y-3 text-sm font-bold text-slate-700 md:col-span-2">
@@ -110,12 +117,16 @@ export function ImageUploadField({
       </div>
 
       <div className={frameClass}>
-        {croppedLogoDataUrl ? (
+        {croppedImageDataUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={`${label} cropped preview`}
-            className="h-full w-full object-contain p-3"
-            src={croppedLogoDataUrl}
+            className={
+              previewMode === "logo"
+                ? "h-full w-full object-contain p-3"
+                : "h-full w-full object-cover"
+            }
+            src={croppedImageDataUrl}
           />
         ) : previewUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -124,10 +135,16 @@ export function ImageUploadField({
             className={
               previewMode === "hero"
                 ? "h-full w-full object-cover"
-                : "max-h-full max-w-full object-contain p-3"
+                : previewMode === "event"
+                  ? "h-full w-full object-cover"
+                  : "max-h-full max-w-full object-contain p-3"
             }
             src={previewUrl}
-            style={previewMode === "hero" ? { objectPosition } : undefined}
+            style={
+              previewMode === "hero" || previewMode === "event"
+                ? { objectPosition }
+                : undefined
+            }
           />
         ) : (
           <span className="px-4 text-center text-xs font-black uppercase tracking-[0.18em] text-slate-400">
@@ -149,22 +166,25 @@ export function ImageUploadField({
               if (file) {
                 const fileUrl = URL.createObjectURL(file);
                 setPreviewUrl(fileUrl);
-                setCroppedLogoDataUrl("");
+                setCroppedImageDataUrl("");
 
-                if (previewMode === "logo" && file.type !== "image/svg+xml") {
+                if (
+                  (previewMode === "event" || previewMode === "logo") &&
+                  file.type !== "image/svg+xml"
+                ) {
                   const reader = new FileReader();
 
                   reader.onload = () => {
-                    setSelectedLogoDataUrl(String(reader.result ?? ""));
-                    setLogoZoom(100);
+                    setSelectedCropDataUrl(String(reader.result ?? ""));
+                    setCropZoom(100);
                     setFocusX(50);
                     setFocusY(50);
                   };
 
                   reader.readAsDataURL(file);
                 } else {
-                  setSelectedLogoDataUrl("");
-                  setCroppedLogoDataUrl("");
+                  setSelectedCropDataUrl("");
+                  setCroppedImageDataUrl("");
                 }
               }
             }}
@@ -179,30 +199,30 @@ export function ImageUploadField({
             name={urlName}
             onChange={(event) => {
               setPreviewUrl(event.target.value);
-              setSelectedLogoDataUrl("");
-              setCroppedLogoDataUrl("");
+              setSelectedCropDataUrl("");
+              setCroppedImageDataUrl("");
             }}
             placeholder="/images/stadium.jpg"
           />
         </label>
       </div>
 
-      {isLogoCropper ? (
+      {isCropper ? (
         <div className="grid gap-3 border border-slate-200 bg-slate-50 p-4 md:grid-cols-3">
           <input
             name={`${name}_cropped_data_url`}
             type="hidden"
-            value={croppedLogoDataUrl}
+            value={croppedImageDataUrl}
           />
           <label>
-            Logo size
+            {previewMode === "event" ? "Image size" : "Logo size"}
             <input
               className="mt-2 w-full accent-emerald-700"
               max="220"
               min="60"
-              onChange={(event) => setLogoZoom(Number(event.target.value))}
+              onChange={(event) => setCropZoom(Number(event.target.value))}
               type="range"
-              value={logoZoom}
+              value={cropZoom}
             />
           </label>
           <label>
@@ -228,8 +248,9 @@ export function ImageUploadField({
             />
           </label>
           <p className="text-xs font-semibold leading-5 text-slate-500 md:col-span-3">
-            This saves a square PNG version of the logo so it fits cleanly in
-            headers, previews, and app-style placements.
+            {previewMode === "event"
+              ? "This saves a cropped event thumbnail for the homepage event rail."
+              : "This saves a square PNG version of the logo so it fits cleanly in headers, previews, and app-style placements."}
           </p>
         </div>
       ) : null}

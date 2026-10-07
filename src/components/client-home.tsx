@@ -306,7 +306,11 @@ export default async function Home() {
             </p>
           </div>
 
-          <EventsSlider events={siteContent.events} fallbackImage={siteContent.brand.heroImageUrl} />
+          <EventsSlider
+            events={siteContent.events}
+            fallbackImage={siteContent.brand.heroImageUrl}
+            placeholderImage={siteContent.brand.logoUrl}
+          />
         </div>
       </section>
 

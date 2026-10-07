@@ -328,11 +328,13 @@ export default async function StudioContentSetupPage({
                           name={`event_${index + 1}_notes`}
                           placeholder="Short event description"
                         />
-                        <input
-                          className={fieldClass}
-                          defaultValue={event.imageUrl}
-                          name={`event_${index + 1}_image_url`}
-                          placeholder="Event image URL"
+                        <ImageUploadField
+                          help="Upload a thumbnail for this event, crop it for the event rail, or paste an image URL."
+                          label={`Event ${index + 1} Image`}
+                          name={`event_${index + 1}_image_file`}
+                          previewMode="event"
+                          urlName={`event_${index + 1}_image_url`}
+                          urlValue={event.imageUrl}
                         />
                       </div>
                       <div>

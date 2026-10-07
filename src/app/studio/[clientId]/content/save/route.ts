@@ -68,7 +68,7 @@ function extensionForFile(file: File) {
   return null;
 }
 
-function fileFromCroppedLogo(formData: FormData, key: string) {
+function fileFromCroppedImage(formData: FormData, key: string, fileName: string) {
   const value = text(formData, key);
   const match = value.match(/^data:(image\/png);base64,([a-zA-Z0-9+/=]+)$/);
 
@@ -78,7 +78,7 @@ function fileFromCroppedLogo(formData: FormData, key: string) {
 
   const bytes = Buffer.from(match[2], "base64");
 
-  return new File([bytes], "cropped-logo.png", { type: match[1] });
+  return new File([bytes], fileName, { type: match[1] });
 }
 
 async function uploadImageFile({
@@ -193,6 +193,36 @@ function event(formData: FormData, index: number): SiteEvent | null {
   };
 }
 
+async function eventWithUpload(
+  formData: FormData,
+  clientId: string,
+  index: number,
+) {
+  const item = event(formData, index);
+
+  if (!item) {
+    return null;
+  }
+
+  const croppedEventImageFile = fileFromCroppedImage(
+    formData,
+    `event_${index}_image_file_cropped_data_url`,
+    `cropped-event-${index}.png`,
+  );
+  const uploadedImageUrl = await uploadImageFile({
+    clientId,
+    file:
+      croppedEventImageFile ||
+      (formData.get(`event_${index}_image_file`) as File | null),
+    kind: `event-${index}`,
+  });
+
+  return {
+    ...item,
+    imageUrl: uploadedImageUrl || item.imageUrl,
+  };
+}
+
 function spotlight(formData: FormData): SiteSpotlight[] {
   const name = text(formData, "spotlight_name");
 
@@ -252,11 +282,20 @@ export async function POST(
     const siteTitle = text(formData, "site_title") || starter.brand.siteTitle;
     const heroTitle = text(formData, "hero_title") || starter.brand.heroTitle;
     const heroBody = text(formData, "hero_body") || starter.brand.heroBody;
-    const croppedLogoFile = fileFromCroppedLogo(
+    const croppedLogoFile = fileFromCroppedImage(
       formData,
       "logo_file_cropped_data_url",
+      "cropped-logo.png",
     );
-    const [uploadedLogoUrl, uploadedHeroImageUrl, sponsor1, sponsor2, sponsor3] =
+    const [
+      uploadedLogoUrl,
+      uploadedHeroImageUrl,
+      sponsor1,
+      sponsor2,
+      sponsor3,
+      event1,
+      event2,
+    ] =
       await Promise.all([
         uploadImageFile({
           clientId,
@@ -271,6 +310,8 @@ export async function POST(
         sponsorWithUpload(formData, clientId, 1),
         sponsorWithUpload(formData, clientId, 2),
         sponsorWithUpload(formData, clientId, 3),
+        eventWithUpload(formData, clientId, 1),
+        eventWithUpload(formData, clientId, 2),
       ]);
     const content: SiteContent = {
       brand: {
@@ -296,9 +337,7 @@ export async function POST(
         ),
         siteTitle,
       },
-      events: [event(formData, 1), event(formData, 2)].filter(
-        Boolean,
-      ) as SiteEvent[],
+      events: [event1, event2].filter(Boolean) as SiteEvent[],
       fundraisingCampaigns: campaign(formData),
       impactStats: [],
       sponsors: [sponsor1, sponsor2, sponsor3].filter(Boolean) as SiteSponsor[],

@@ -114,7 +114,11 @@ export default async function ClientPreviewPage({
                 Keep the alumni network moving with clean event listings.
               </p>
             </div>
-            <EventsSlider events={siteContent.events} fallbackImage={heroImage} />
+            <EventsSlider
+              events={siteContent.events}
+              fallbackImage={heroImage}
+              placeholderImage={brand.logoUrl}
+            />
           </div>
         </section>
       );

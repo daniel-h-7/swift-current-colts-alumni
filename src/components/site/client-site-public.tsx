@@ -314,6 +314,7 @@ export async function ClientSitePublic({
                   <EventsSlider
                     events={siteContent.events}
                     fallbackImage={heroImage}
+                    placeholderImage={brand.logoUrl}
                   />
                 </div>
               </section>
