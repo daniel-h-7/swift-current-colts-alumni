@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ColorSettingField } from "@/components/studio/color-setting-field";
 import { ImageUploadField } from "@/components/studio/image-upload-field";
+import { SpotlightFields } from "@/components/studio/spotlight-fields";
 import { StudioHeader } from "@/components/studio-header";
 import { getPlatformClient } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
@@ -43,6 +44,12 @@ const setupSections = [
 
 function row<T>(items: T[], index: number, fallback: T) {
   return items[index] ?? fallback;
+}
+
+function amountFromLabel(value: string) {
+  const match = value.match(/[\d,.]+/);
+
+  return match ? match[0].replaceAll(",", "") : "";
 }
 
 export default async function StudioContentSetupPage({
@@ -97,13 +104,6 @@ export default async function StudioContentSetupPage({
       title: "",
     }),
   ];
-  const spotlight = row(siteContent.spotlights, 0, {
-    classYear: "",
-    descriptor: "",
-    imageClass: "object-center",
-    imageUrl: "",
-    name: "",
-  });
   const campaign = row(siteContent.fundraisingCampaigns, 0, {
     buttonLabel: "Support the Program",
     buttonUrl: "/join",
@@ -361,38 +361,41 @@ export default async function StudioContentSetupPage({
                   ))}
                 </div>
               </div>
+            </div>
+          </section>
 
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <h3 className="font-black">Alumni Spotlight</h3>
-                  <input
-                    className={fieldClass}
-                    defaultValue={spotlight.name}
-                    name="spotlight_name"
-                    placeholder="Name"
-                  />
-                  <input
-                    className={fieldClass}
-                    defaultValue={spotlight.classYear}
-                    name="spotlight_class_year"
-                    placeholder="Class year or role"
-                  />
-                  <input
-                    className={fieldClass}
-                    defaultValue={spotlight.descriptor}
-                    name="spotlight_descriptor"
-                    placeholder="Short description"
-                  />
-                  <input
-                    className={fieldClass}
-                    defaultValue={spotlight.imageUrl}
-                    name="spotlight_image_url"
-                    placeholder="Photo URL"
-                  />
-                </div>
+          <section
+            className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm"
+            id="alumni-spotlights"
+          >
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div>
+                <h2 className="text-xl font-black">Alumni Spotlights</h2>
+                <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+                  Add the alumni, volunteers, sponsors, or supporters you want
+                  featured on the homepage.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <SpotlightFields initialSpotlights={siteContent.spotlights} />
+            </div>
+          </section>
 
-                <div>
-                  <h3 className="font-black">Campaign</h3>
+          <section
+            className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm"
+            id="campaigns"
+          >
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div>
+                <h2 className="text-xl font-black">Campaign</h2>
+                <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+                  Set a fundraising goal and the progress bar will calculate
+                  automatically from raised divided by goal.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
                   <input
                     className={fieldClass}
                     defaultValue={campaign.title}
@@ -400,7 +403,7 @@ export default async function StudioContentSetupPage({
                     placeholder="Campaign title"
                   />
                   <textarea
-                    className={areaClass}
+                    className={`${areaClass} md:col-span-2`}
                     defaultValue={campaign.description}
                     name="campaign_description"
                     placeholder="Campaign description"
@@ -408,29 +411,24 @@ export default async function StudioContentSetupPage({
                   <div className="grid gap-3 md:grid-cols-2">
                     <input
                       className={fieldClass}
-                      defaultValue={campaign.raisedLabel}
-                      name="campaign_raised_label"
-                      placeholder="$6,250"
+                      defaultValue={amountFromLabel(campaign.raisedLabel)}
+                      name="campaign_raised_amount"
+                      placeholder="6250"
+                      type="number"
                     />
                     <input
                       className={fieldClass}
-                      defaultValue={campaign.goalLabel}
-                      name="campaign_goal_label"
-                      placeholder="Raised of $25,000"
+                      defaultValue={amountFromLabel(campaign.goalLabel)}
+                      name="campaign_goal_amount"
+                      placeholder="25000"
+                      type="number"
                     />
                   </div>
-                  <input
-                    className={fieldClass}
-                    defaultValue={campaign.progressPercent}
-                    max="100"
-                    min="0"
-                    name="campaign_progress_percent"
-                    placeholder="25"
-                    type="number"
-                  />
-                </div>
+                  <div className="rounded-[8px] border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-500 md:col-span-2">
+                    Progress is calculated when saved. Example: raised 6,250
+                    and goal 25,000 saves as 25%.
+                  </div>
               </div>
-            </div>
           </section>
 
           <button

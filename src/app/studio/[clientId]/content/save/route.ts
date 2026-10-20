@@ -139,6 +139,25 @@ function percent(formData: FormData, key: string, fallback: number) {
   return Math.min(100, Math.max(0, value));
 }
 
+function moneyAmount(formData: FormData, key: string) {
+  const value = text(formData, key).replace(/[$,\s]/g, "");
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount) || amount < 0) {
+    return 0;
+  }
+
+  return amount;
+}
+
+function formatMoneyLabel(amount: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
+}
+
 function sponsor(formData: FormData, index: number): SiteSponsor | null {
   const name = text(formData, `sponsor_${index}_name`);
 
@@ -223,23 +242,52 @@ async function eventWithUpload(
   };
 }
 
-function spotlight(formData: FormData): SiteSpotlight[] {
-  const name = text(formData, "spotlight_name");
+function spotlight(formData: FormData, index: number): SiteSpotlight | null {
+  const name = text(formData, `spotlight_${index}_name`);
 
   if (!name) {
-    return [];
+    return null;
   }
 
-  return [
-    {
-      classYear: text(formData, "spotlight_class_year"),
-      descriptor: text(formData, "spotlight_descriptor"),
-      imageClass: "object-center",
-      imageUrl:
-        text(formData, "spotlight_image_url") || "/images/team-gridiron-shield.svg",
-      name,
-    },
-  ];
+  return {
+    classYear: text(formData, `spotlight_${index}_class_year`),
+    descriptor: text(formData, `spotlight_${index}_descriptor`),
+    imageClass: "object-center",
+    imageUrl:
+      text(formData, `spotlight_${index}_image_url`) ||
+      "/images/team-gridiron-shield.svg",
+    name,
+  };
+}
+
+async function spotlightWithUpload(
+  formData: FormData,
+  clientId: string,
+  index: number,
+) {
+  const item = spotlight(formData, index);
+
+  if (!item) {
+    return null;
+  }
+
+  const croppedSpotlightFile = fileFromCroppedImage(
+    formData,
+    `spotlight_${index}_image_file_cropped_data_url`,
+    `cropped-spotlight-${index}.png`,
+  );
+  const uploadedImageUrl = await uploadImageFile({
+    clientId,
+    file:
+      croppedSpotlightFile ||
+      (formData.get(`spotlight_${index}_image_file`) as File | null),
+    kind: `spotlight-${index}`,
+  });
+
+  return {
+    ...item,
+    imageUrl: uploadedImageUrl || item.imageUrl,
+  };
 }
 
 function campaign(formData: FormData): SiteFundraisingCampaign[] {
@@ -249,15 +297,28 @@ function campaign(formData: FormData): SiteFundraisingCampaign[] {
     return [];
   }
 
+  const raisedAmount = moneyAmount(formData, "campaign_raised_amount");
+  const goalAmount = moneyAmount(formData, "campaign_goal_amount");
+  const progressPercent =
+    goalAmount > 0
+      ? Math.min(100, Math.max(0, Math.round((raisedAmount / goalAmount) * 100)))
+      : percent(formData, "campaign_progress_percent", 0);
+
   return [
     {
       buttonLabel: text(formData, "campaign_button_label") || "Support the Program",
       buttonUrl: text(formData, "campaign_button_url") || "/join",
       description: text(formData, "campaign_description"),
       eyebrow: text(formData, "campaign_eyebrow") || "Current Campaign",
-      goalLabel: text(formData, "campaign_goal_label"),
-      progressPercent: percent(formData, "campaign_progress_percent", 0),
-      raisedLabel: text(formData, "campaign_raised_label"),
+      goalLabel:
+        goalAmount > 0
+          ? `Raised of ${formatMoneyLabel(goalAmount)}`
+          : text(formData, "campaign_goal_label"),
+      progressPercent,
+      raisedLabel:
+        raisedAmount > 0
+          ? formatMoneyLabel(raisedAmount)
+          : text(formData, "campaign_raised_label"),
       title,
     },
   ];
@@ -295,6 +356,10 @@ export async function POST(
       sponsor3,
       event1,
       event2,
+      spotlight1,
+      spotlight2,
+      spotlight3,
+      spotlight4,
     ] =
       await Promise.all([
         uploadImageFile({
@@ -312,6 +377,10 @@ export async function POST(
         sponsorWithUpload(formData, clientId, 3),
         eventWithUpload(formData, clientId, 1),
         eventWithUpload(formData, clientId, 2),
+        spotlightWithUpload(formData, clientId, 1),
+        spotlightWithUpload(formData, clientId, 2),
+        spotlightWithUpload(formData, clientId, 3),
+        spotlightWithUpload(formData, clientId, 4),
       ]);
     const content: SiteContent = {
       brand: {
@@ -341,7 +410,9 @@ export async function POST(
       fundraisingCampaigns: campaign(formData),
       impactStats: [],
       sponsors: [sponsor1, sponsor2, sponsor3].filter(Boolean) as SiteSponsor[],
-      spotlights: spotlight(formData),
+      spotlights: [spotlight1, spotlight2, spotlight3, spotlight4].filter(
+        Boolean,
+      ) as SiteSpotlight[],
     };
 
     await saveSiteContentForClient(clientId, content, {

@@ -159,10 +159,39 @@ export default async function ClientPreviewPage({
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {siteContent.fundraisingCampaigns.map((campaign) => (
                 <article className="border border-white/10 bg-black/35 p-5" key={campaign.title}>
-                  <h3 className="text-2xl font-black">{campaign.title}</h3>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-gray-400">
-                    {campaign.description}
+                  <p className="text-xs font-black uppercase tracking-[0.18em]" style={kickerStyle}>
+                    {campaign.eyebrow}
                   </p>
+                  <h3 className="mt-2 text-2xl font-black">{campaign.title}</h3>
+                  {campaign.description ? (
+                    <p className="mt-2 text-sm font-semibold leading-6 text-gray-400">
+                      {campaign.description}
+                    </p>
+                  ) : null}
+                  <div className="mt-6">
+                    <div className="flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-3xl font-black text-white">
+                          {campaign.raisedLabel}
+                        </p>
+                        <p className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-gray-500">
+                          {campaign.goalLabel}
+                        </p>
+                      </div>
+                      <p className="text-xl font-black text-gray-200">
+                        {campaign.progressPercent}%
+                      </p>
+                    </div>
+                    <div className="mt-4 h-3 overflow-hidden bg-white/10">
+                      <div
+                        className="h-full"
+                        style={{
+                          backgroundColor: brand.accentColor,
+                          width: `${campaign.progressPercent}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
                 </article>
               ))}
             </div>
