@@ -73,11 +73,12 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
         <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#events">
           Events
         </Link>
+        <SiteAdminLink href="/admin" className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" />
         <Link className="bg-red-600 px-5 py-3 text-white transition hover:bg-red-500" href="/join">
           Support
         </Link>
       </div>
-      <SiteAdminLink href="/admin" />
+      <SiteAdminLink href="/admin" className="px-4 py-3 text-[11px] font-black uppercase tracking-[2px] text-gray-300 transition hover:text-white md:hidden" />
       </div>
     </nav>
   );
