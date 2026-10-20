@@ -15,7 +15,7 @@ type EditCampaignParams = {
 };
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full rounded-xl border border-[#e9e1d1] bg-white px-4 py-3 text-[#17130d] outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#c5a45b]/30";
 
 async function getCampaign(id: string) {
   const supabase = createServerSupabaseClient();
@@ -80,19 +80,19 @@ export default async function EditCampaignPage({
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-white text-[#17130d]">
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link className="font-bold text-blue-300" href={`/admin/campaigns/${id}`}>
+        <Link className="font-bold text-[#785d25]" href={`/admin/campaigns/${id}`}>
           Back to campaign
         </Link>
-        <section className="mt-6 rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
-          <p className="text-sm uppercase tracking-[5px] text-red-500">
+        <section className="mt-6 rounded-3xl border border-[#e9e1d1] bg-white p-6 shadow-[0_16px_60px_rgba(23,19,13,0.06)]">
+          <p className="text-sm uppercase tracking-[5px] text-[#785d25]">
             Edit Campaign
           </p>
           <h1 className="mt-3 text-4xl font-black">Campaign Settings</h1>
           <form action={updateCampaign} className="mt-8 space-y-5">
             <input name="campaign_id" type="hidden" value={campaign.id} />
-            <label className="block text-sm font-bold text-gray-200">
+            <label className="block text-sm font-bold text-slate-700">
               Campaign title
               <input
                 className={fieldClass}
@@ -102,7 +102,7 @@ export default async function EditCampaignPage({
                 required
               />
             </label>
-            <label className="block text-sm font-bold text-gray-200">
+            <label className="block text-sm font-bold text-slate-700">
               Description
               <textarea
                 className={`${fieldClass} min-h-32 resize-y`}
@@ -111,7 +111,7 @@ export default async function EditCampaignPage({
                 placeholder="Internal notes about this communication push."
               />
             </label>
-            <label className="block text-sm font-bold text-gray-200">
+            <label className="block text-sm font-bold text-slate-700">
               Status
               <select
                 className={fieldClass}
@@ -119,14 +119,14 @@ export default async function EditCampaignPage({
                 name="status"
               >
                 {campaignStatuses.map((status) => (
-                  <option className="bg-zinc-950" key={status} value={status}>
+                  <option className="bg-white" key={status} value={status}>
                     {status}
                   </option>
                 ))}
               </select>
             </label>
             <button
-              className="w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600"
+              className="w-full rounded-full bg-[#17130d] px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-[#362b19]"
               type="submit"
             >
               Save Campaign

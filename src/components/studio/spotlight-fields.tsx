@@ -5,7 +5,7 @@ import { ImageUploadField } from "@/components/studio/image-upload-field";
 import { SiteSpotlight } from "@/lib/site-content";
 
 const fieldClass =
-  "mt-2 w-full rounded-[8px] border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25";
+  "mt-2 w-full rounded-[8px] border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25";
 
 const areaClass = `${fieldClass} min-h-28`;
 
@@ -72,7 +72,7 @@ export function SpotlightFields({
 
       {count < 4 ? (
         <button
-          className="rounded-full border border-slate-300 px-5 py-3 text-sm font-black uppercase text-slate-700 transition hover:border-emerald-500 hover:text-emerald-700"
+          className="rounded-full border border-slate-300 px-5 py-3 text-sm font-black uppercase text-slate-700 transition hover:border-[#a18442] hover:text-[#785d25]"
           onClick={() => setCount((current) => Math.min(4, current + 1))}
           type="button"
         >

@@ -429,18 +429,18 @@ export default async function EditBlastPage({
         heading="Edit Blast"
         submitLabel="Save Blast"
       >
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+        <section className="rounded-3xl border border-[#e9e1d1] bg-[#faf7ef] p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-xl font-black">Reuse This Blast</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-400">
+              <p className="mt-2 text-sm leading-6 text-slate-600">
                 Create a fresh draft copy with the same content and audience.
               </p>
             </div>
             <form action={duplicateBlastAction}>
               <input name="blast_id" type="hidden" value={blast.id} />
               <button
-                className="rounded-md border border-white/15 bg-black/25 px-5 py-3 text-sm font-black uppercase tracking-[2px] text-gray-200 transition hover:border-blue-500 hover:bg-blue-950/35 hover:text-white"
+                className="rounded-full border border-[#dfcc9a] bg-white/25 px-5 py-3 text-sm font-black uppercase tracking-[2px] text-slate-700 transition hover:border-[#a18442] hover:bg-[#f1e7ce] hover:text-[#17130d]"
                 type="submit"
               >
                 Duplicate Blast
@@ -449,22 +449,22 @@ export default async function EditBlastPage({
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+        <section className="rounded-3xl border border-[#e9e1d1] bg-[#faf7ef] p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-xl font-black">Send Blast</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-400">
+              <p className="mt-2 text-sm leading-6 text-slate-600">
                 Sends the saved blast to email opt-ins in the saved audience.
                 Save changes before sending.
               </p>
             </div>
-            <p className="text-sm font-bold text-gray-400">
+            <p className="text-sm font-bold text-slate-600">
               {summarizeAudienceFilter(blast.audience_filter)}
             </p>
           </div>
 
           {sendSentCount > 0 ? (
-            <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
+            <div className="mt-5 rounded-2xl border border-[#a18442]/30 bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               Sent to {sendSentCount} recipient{sendSentCount === 1 ? "" : "s"}
               {sendFailedCount
                 ? `; ${sendFailedCount} failed and were recorded.`
@@ -473,13 +473,13 @@ export default async function EditBlastPage({
           ) : null}
 
           {query.send_error ? (
-            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-50 p-4 text-sm font-bold text-red-800">
               {query.send_error}
             </div>
           ) : null}
 
           {isSent ? (
-            <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm font-bold text-gray-300">
+            <div className="mt-5 rounded-2xl border border-[#e9e1d1] bg-[#faf7ef] p-4 text-sm font-bold text-slate-600">
               This blast has already been sent.
             </div>
           ) : (
@@ -487,7 +487,7 @@ export default async function EditBlastPage({
               <input name="campaign_id" type="hidden" value={id} />
               <input name="blast_id" type="hidden" value={blast.id} />
               <button
-                className="w-full rounded-md bg-red-600 px-6 py-4 font-black uppercase tracking-[3px] text-white shadow-[0_12px_34px_rgba(220,38,38,0.22)] transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-full bg-[#17130d] px-6 py-4 font-black uppercase tracking-[3px] text-white shadow-[0_12px_34px_rgba(23,19,13,0.12)] transition hover:bg-[#362b19] disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={!emailAudiencePreview.count}
                 type="submit"
               >
@@ -498,30 +498,30 @@ export default async function EditBlastPage({
           )}
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+        <section className="rounded-3xl border border-[#e9e1d1] bg-[#faf7ef] p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-xl font-black">Send Test</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-400">
+              <p className="mt-2 text-sm leading-6 text-slate-600">
                 {emailProviderMode === "smtp-demo"
                   ? "Sends a demo-tagged test email through the configured SMTP server."
                   : "Sends a real test email through Resend when the provider variables are configured."}
               </p>
             </div>
-            <p className="text-sm font-bold text-gray-400">
+            <p className="text-sm font-bold text-slate-600">
               {summarizeAudienceFilter(blast.audience_filter)}
             </p>
           </div>
 
           {query.test_sent === "1" ? (
-            <div className="mt-5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
+            <div className="mt-5 rounded-2xl border border-[#a18442]/30 bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               Test email sent and recorded
               {emailProviderMode === "smtp-demo" ? " in SMTP demo mode." : "."}
             </div>
           ) : null}
 
           {query.test_error ? (
-            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-50 p-4 text-sm font-bold text-red-800">
               {query.test_error}
             </div>
           ) : null}
@@ -530,14 +530,14 @@ export default async function EditBlastPage({
             <input name="campaign_id" type="hidden" value={id} />
             <input name="blast_id" type="hidden" value={blast.id} />
             <input
-              className="w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+              className="w-full rounded-xl border border-[#e9e1d1] bg-white px-4 py-3 text-[#17130d] outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#c5a45b]/30"
               name="test_email"
               placeholder="you@example.com"
               required
               type="email"
             />
             <button
-              className="rounded-md bg-blue-700 px-6 py-3 font-black uppercase tracking-[3px] text-white shadow-[0_10px_30px_rgba(29,78,216,0.22)] transition hover:bg-blue-600"
+              className="rounded-full bg-[#17130d] px-6 py-3 font-black uppercase tracking-[3px] text-white shadow-[0_10px_30px_rgba(23,19,13,0.12)] transition hover:bg-[#362b19]"
               type="submit"
             >
               Send Test
@@ -550,11 +550,11 @@ export default async function EditBlastPage({
 
               return (
                 <div
-                  className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm"
+                  className="rounded-2xl border border-[#e9e1d1] bg-[#faf7ef] p-4 text-sm"
                   key={event.id}
                 >
-                  <p className="font-black text-white">{event.event_type}</p>
-                  <p className="mt-1 text-gray-400">
+                  <p className="font-black text-[#17130d]">{event.event_type}</p>
+                  <p className="mt-1 text-slate-600">
                     {event.email || "-"} ·{" "}
                     <LocalDateTime
                       fallback={formatDate(event.created_at)}
@@ -562,7 +562,7 @@ export default async function EditBlastPage({
                     />
                   </p>
                   {providerDetail ? (
-                    <p className="mt-1 text-gray-500">{providerDetail}</p>
+                    <p className="mt-1 text-slate-500">{providerDetail}</p>
                   ) : null}
                 </div>
               );
@@ -570,34 +570,34 @@ export default async function EditBlastPage({
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+        <section className="rounded-3xl border border-[#e9e1d1] bg-[#faf7ef] p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-xl font-black">Audience Preview</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-400">
+              <p className="mt-2 text-sm leading-6 text-slate-600">
                 Preview is based on the last saved audience filters.
               </p>
             </div>
-            <p className="text-3xl font-black text-blue-300">
+            <p className="text-3xl font-black text-[#785d25]">
               {audiencePreview.count} recipients
             </p>
           </div>
 
           {"error" in audiencePreview && audiencePreview.error ? (
-            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-50 p-4 text-sm font-bold text-red-800">
               {audiencePreview.error}
             </div>
           ) : null}
 
           {!audiencePreview.count && !("error" in audiencePreview) ? (
-            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+            <div className="mt-5 rounded-2xl border border-red-500/30 bg-red-50 p-4 text-sm font-bold text-red-800">
               This audience is empty. Adjust the send categories before sending.
             </div>
           ) : null}
 
-          <div className="mt-5 overflow-hidden rounded-2xl border border-white/10">
-            <table className="min-w-full divide-y divide-white/10 text-left text-sm">
-              <thead className="bg-black/40 text-gray-300">
+          <div className="mt-5 overflow-hidden rounded-2xl border border-[#e9e1d1]">
+            <table className="min-w-full divide-y divide-[#e9e1d1] text-left text-sm">
+              <thead className="bg-[#faf7ef] text-slate-600">
                 <tr>
                   {["Name", "Email", "Year", "Relationship", "Sport"].map(
                     (heading) => (
@@ -608,29 +608,29 @@ export default async function EditBlastPage({
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-[#e9e1d1]">
                 {audiencePreview.contacts.map((contact) => (
                   <tr key={contact.id}>
-                    <td className="whitespace-nowrap px-4 py-3 font-bold text-white">
+                    <td className="whitespace-nowrap px-4 py-3 font-bold text-[#17130d]">
                       {formatContactName(contact)}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                       {contact.email}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                       {contact.graduation_year || "-"}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                       {contact.relationship_type}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                       {contact.sport}
                     </td>
                   </tr>
                 ))}
                 {!audiencePreview.contacts.length ? (
                   <tr>
-                    <td className="px-4 py-8 text-center text-gray-500" colSpan={5}>
+                    <td className="px-4 py-8 text-center text-slate-500" colSpan={5}>
                       No preview recipients.
                     </td>
                   </tr>

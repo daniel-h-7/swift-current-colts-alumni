@@ -146,7 +146,7 @@ export default async function HqHomePage() {
   );
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <HqHeader
         actions={[
           { href: "/hq", label: "Clients", tone: "primary" },
@@ -234,13 +234,13 @@ export default async function HqHomePage() {
                   </div>
                   <div className="flex flex-wrap gap-2 lg:justify-end">
                     <Link
-                      className="inline-flex border border-slate-300 bg-white px-3 py-2 font-black text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                      className="inline-flex border border-slate-300 bg-white px-3 py-2 font-black text-slate-700 transition hover:border-[#d9bd72] hover:text-[#785d25]"
                       href={`/preview/${encodeURIComponent(client.id)}`}
                     >
                       Preview
                     </Link>
                     <Link
-                      className="inline-flex border border-blue-200 bg-blue-50 px-3 py-2 font-black text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                      className="inline-flex border border-[#dfcc9a] bg-[#faf7ef] px-3 py-2 font-black text-[#785d25] transition hover:border-[#d9bd72] hover:bg-[#f1e7ce]"
                       href={`/hq/clients/${encodeURIComponent(client.id)}`}
                     >
                       Open
@@ -250,7 +250,7 @@ export default async function HqHomePage() {
                       method="post"
                     >
                       <button
-                        className="inline-flex border border-emerald-700 bg-emerald-700 px-3 py-2 font-black text-white transition hover:bg-emerald-600"
+                        className="inline-flex border border-[#785d25] bg-[#785d25] px-3 py-2 font-black text-white transition hover:bg-[#8b6f2f]"
                         type="submit"
                       >
                         Approve
@@ -277,6 +277,7 @@ export default async function HqHomePage() {
               <thead className="bg-slate-50 text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                 <tr>
                   <th className="px-5 py-3">Client</th>
+                  <th className="px-5 py-3">Owner email</th>
                   <th className="px-5 py-3">Variant</th>
                   <th className="px-5 py-3">Plan</th>
                   <th className="px-5 py-3">Status</th>
@@ -297,6 +298,9 @@ export default async function HqHomePage() {
                         {client.id}
                       </p>
                     </td>
+                    <td className="px-5 py-4 text-slate-700">
+                      {client.ownerEmail ? <a className="underline decoration-[#c5a45b] underline-offset-4 hover:text-[#785d25]" href={`mailto:${client.ownerEmail}`}>{client.ownerEmail}</a> : <span className="text-slate-500">Not assigned</span>}
+                    </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">
                       {client.site_variant}
                     </td>
@@ -310,7 +314,7 @@ export default async function HqHomePage() {
                       <span
                         className={
                           client.launch_approved_at
-                            ? "text-emerald-700"
+                            ? "text-[#785d25]"
                             : "text-amber-700"
                         }
                       >
@@ -331,7 +335,7 @@ export default async function HqHomePage() {
                     </td>
                     <td className="px-5 py-4">
                       <Link
-                        className="inline-flex border border-blue-200 bg-blue-50 px-3 py-2 font-black text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                        className="inline-flex border border-[#dfcc9a] bg-[#faf7ef] px-3 py-2 font-black text-[#785d25] transition hover:border-[#d9bd72] hover:bg-[#f1e7ce]"
                         href={`/hq/clients/${encodeURIComponent(client.id)}`}
                       >
                         Open

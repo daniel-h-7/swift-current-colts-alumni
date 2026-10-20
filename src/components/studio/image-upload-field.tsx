@@ -194,7 +194,7 @@ export function ImageUploadField({
         <label>
           Or paste image URL
           <input
-            className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25"
+            className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
             defaultValue={urlValue}
             name={urlName}
             onChange={(event) => {
@@ -217,7 +217,7 @@ export function ImageUploadField({
           <label>
             {previewMode === "event" ? "Image size" : "Logo size"}
             <input
-              className="mt-2 w-full accent-emerald-700"
+              className="mt-2 w-full accent-[#785d25]"
               max="220"
               min="60"
               onChange={(event) => setCropZoom(Number(event.target.value))}
@@ -228,7 +228,7 @@ export function ImageUploadField({
           <label>
             Horizontal position
             <input
-              className="mt-2 w-full accent-emerald-700"
+              className="mt-2 w-full accent-[#785d25]"
               max="100"
               min="0"
               onChange={(event) => setFocusX(Number(event.target.value))}
@@ -239,7 +239,7 @@ export function ImageUploadField({
           <label>
             Vertical position
             <input
-              className="mt-2 w-full accent-emerald-700"
+              className="mt-2 w-full accent-[#785d25]"
               max="100"
               min="0"
               onChange={(event) => setFocusY(Number(event.target.value))}
@@ -261,7 +261,7 @@ export function ImageUploadField({
           <label>
             Horizontal focus
             <input
-              className="mt-2 w-full accent-emerald-700"
+              className="mt-2 w-full accent-[#785d25]"
               max="100"
               min="0"
               onChange={(event) => setFocusX(Number(event.target.value))}
@@ -272,7 +272,7 @@ export function ImageUploadField({
           <label>
             Vertical focus
             <input
-              className="mt-2 w-full accent-emerald-700"
+              className="mt-2 w-full accent-[#785d25]"
               max="100"
               min="0"
               onChange={(event) => setFocusY(Number(event.target.value))}

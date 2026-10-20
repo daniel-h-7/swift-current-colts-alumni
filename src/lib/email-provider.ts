@@ -93,16 +93,17 @@ function getRequiredSmtpEnv(): SmtpConfig {
 }
 
 function buildEmailHtml({
+  from,
   html,
   preheader,
   unsubscribeUrl,
-}: Pick<SendEmailInput, "html" | "preheader" | "unsubscribeUrl">) {
+}: Pick<SendEmailInput, "from" | "html" | "preheader" | "unsubscribeUrl">) {
   const hiddenPreheader = preheader
-    ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${preheader}</div>`
+    ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(preheader)}</div>`
     : "";
   const unsubscribeFooter = unsubscribeUrl
     ? `<div style="margin-top:14px;">
-          <a href="${escapeHtml(unsubscribeUrl)}" style="display:inline-block;border:1px solid #d4d4d8;padding:8px 12px;color:#52525b;text-decoration:none;font-weight:bold;">
+          <a href="${escapeHtml(unsubscribeUrl)}" style="display:inline-block;border:1px solid #dfcc9a;border-radius:24px;padding:10px 18px;color:#785d25;text-decoration:none;font-weight:bold;">
             Unsubscribe from emails
           </a>
         </div>`
@@ -110,15 +111,15 @@ function buildEmailHtml({
 
   return `<!doctype html>
 <html>
-  <body style="margin:0;background:#f4f4f5;padding:24px;font-family:Arial,Helvetica,sans-serif;">
+  <body style="margin:0;background:#ffffff;padding:24px;font-family:Arial,Helvetica,sans-serif;">
     ${hiddenPreheader}
-    <div style="margin:0 auto;max-width:680px;background:#ffffff;border:1px solid #e4e4e7;">
-      <div style="height:8px;background:#d71920;"></div>
-      <div style="padding:28px;color:#111827;font-size:16px;line-height:1.6;">
+    <div style="margin:0 auto;max-width:680px;background:#ffffff;border:1px solid #e9e1d1;border-radius:28px;overflow:hidden;">
+      <div style="height:6px;background:#c5a45b;border-radius:28px 28px 0 0;"></div>
+      <div style="padding:36px 28px;color:#17130d;font-size:16px;line-height:1.6;">
         ${html}
       </div>
-      <div style="border-top:1px solid #e4e4e7;padding:18px 28px;color:#6b7280;font-size:12px;">
-        Swift Current Colts Football Alumni and Booster Club
+      <div style="border-top:1px solid #e9e1d1;background:#faf7ef;padding:24px 28px;color:#62563f;font-size:12px;">
+        ${escapeHtml(from)}
         ${unsubscribeFooter}
       </div>
     </div>
@@ -154,6 +155,7 @@ function escapeHtml(value: string) {
 
 function buildSmtpMessage(input: SendEmailInput, deliveredTo: string) {
   const html = buildEmailHtml({
+    from: input.from,
     html: `<p style="margin:0 0 18px;color:#374151;"><strong>SMTP demo mode:</strong> intended recipient ${escapeHtml(input.to)}</p>${input.html}`,
     preheader: input.preheader,
     unsubscribeUrl: input.unsubscribeUrl,

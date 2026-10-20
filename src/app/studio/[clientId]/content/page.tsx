@@ -20,7 +20,7 @@ type PageSearchParams = {
 };
 
 const fieldClass =
-  "mt-2 w-full rounded-[8px] border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25";
+  "mt-2 w-full rounded-[8px] border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25";
 
 const areaClass = `${fieldClass} min-h-28`;
 
@@ -116,7 +116,7 @@ export default async function StudioContentSetupPage({
   });
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <StudioHeader
         actions={[
           ...(isHqEditing
@@ -132,7 +132,7 @@ export default async function StudioContentSetupPage({
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <form action={action} className="space-y-6" encType="multipart/form-data" method="post">
           {saved ? (
-            <div className="rounded-[8px] border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+            <div className="rounded-[8px] border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               Site content saved. Preview is updated.
             </div>
           ) : null}
@@ -142,7 +142,7 @@ export default async function StudioContentSetupPage({
             </div>
           ) : null}
           {isHqEditing ? (
-            <div className="rounded-[8px] border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+            <div className="rounded-[8px] border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               HQ admin editing this client content.
             </div>
           ) : null}
@@ -157,7 +157,7 @@ export default async function StudioContentSetupPage({
                 </p>
               </div>
               <button
-                className="rounded-full bg-slate-950 px-5 py-3 text-sm font-black uppercase text-white transition hover:bg-emerald-700"
+                className="rounded-full bg-slate-950 px-5 py-3 text-sm font-black uppercase text-white transition hover:bg-[#785d25]"
                 type="submit"
               >
                 Save Content
@@ -256,7 +256,7 @@ export default async function StudioContentSetupPage({
                 </p>
               </div>
               <Link
-                className="rounded-full border border-slate-300 px-5 py-3 text-sm font-black uppercase text-slate-700 transition hover:border-emerald-500 hover:text-emerald-700"
+                className="rounded-full border border-slate-300 px-5 py-3 text-sm font-black uppercase text-slate-700 transition hover:border-[#a18442] hover:text-[#785d25]"
                 href={previewHref}
               >
                 Preview
@@ -432,7 +432,7 @@ export default async function StudioContentSetupPage({
           </section>
 
           <button
-            className="w-full rounded-full bg-emerald-700 px-6 py-5 text-center text-sm font-black uppercase text-white shadow-sm transition hover:bg-emerald-600"
+            className="w-full rounded-full bg-[#785d25] px-6 py-5 text-center text-sm font-black uppercase text-white shadow-sm transition hover:bg-[#8b6f2f]"
             type="submit"
           >
             Save and Continue to Preview
@@ -448,7 +448,7 @@ export default async function StudioContentSetupPage({
                   className="flex gap-3 rounded-[8px] border border-slate-200 bg-slate-50 p-4"
                   key={section.label}
                 >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-xs font-black text-emerald-700">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#dfcc9a] bg-[#faf7ef] text-xs font-black text-[#785d25]">
                     {index + 1}
                   </span>
                   <div>
@@ -475,7 +475,7 @@ export default async function StudioContentSetupPage({
             </p>
             <div className="mt-5 grid gap-3">
               <Link
-                className="w-full rounded-full border border-emerald-700 bg-emerald-700 px-5 py-4 text-center font-black uppercase text-white transition hover:bg-emerald-600"
+                className="w-full rounded-full border border-[#785d25] bg-[#785d25] px-5 py-4 text-center font-black uppercase text-white transition hover:bg-[#8b6f2f]"
                 href={previewHref}
               >
                 Preview Site

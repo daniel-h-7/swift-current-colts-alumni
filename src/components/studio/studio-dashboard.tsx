@@ -113,7 +113,7 @@ export async function StudioDashboard({
     (isReviewRequested ? 1 : 0);
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <StudioHeader
         actions={[
           ...(isHqEditing ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }] : []),
@@ -128,12 +128,12 @@ export async function StudioDashboard({
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
           {isCreated ? (
-            <div className="border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+            <div className="border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               Site workspace created. Continue setup below.
             </div>
           ) : null}
           {isReviewSubmitted ? (
-            <div className="border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+            <div className="border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               Your site has been submitted to TeamAlum for launch review.
             </div>
           ) : null}
@@ -143,7 +143,7 @@ export async function StudioDashboard({
             </div>
           ) : null}
           {isHqEditing ? (
-            <div className="border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+            <div className="border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               HQ admin editing this client site. Client access remains limited
               to assigned users.
             </div>
@@ -162,7 +162,7 @@ export async function StudioDashboard({
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className="inline-flex border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+                  className="inline-flex border border-[#dfcc9a] bg-[#faf7ef] px-4 py-3 text-sm font-black text-[#785d25] transition hover:border-[#d9bd72] hover:bg-[#f1e7ce]"
                   form="feature-settings-form"
                   name="intent"
                   type="submit"
@@ -171,14 +171,14 @@ export async function StudioDashboard({
                   Save Settings
                 </button>
                 <Link
-                  className="inline-flex border border-slate-300 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700"
+                  className="inline-flex border border-slate-300 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-[#c5a45b] hover:text-[#785d25]"
                   href={previewHref}
                 >
                   Preview Site
                 </Link>
                 {isLaunchApproved ? (
                   <Link
-                    className="inline-flex border border-emerald-700 bg-emerald-700 px-4 py-3 text-sm font-black text-white transition hover:bg-emerald-600"
+                    className="inline-flex border border-[#785d25] bg-[#785d25] px-4 py-3 text-sm font-black text-white transition hover:bg-[#8b6f2f]"
                     href={liveUrl}
                   >
                     Live Site
@@ -227,7 +227,7 @@ export async function StudioDashboard({
                   Preview
                 </p>
                 <Link
-                  className="mt-2 block break-all text-sm font-black text-blue-700 hover:text-blue-600"
+                  className="mt-2 block break-all text-sm font-black text-[#785d25] hover:text-[#8b6f2f]"
                   href={previewHref}
                 >
                   {previewHref}
@@ -236,19 +236,19 @@ export async function StudioDashboard({
               <div
                 className={`border p-4 ${
                   isLaunchApproved
-                    ? "border-emerald-200 bg-emerald-50"
+                    ? "border-[#dfcc9a] bg-[#faf7ef]"
                     : "border-amber-200 bg-amber-50"
                 }`}
               >
                 <p
                   className={`text-xs font-black uppercase tracking-[0.18em] ${
-                    isLaunchApproved ? "text-emerald-700" : "text-amber-700"
+                    isLaunchApproved ? "text-[#785d25]" : "text-amber-700"
                   }`}
                 >
                   Live
                 </p>
                 <Link
-                  className="mt-2 block break-all text-sm font-black text-slate-800 hover:text-emerald-700"
+                  className="mt-2 block break-all text-sm font-black text-slate-800 hover:text-[#785d25]"
                   href={liveUrl}
                 >
                   {liveUrl}
@@ -305,7 +305,7 @@ export async function StudioDashboard({
                     </span>
                     <span
                       className={`text-xs font-black uppercase tracking-[0.16em] ${
-                        item.isComplete ? "text-emerald-700" : "text-amber-700"
+                        item.isComplete ? "text-[#785d25]" : "text-amber-700"
                       }`}
                     >
                       {item.isComplete ? "Ready" : "Needed"}
@@ -357,7 +357,7 @@ export async function StudioDashboard({
               method="post"
             >
               <button
-                className="w-full border border-blue-700 bg-blue-700 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-blue-600"
+                className="w-full border border-[#785d25] bg-[#785d25] px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-[#8b6f2f]"
                 disabled={isLaunchApproved}
                 type="submit"
               >
@@ -371,9 +371,9 @@ export async function StudioDashboard({
             <p className="mt-2 text-sm font-semibold text-slate-500">
               {completedSetup} of {setupItems.length} complete
             </p>
-            <div className="mt-4 h-2 bg-slate-100">
+            <div className="mt-4 h-2 bg-[#f5f1e8]">
               <div
-                className="h-2 bg-emerald-600"
+                className="h-2 bg-[#8b6f2f]"
                 style={{
                   width: `${Math.round((completedSetup / setupItems.length) * 100)}%`,
                 }}
@@ -389,7 +389,7 @@ export async function StudioDashboard({
                   <span
                     className={`text-xs font-black uppercase tracking-[0.16em] ${
                       index < completedSetup
-                        ? "text-emerald-700"
+                        ? "text-[#785d25]"
                         : "text-slate-400"
                     }`}
                   >
@@ -403,12 +403,12 @@ export async function StudioDashboard({
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">Payments</h2>
             <div className="mt-4 space-y-4">
-              <div className="border border-emerald-200 bg-emerald-50 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">
+              <div className="border border-[#dfcc9a] bg-[#faf7ef] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#785d25]">
                   TeamAlum Access
                 </p>
                 <p className="mt-2 text-xl font-black">$360 / year</p>
-                <p className="mt-2 text-xs font-bold leading-5 text-emerald-800">
+                <p className="mt-2 text-xs font-bold leading-5 text-[#624c22]">
                   Planned as $30/month, billed annually. If your site does not
                   raise enough to cover the fee, the site is on us.
                 </p>
@@ -428,14 +428,14 @@ export async function StudioDashboard({
                 <p
                   className={`mt-2 text-sm font-bold ${
                     stripeStatus === "connected"
-                      ? "text-emerald-700"
+                      ? "text-[#785d25]"
                       : "text-amber-700"
                   }`}
                 >
                   {stripeStatus.replaceAll("_", " ")}
                 </p>
                 <Link
-                  className="mt-4 inline-flex border border-emerald-700 bg-emerald-700 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-emerald-600"
+                  className="mt-4 inline-flex border border-[#785d25] bg-[#785d25] px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-[#8b6f2f]"
                   href={`/studio/${encodeURIComponent(client.id)}/payments`}
                 >
                   Manage Payments

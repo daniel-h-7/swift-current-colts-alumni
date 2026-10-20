@@ -11,14 +11,16 @@ export function AdminHeader({
   eyebrow,
   subtitle,
   title,
+  theme = "default",
 }: {
   actions: AdminHeaderAction[];
   eyebrow: string;
   subtitle?: string;
   title: string;
+  theme?: "default" | "paper";
 }) {
   return (
-    <header className="relative overflow-hidden border-b border-white/10 bg-zinc-950">
+    <header className={`relative overflow-hidden border-b border-white/10 bg-zinc-950 ${theme === "paper" ? "mailer-header" : ""}`}>
       <div className="absolute inset-0 premium-grid opacity-20" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8 md:flex-row md:items-end md:justify-between">

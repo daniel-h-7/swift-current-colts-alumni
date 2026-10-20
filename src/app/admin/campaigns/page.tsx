@@ -135,11 +135,11 @@ function CampaignSortHeader({
   return (
     <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
       <Link
-        className="inline-flex items-center gap-2 text-white hover:text-blue-300"
+        className="inline-flex items-center gap-2 text-[#17130d] hover:text-[#785d25]"
         href={getCampaignSortHref(filters, sortBy)}
       >
         {label}
-        <span className={isActive ? "text-blue-300" : "text-white/35"}>
+        <span className={isActive ? "text-[#785d25]" : "text-slate-400"}>
           {isActive && currentSort.sortDir === "asc" ? "^" : "v"}
         </span>
       </Link>
@@ -277,8 +277,8 @@ export default async function CampaignsPage({
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <AdminHeader
+    <main className="min-h-screen bg-white text-[#17130d]">
+      <AdminHeader theme="paper"
         actions={[
           { href: "/admin", label: "Dashboard" },
           { href: "/admin/campaigns/new", label: "New Campaign", tone: "primary" },
@@ -290,15 +290,15 @@ export default async function CampaignsPage({
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         {errorMessage ? (
-          <section className="border border-red-500/30 bg-red-950/40 p-6 font-bold text-red-200">
+          <section className="border border-red-500/30 bg-red-50 p-6 font-bold text-red-800">
             {errorMessage}
           </section>
         ) : null}
 
-        <section className="overflow-visible border border-white/10 bg-zinc-950 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+        <section className="overflow-hidden rounded-[2rem] border border-[#e9e1d1] bg-white shadow-[0_24px_80px_rgba(23,19,13,0.06)]">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10 text-left text-sm">
-              <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
+            <table className="min-w-full divide-y divide-[#e9e1d1] text-left text-sm">
+              <thead className="bg-[#faf7ef] text-[#17130d]">
                 <tr>
                   {campaignSortColumns.map((column) => (
                     <CampaignSortHeader
@@ -313,35 +313,35 @@ export default async function CampaignsPage({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-[#e9e1d1]">
                 {campaigns.map((campaign) => (
-                  <tr className="align-top hover:bg-white/[0.04]" key={campaign.id}>
+                  <tr className="align-top hover:bg-[#faf7ef]" key={campaign.id}>
                     <td className="min-w-80 px-4 py-4">
                       <Link
-                        className="font-black text-white hover:text-blue-300"
+                        className="font-black text-[#17130d] hover:text-[#785d25]"
                         href={`/admin/campaigns/${campaign.id}`}
                       >
                         {campaign.title}
                       </Link>
-                      <p className="mt-1 max-w-xl text-sm leading-6 text-gray-400">
+                      <p className="mt-1 max-w-xl text-sm leading-6 text-slate-600">
                         {campaign.description || "No description yet."}
                       </p>
                     </td>
                     <td className="whitespace-nowrap px-4 py-4">
-                      <span className="border border-red-500/20 bg-red-500/15 px-3 py-1 text-xs font-black text-red-300">
+                      <span className="rounded-full border border-[#dfcc9a] bg-[#faf7ef] px-3 py-1 text-xs font-black text-[#785d25]">
                         {campaign.status}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       <LocalDateTime
                         fallback={formatDate(campaign.created_at)}
                         value={campaign.created_at}
                       />
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       {campaign.blastCount}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       {campaign.lastSentAt ? (
                         <LocalDateTime
                           fallback={formatDate(campaign.lastSentAt)}
@@ -351,7 +351,7 @@ export default async function CampaignsPage({
                         "-"
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       <LocalDateTime
                         fallback={formatDate(campaign.lastEditedAt)}
                         value={campaign.lastEditedAt}
@@ -360,7 +360,7 @@ export default async function CampaignsPage({
                     <td className="whitespace-nowrap px-4 py-4 text-right">
                       <div className="flex flex-wrap justify-end gap-3">
                         <Link
-                          className="font-black text-blue-400 hover:text-blue-300"
+                          className="font-black text-[#785d25] hover:text-[#785d25]"
                           href={`/admin/campaigns/${campaign.id}/edit`}
                         >
                           Edit
@@ -368,7 +368,7 @@ export default async function CampaignsPage({
                         <form action={duplicateCampaign}>
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <button
-                            className="font-black text-gray-400 hover:text-white"
+                            className="font-black text-slate-600 hover:text-[#17130d]"
                             type="submit"
                           >
                             Duplicate
@@ -377,7 +377,7 @@ export default async function CampaignsPage({
                         <form action={deleteCampaign}>
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <ConfirmSubmitButton
-                            className="font-black text-red-400 hover:text-red-300"
+                            className="font-black text-red-700 hover:text-red-700"
                             message={`Delete campaign "${campaign.title}" and all of its blasts?`}
                           >
                             Delete
@@ -391,7 +391,7 @@ export default async function CampaignsPage({
                 {!campaigns.length && !errorMessage ? (
                   <tr>
                     <td
-                      className="px-4 py-12 text-center font-bold text-gray-400"
+                      className="px-4 py-12 text-center font-bold text-slate-600"
                       colSpan={7}
                     >
                       No campaigns yet.

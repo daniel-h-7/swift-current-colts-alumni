@@ -135,11 +135,11 @@ function BlastSortHeader({
   return (
     <th className="whitespace-nowrap px-4 py-4 font-black uppercase tracking-[3px]">
       <Link
-        className="inline-flex items-center gap-2 text-white hover:text-blue-300"
+        className="inline-flex items-center gap-2 text-[#17130d] hover:text-[#785d25]"
         href={getBlastSortHref(campaignId, filters, sortBy)}
       >
         {label}
-        <span className={isActive ? "text-blue-300" : "text-white/35"}>
+        <span className={isActive ? "text-[#785d25]" : "text-slate-400"}>
           {isActive && currentSort.sortDir === "asc" ? "^" : "v"}
         </span>
       </Link>
@@ -245,8 +245,8 @@ export default async function CampaignDetailPage({
   const clickRate = recipients ? Math.round((clicks / recipients) * 1000) / 10 : 0;
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <AdminHeader
+    <main className="min-h-screen bg-white text-[#17130d]">
+      <AdminHeader theme="paper"
         actions={[
           { href: "/admin/campaigns", label: "Campaigns" },
           {
@@ -269,8 +269,8 @@ export default async function CampaignDetailPage({
             ["Open Rate", `${openRate}%`],
             ["Click Rate", `${clickRate}%`],
           ].map(([label, value]) => (
-            <div className="border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,27,0.92),rgba(9,9,11,0.96))] p-5 shadow-[0_22px_70px_rgba(0,0,0,0.26)]" key={label}>
-              <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+            <div className="border border-[#e9e1d1] bg-[linear-gradient(180deg,rgba(24,24,27,0.92),rgba(9,9,11,0.96))] p-5 shadow-[0_22px_70px_rgba(0,0,0,0.26)]" key={label}>
+              <p className="text-xs font-black uppercase tracking-[3px] text-slate-500">
                 {label}
               </p>
               <p className="mt-3 text-3xl font-black">{value}</p>
@@ -278,10 +278,10 @@ export default async function CampaignDetailPage({
           ))}
         </section>
 
-        <section className="mt-6 border border-white/10 bg-zinc-950 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+        <section className="mt-6 border border-[#e9e1d1] bg-white shadow-[0_24px_80px_rgba(23,19,13,0.06)]">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10 text-left text-sm">
-              <thead className="bg-gradient-to-r from-blue-950 via-zinc-950 to-red-950 text-white">
+            <table className="min-w-full divide-y divide-[#e9e1d1] text-left text-sm">
+              <thead className="bg-[#faf7ef] text-[#17130d]">
                 <tr>
                   {blastSortColumns.map((column) => (
                     <BlastSortHeader
@@ -300,24 +300,24 @@ export default async function CampaignDetailPage({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-[#e9e1d1]">
                 {blasts.map((blast) => (
-                  <tr className="hover:bg-white/[0.04]" key={blast.id}>
+                  <tr className="hover:bg-[#faf7ef]" key={blast.id}>
                     <td className="px-4 py-4">
-                      <p className="font-black text-white">{blast.title}</p>
-                      <p className="mt-1 text-gray-400">{blast.subject}</p>
+                      <p className="font-black text-[#17130d]">{blast.title}</p>
+                      <p className="mt-1 text-slate-600">{blast.subject}</p>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.status}</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{blast.recipient_count}</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getOpenRate(blast)}%</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">{getClickRate(blast)}%</td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">{blast.status}</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">{blast.recipient_count}</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">{getOpenRate(blast)}%</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">{getClickRate(blast)}%</td>
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       <LocalDateTime
                         fallback={formatDate(blast.created_at)}
                         value={blast.created_at}
                       />
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       {blast.sent_at ? (
                         <LocalDateTime
                           fallback={formatDate(blast.sent_at)}
@@ -327,24 +327,24 @@ export default async function CampaignDetailPage({
                         "-"
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-gray-300">
+                    <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       <LocalDateTime
                         fallback={formatDate(blast.updated_at)}
                         value={blast.updated_at}
                       />
                     </td>
-                    <td className="max-w-sm px-4 py-4 text-gray-300">
+                    <td className="max-w-sm px-4 py-4 text-slate-600">
                       {summarizeAudienceFilter(blast.audience_filter)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-right">
                       <div className="flex flex-wrap justify-end gap-3">
-                        <Link className="font-black text-blue-400 hover:text-blue-300" href={`/admin/campaigns/${campaign.id}/blasts/${blast.id}`}>
+                        <Link className="font-black text-[#785d25] hover:text-[#785d25]" href={`/admin/campaigns/${campaign.id}/blasts/${blast.id}`}>
                           Edit
                         </Link>
                         <form action={duplicateBlastAction}>
                           <input name="blast_id" type="hidden" value={blast.id} />
                           <button
-                            className="font-black text-gray-400 hover:text-white"
+                            className="font-black text-slate-600 hover:text-[#17130d]"
                             type="submit"
                           >
                             Duplicate
@@ -354,7 +354,7 @@ export default async function CampaignDetailPage({
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <input name="blast_id" type="hidden" value={blast.id} />
                           <ConfirmSubmitButton
-                            className="font-black text-red-400 hover:text-red-300"
+                            className="font-black text-red-700 hover:text-red-700"
                             message={`Delete blast "${blast.title}"?`}
                           >
                             Delete
@@ -366,7 +366,7 @@ export default async function CampaignDetailPage({
                 ))}
                 {!blasts.length ? (
                   <tr>
-                    <td className="px-4 py-12 text-center font-bold text-gray-400" colSpan={10}>
+                    <td className="px-4 py-12 text-center font-bold text-slate-600" colSpan={10}>
                       No blasts yet.
                     </td>
                   </tr>

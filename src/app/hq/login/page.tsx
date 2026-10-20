@@ -38,10 +38,10 @@ export default async function HqLoginPage({
   const isConfigured = isHqPasswordConfigured();
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <section className="flex min-h-screen items-center justify-center px-6 py-12">
         <div className="w-full max-w-md border border-slate-200 bg-white p-8 shadow-xl">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-700">
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-[#785d25]">
             TeamAlum HQ
           </p>
           <h1 className="mt-3 text-4xl font-black">Admin Login</h1>
@@ -66,7 +66,7 @@ export default async function HqLoginPage({
             <label className="text-sm font-bold text-slate-700">
               Password
               <input
-                className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                 name="password"
                 required
                 type="password"
@@ -74,7 +74,7 @@ export default async function HqLoginPage({
             </label>
 
             <button
-              className="mt-6 w-full border border-blue-700 bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 w-full border border-[#785d25] bg-[#785d25] px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-[#8b6f2f] disabled:cursor-not-allowed disabled:opacity-60"
               disabled={!isConfigured}
               type="submit"
             >

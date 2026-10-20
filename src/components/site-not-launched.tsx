@@ -12,7 +12,7 @@ export function SiteNotLaunched({
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <section className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-16">
-        <p className="text-xs font-black uppercase tracking-[0.28em] text-emerald-300">
+        <p className="text-xs font-black uppercase tracking-[0.28em] text-[#d9bd72]">
           TeamAlum site pending launch
         </p>
         <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">
@@ -25,7 +25,7 @@ export function SiteNotLaunched({
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            className="border border-emerald-400 bg-emerald-400 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-emerald-300"
+            className="border border-[#c5a45b] bg-[#c5a45b] px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-[#d9bd72]"
             href="/studio/login"
           >
             Studio Login

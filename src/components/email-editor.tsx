@@ -3,13 +3,13 @@
 import { ChangeEvent, MouseEvent, useRef, useState } from "react";
 
 const buttonClass =
-  "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-black text-gray-200 hover:border-blue-500 hover:text-white";
+  "rounded-full border border-[#e9e1d1] bg-[#faf7ef] px-3 py-2 text-sm font-black text-slate-700 hover:border-[#a18442] hover:text-[#17130d]";
 
 const selectClass =
-  "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200 outline-none hover:border-blue-500 focus:border-blue-500";
+  "rounded-full border border-[#e9e1d1] bg-[#faf7ef] px-3 py-2 text-sm font-bold text-slate-700 outline-none hover:border-[#a18442] focus:border-[#a18442]";
 
 const colorInputClass =
-  "h-10 w-12 cursor-pointer rounded-xl border border-white/10 bg-white/[0.04] p-1";
+  "h-10 w-12 cursor-pointer rounded-full border border-[#e9e1d1] bg-[#faf7ef] p-1";
 
 export function EmailEditor({
   defaultValue,
@@ -143,7 +143,7 @@ export function EmailEditor({
     const style =
       level === "large"
         ? "margin:0 0 16px;font-size:34px;line-height:1.05;font-weight:900;color:#0f172a;"
-        : "margin:0 0 14px;font-size:24px;line-height:1.2;font-weight:800;color:#1d4ed8;";
+        : "margin:0 0 14px;font-size:24px;line-height:1.2;font-weight:800;color:#785d25;";
 
     insertHtml(`<${tag} style="${style}">${text}</${tag}><p><br></p>`);
   }
@@ -166,7 +166,7 @@ export function EmailEditor({
     if (url) {
       const text = getSelectedText() || url;
       insertHtml(
-        `<a href="${url}" style="color:#1d4ed8;font-weight:700;text-decoration:underline;">${text}</a>`,
+        `<a href="${url}" style="color:#785d25;font-weight:700;text-decoration:underline;">${text}</a>`,
       );
     }
   }
@@ -248,7 +248,7 @@ export function EmailEditor({
     <div>
       <input name={name} type="hidden" value={html} />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 rounded-3xl bg-[#faf7ef] p-3">
         <button
           className={buttonClass}
           onMouseDown={keepEditorSelection}
@@ -313,7 +313,7 @@ export function EmailEditor({
         >
           Upload Image (max 600px)
         </button>
-        <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200">
+        <label className="flex items-center gap-2 rounded-full border border-[#e9e1d1] bg-[#faf7ef] px-3 py-2 text-sm font-bold text-slate-700">
           Text
           <input
             className={colorInputClass}
@@ -325,11 +325,11 @@ export function EmailEditor({
             type="color"
           />
         </label>
-        <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-200">
+        <label className="flex items-center gap-2 rounded-full border border-[#e9e1d1] bg-[#faf7ef] px-3 py-2 text-sm font-bold text-slate-700">
           Highlight
           <input
             className={colorInputClass}
-            defaultValue="#fef08a"
+            defaultValue="#f1e7ce"
             onChange={(event) =>
               applyInlineStyle(`background-color:${event.target.value};`)
             }
@@ -406,9 +406,12 @@ export function EmailEditor({
         />
       </div>
 
-      <div className="mt-4 rounded-3xl border border-white/10 bg-white p-4 text-slate-950">
+      <div className="mt-4 rounded-3xl border border-[#e9e1d1] bg-white p-4 text-slate-950">
         <div
-          className="mx-auto min-h-96 max-w-[600px] rounded-2xl border border-slate-200 bg-white p-6 leading-7 outline-none"
+          className="mx-auto min-h-96 max-w-[600px] bg-white p-6 leading-7 outline-none"
+          aria-label="Email body editor"
+          role="textbox"
+          aria-multiline="true"
           contentEditable
           dangerouslySetInnerHTML={{ __html: defaultValue }}
           onBlur={saveEditorRange}

@@ -14,7 +14,7 @@ type NewClientSearchParams = {
 };
 
 const fieldClass =
-  "mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25";
+  "mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25";
 
 export default async function NewHqClientPage({
   searchParams,
@@ -28,7 +28,7 @@ export default async function NewHqClientPage({
   const params = await searchParams;
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <HqHeader
         actions={[
           { href: "/hq", label: "Clients" },
@@ -160,7 +160,7 @@ export default async function NewHqClientPage({
                 </label>
                 <label className="flex items-center gap-3 border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 md:col-span-2">
                   <input
-                    className="h-5 w-5 accent-blue-700"
+                    className="h-5 w-5 accent-[#785d25]"
                     defaultChecked
                     name="join_is_open"
                     type="checkbox"
@@ -185,7 +185,7 @@ export default async function NewHqClientPage({
                     <span className="flex items-center justify-between gap-3 text-sm font-black text-slate-800">
                       {getFeatureLabel(feature.feature_key)}
                       <input
-                        className="h-5 w-5 accent-blue-700"
+                        className="h-5 w-5 accent-[#785d25]"
                         defaultChecked={feature.is_enabled}
                         name={`feature:${feature.feature_key}`}
                         type="checkbox"
@@ -205,7 +205,7 @@ export default async function NewHqClientPage({
                 This seeds the client, default CRM settings, and feature flags.
               </p>
               <button
-                className="mt-5 w-full border border-blue-700 bg-blue-700 px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-blue-600"
+                className="mt-5 w-full border border-[#785d25] bg-[#785d25] px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-[#8b6f2f]"
                 type="submit"
               >
                 Create Client

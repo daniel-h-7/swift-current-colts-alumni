@@ -31,7 +31,7 @@ export function ColorSettingField({
   return (
     <label className="text-sm font-bold text-slate-700">
       {label}
-      <div className="mt-2 grid grid-cols-[56px_minmax(0,1fr)] border border-slate-300 bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/25">
+      <div className="mt-2 grid grid-cols-[56px_minmax(0,1fr)] border border-slate-300 bg-white focus-within:border-[#a18442] focus-within:ring-2 focus-within:ring-[#a18442]/25">
         <input
           aria-label={`${label} picker`}
           className="h-full min-h-12 w-full border-r border-slate-300 bg-white p-1"

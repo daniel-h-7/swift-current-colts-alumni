@@ -38,9 +38,9 @@ function Toggle({
         type="checkbox"
       />
       <span
-        className={`relative block h-7 w-12 border transition peer-checked:border-emerald-600 peer-checked:bg-emerald-600 ${
+        className={`relative block h-7 w-12 border transition peer-checked:border-[#8b6f2f] peer-checked:bg-[#8b6f2f] ${
           checked
-            ? "border-emerald-600 bg-emerald-600"
+            ? "border-[#8b6f2f] bg-[#8b6f2f]"
             : "border-slate-300 bg-slate-200"
         } ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
       >
@@ -182,7 +182,7 @@ export function FeatureSettingsForm({
               Turn site sections on or off for this client.
             </p>
           </div>
-          <span className="border border-emerald-200 bg-emerald-50 px-3 py-3 text-xs font-black uppercase tracking-[0.16em] text-emerald-700">
+          <span className="border border-[#dfcc9a] bg-[#faf7ef] px-3 py-3 text-xs font-black uppercase tracking-[0.16em] text-[#785d25]">
             Live Controls
           </span>
         </div>
@@ -268,7 +268,7 @@ export function FeatureSettingsForm({
                   {getSectionLabel(section.section_key)}
                 </span>
               </div>
-              <span className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-black uppercase text-emerald-700">
+              <span className="rounded-full bg-[#faf7ef] px-3 py-2 text-xs font-black uppercase text-[#785d25]">
                 Enabled
               </span>
             </div>
@@ -292,7 +292,7 @@ export function FeatureSettingsForm({
       </section>
 
       <button
-        className="w-full border border-emerald-700 bg-emerald-700 px-6 py-5 text-center text-sm font-black uppercase tracking-[0.2em] text-white shadow-sm transition hover:bg-emerald-600"
+        className="w-full border border-[#785d25] bg-[#785d25] px-6 py-5 text-center text-sm font-black uppercase tracking-[0.2em] text-white shadow-sm transition hover:bg-[#8b6f2f]"
         name="intent"
         type="submit"
         value="continue"

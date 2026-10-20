@@ -18,10 +18,10 @@ export function HqHeader({
   title: string;
 }) {
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="studio-gold-header border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-7 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-700">
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-[#785d25]">
             {eyebrow}
           </p>
           <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
@@ -34,12 +34,12 @@ export function HqHeader({
           ) : null}
         </div>
 
-        <nav className="flex flex-wrap border border-slate-200 bg-slate-50 text-sm font-bold text-slate-700 shadow-sm">
+        <nav className="flex flex-wrap overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-sm font-bold text-slate-700 shadow-sm">
           {actions.map((action) => (
             <Link
               className={`border-r border-slate-200 px-4 py-3 transition last:border-r-0 ${
                 action.tone === "primary"
-                  ? "bg-blue-700 text-white hover:bg-blue-600"
+                  ? "bg-[#17130d] text-[#f8f1df] hover:bg-[#362b19]"
                   : action.tone === "danger"
                     ? "bg-red-600 text-white hover:bg-red-500"
                     : "hover:bg-white hover:text-slate-950"

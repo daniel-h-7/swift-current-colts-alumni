@@ -154,7 +154,7 @@ export default async function HqClientPage({
   const previewUrl = `/preview/${encodeURIComponent(client.id)}`;
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <HqHeader
         actions={[
           { href: "/hq", label: "Clients" },
@@ -169,7 +169,7 @@ export default async function HqClientPage({
 
       <section className="mx-auto max-w-7xl px-6 py-8">
         {query.saved === "1" ? (
-          <div className="mb-6 border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+          <div className="mb-6 border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
             Client settings saved.
           </div>
         ) : null}
@@ -218,7 +218,7 @@ export default async function HqClientPage({
                 Preview URL
               </p>
               <a
-                className="mt-2 block break-all text-sm font-black text-blue-700 hover:text-blue-600"
+                className="mt-2 block break-all text-sm font-black text-[#785d25] hover:text-[#8b6f2f]"
                 href={previewUrl}
               >
                 {previewUrl}
@@ -227,19 +227,19 @@ export default async function HqClientPage({
             <div
               className={`border p-4 ${
                 isLaunchApproved
-                  ? "border-emerald-200 bg-emerald-50"
+                  ? "border-[#dfcc9a] bg-[#faf7ef]"
                   : "border-amber-200 bg-amber-50"
               }`}
             >
               <p
                 className={`text-xs font-black uppercase tracking-[0.22em] ${
-                  isLaunchApproved ? "text-emerald-700" : "text-amber-700"
+                  isLaunchApproved ? "text-[#785d25]" : "text-amber-700"
                 }`}
               >
                 Live TeamAlum URL
               </p>
               <a
-                className="mt-2 block break-all text-sm font-black text-slate-800 hover:text-emerald-700"
+                className="mt-2 block break-all text-sm font-black text-slate-800 hover:text-[#785d25]"
                 href={liveUrl}
               >
                 {liveUrl}
@@ -270,7 +270,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Client ID
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-slate-100 px-4 py-3 font-mono text-slate-500"
+                    className="mt-2 w-full border border-slate-300 bg-[#f5f1e8] px-4 py-3 font-mono text-slate-500"
                     disabled
                     value={client.id}
                   />
@@ -278,7 +278,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Site Variant
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="site_variant"
                     required
                     defaultValue={client.site_variant}
@@ -287,7 +287,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Client Name
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="name"
                     required
                     defaultValue={client.name}
@@ -296,7 +296,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   TeamAlum URL
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-slate-100 px-4 py-3 text-slate-500"
+                    className="mt-2 w-full border border-slate-300 bg-[#f5f1e8] px-4 py-3 text-slate-500"
                     disabled
                     value={`${client.subdomain || client.id}.teamalum.com`}
                   />
@@ -304,7 +304,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Subdomain
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="subdomain"
                     placeholder="club"
                     defaultValue={client.subdomain ?? ""}
@@ -313,7 +313,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Plan
                   <select
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="plan_key"
                     defaultValue={client.plan_key ?? "starter"}
                   >
@@ -325,7 +325,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Client Status
                   <select
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="status"
                     defaultValue={client.status ?? "active"}
                   >
@@ -338,7 +338,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700 md:col-span-2">
                   Support Notes
                   <textarea
-                    className="mt-2 min-h-24 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 min-h-24 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="support_notes"
                     defaultValue={client.support_notes ?? ""}
                   />
@@ -352,7 +352,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Annual Membership Amount
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     min="0"
                     name="annual_membership_amount"
                     step="0.01"
@@ -363,7 +363,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700">
                   Renewal Deadline
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="renewal_deadline"
                     type="date"
                     defaultValue={settings?.renewal_deadline ?? ""}
@@ -372,7 +372,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700 md:col-span-2">
                   Membership Year Label
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="membership_year_label"
                     required
                     defaultValue={
@@ -383,7 +383,7 @@ export default async function HqClientPage({
                 </label>
                 <label className="flex items-center gap-3 border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 md:col-span-2">
                   <input
-                    className="h-5 w-5 accent-blue-700"
+                    className="h-5 w-5 accent-[#785d25]"
                     name="join_is_open"
                     type="checkbox"
                     defaultChecked={settings?.join_is_open ?? true}
@@ -393,7 +393,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700 md:col-span-2">
                   Join Headline
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="join_headline"
                     required
                     defaultValue={settings?.join_headline ?? "Help build the legacy."}
@@ -402,7 +402,7 @@ export default async function HqClientPage({
                 <label className="text-sm font-bold text-slate-700 md:col-span-2">
                   Join Body
                   <textarea
-                    className="mt-2 min-h-28 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 min-h-28 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="join_body"
                     required
                     defaultValue={
@@ -422,13 +422,13 @@ export default async function HqClientPage({
                 <div
                   className={`border p-4 ${
                     isLaunchApproved
-                      ? "border-emerald-200 bg-emerald-50"
+                      ? "border-[#dfcc9a] bg-[#faf7ef]"
                       : "border-amber-200 bg-amber-50"
                   }`}
                 >
                   <p
                     className={`text-xs font-black uppercase tracking-[0.18em] ${
-                      isLaunchApproved ? "text-emerald-700" : "text-amber-700"
+                      isLaunchApproved ? "text-[#785d25]" : "text-amber-700"
                     }`}
                   >
                     Launch Approval
@@ -477,7 +477,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   Client Stripe Status
                   <select
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="integration:stripe_connect:status"
                     defaultValue={stripeStatus}
                   >
@@ -491,7 +491,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   Client Stripe Account ID
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="integration:stripe_connect:external_account_id"
                     placeholder="acct_..."
                     defaultValue={stripeAccountId}
@@ -500,7 +500,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   TeamAlum Email Status
                   <select
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="integration:resend:status"
                     defaultValue={resendStatus}
                   >
@@ -526,7 +526,7 @@ export default async function HqClientPage({
                   >
                     <span>{getFeatureLabel(feature.feature_key)}</span>
                     <input
-                      className="h-5 w-5 accent-blue-700"
+                      className="h-5 w-5 accent-[#785d25]"
                       defaultChecked={feature.is_enabled}
                       name={`feature:${feature.feature_key}`}
                       type="checkbox"
@@ -542,7 +542,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   From Name
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_from_name"
                     required
                     defaultValue={settings?.email_from_name ?? "TeamAlum"}
@@ -551,7 +551,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   From Address
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_from_address"
                     required
                     type="email"
@@ -561,7 +561,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   Reply-To
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_reply_to"
                     type="email"
                     defaultValue={settings?.email_reply_to ?? ""}
@@ -570,7 +570,7 @@ export default async function HqClientPage({
                 <label className="block text-sm font-bold text-slate-700">
                   Sending Domain
                   <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25"
+                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_sending_domain"
                     placeholder="mg.example.com"
                     defaultValue={settings?.email_sending_domain ?? ""}
@@ -586,7 +586,7 @@ export default async function HqClientPage({
                 tables for this tenant.
               </p>
               <button
-                className="mt-5 w-full border border-blue-700 bg-blue-700 px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-blue-600"
+                className="mt-5 w-full border border-[#785d25] bg-[#785d25] px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-[#8b6f2f]"
                 name="intent"
                 type="submit"
                 value="save"
@@ -604,7 +604,7 @@ export default async function HqClientPage({
                 </button>
               ) : (
                 <button
-                  className="mt-3 w-full border border-emerald-700 bg-emerald-700 px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-600"
+                  className="mt-3 w-full border border-[#785d25] bg-[#785d25] px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-[#8b6f2f]"
                   name="intent"
                   type="submit"
                   value="approve_launch"

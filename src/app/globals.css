@@ -272,3 +272,13 @@ body {
 .studio-gold-header p { color: #d9bd72; }
 .studio-gold-header nav { background: #f5f1e8; border-color: #c5a45b; color: #17130d; }
 .membership-thanks-script { font-family: "Snell Roundhand", "Brush Script MT", "Segoe Script", cursive; font-style: italic; }
+
+.mailer-header { background: #fff; border-color: #e9e1d1; color: #17130d; }
+.mailer-header .premium-grid { display: none; }
+.mailer-header .program-kicker { color: #785d25; }
+.mailer-header p { color: #62563f; }
+.mailer-header > div:nth-child(2) { background: #c5a45b; }
+.mailer-header .flex.flex-wrap { border-radius: 999px; overflow: hidden; background: #faf7ef; border-color: #e9e1d1; box-shadow: none; color: #17130d; }
+.mailer-header a { border-color: #e9e1d1; }
+.mailer-header a:hover { color: #17130d; background: #f1e7ce; }
+.mailer-header a.bg-blue-700 { background: #17130d; color: #fff; }

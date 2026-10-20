@@ -21,7 +21,7 @@ type PageSearchParams = {
 
 function getStatusTone(status: string) {
   if (status === "connected") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-800";
+    return "border-[#dfcc9a] bg-[#faf7ef] text-[#624c22]";
   }
 
   if (status === "needs_attention") {
@@ -64,7 +64,7 @@ export default async function StudioPaymentsPage({
   const accountId = stripeIntegration?.external_account_id;
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <StudioHeader
         actions={[
           ...(isHqEditing
@@ -87,13 +87,13 @@ export default async function StudioPaymentsPage({
           ) : null}
 
           {query.stripe_returned === "1" ? (
-            <div className="border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+            <div className="border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               Stripe setup checked. If Stripe still needs information, continue
               onboarding below.
             </div>
           ) : null}
           {isHqEditing ? (
-            <div className="border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-700">
+            <div className="border border-[#dfcc9a] bg-[#faf7ef] p-4 text-sm font-bold text-[#785d25]">
               HQ admin viewing this client payment setup. Stripe onboarding
               should still be completed by the client owner.
             </div>
@@ -145,7 +145,7 @@ export default async function StudioPaymentsPage({
               method="post"
             >
               <button
-                className="w-full border border-emerald-700 bg-emerald-700 px-6 py-5 text-sm font-black uppercase tracking-[0.22em] text-white transition hover:bg-emerald-600 md:w-auto"
+                className="w-full border border-[#785d25] bg-[#785d25] px-6 py-5 text-sm font-black uppercase tracking-[0.22em] text-white transition hover:bg-[#8b6f2f] md:w-auto"
                 type="submit"
               >
                 {stripeStatus === "connected"
@@ -169,7 +169,7 @@ export default async function StudioPaymentsPage({
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">Next</h2>
             <Link
-              className="mt-5 inline-flex w-full justify-center border border-slate-300 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700"
+              className="mt-5 inline-flex w-full justify-center border border-slate-300 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:border-[#c5a45b] hover:text-[#785d25]"
               href={`/studio/${encodeURIComponent(client.id)}`}
             >
               Back to Builder
