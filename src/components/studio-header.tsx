@@ -10,13 +10,15 @@ export function StudioHeader({
   actions,
   subtitle,
   title,
+  theme = "default",
 }: {
   actions: StudioHeaderAction[];
   subtitle?: string;
   title: string;
+  theme?: "default" | "gold";
 }) {
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className={`border-b border-slate-200 bg-white ${theme === "gold" ? "studio-gold-header" : ""}`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-7 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.28em] text-emerald-700">

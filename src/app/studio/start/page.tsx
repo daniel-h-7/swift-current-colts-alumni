@@ -12,7 +12,7 @@ type StartSearchParams = {
 };
 
 const fieldClass =
-  "mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25";
+  "mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#c5a45b] focus:ring-2 focus:ring-[#c5a45b]/25";
 
 export default async function StudioStartPage({
   searchParams,
@@ -24,8 +24,9 @@ export default async function StudioStartPage({
 
   if (!isUnlocked) {
     return (
-      <main className="min-h-screen bg-slate-100 text-slate-950">
+      <main className="min-h-screen bg-[#f5f1e8] text-[#17130d]">
         <StudioHeader
+          theme="gold"
           actions={[
             { href: "/", label: "TeamAlum" },
             { href: "/studio/login", label: "Log In" },
@@ -35,8 +36,8 @@ export default async function StudioStartPage({
         />
 
         <section className="mx-auto grid max-w-5xl gap-6 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="text-sm font-black uppercase text-emerald-700">
+          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="text-sm font-black uppercase text-[#8b6f2f]">
               Coming Soon
             </p>
             <h1 className="mt-4 text-4xl font-black leading-tight md:text-6xl">
@@ -48,21 +49,21 @@ export default async function StudioStartPage({
               and manage their TeamAlum site.
             </p>
             <Link
-              className="mt-7 inline-flex rounded-full bg-slate-950 px-6 py-4 text-sm font-black uppercase text-white transition hover:bg-emerald-700"
+              className="mt-7 inline-flex rounded-full bg-slate-950 px-6 py-4 text-sm font-black uppercase text-white transition hover:bg-[#8b6f2f]"
               href="/studio/login"
             >
               Log In to Studio
             </Link>
           </div>
 
-          <aside className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+          <aside className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">Private Beta</h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
               Have the early access password? Unlock the site creation form.
             </p>
 
             {params.error ? (
-              <div className="mt-5 rounded-[8px] border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
+              <div className="mt-5 rounded-3xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
                 {params.error}
               </div>
             ) : null}
@@ -78,7 +79,7 @@ export default async function StudioStartPage({
                 />
               </label>
               <button
-                className="mt-4 w-full rounded-full border border-emerald-700 bg-emerald-700 px-5 py-4 font-black uppercase text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-500"
+                className="mt-4 w-full rounded-full border border-[#c5a45b] bg-[#c5a45b] px-5 py-4 font-black uppercase text-[#17130d] transition hover:bg-[#d6bb73] disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-500"
                 disabled={!isStudioStartPasswordConfigured()}
                 type="submit"
               >
@@ -92,8 +93,9 @@ export default async function StudioStartPage({
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen bg-[#f5f1e8] text-[#17130d]">
       <StudioHeader
+          theme="gold"
         actions={[
           { href: "/", label: "TeamAlum" },
           { href: "/studio/login", label: "Log In" },
@@ -105,7 +107,7 @@ export default async function StudioStartPage({
       <section className="mx-auto grid max-w-6xl gap-6 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <form
           action="/studio/create-site"
-          className="border border-slate-200 bg-white p-6 shadow-sm"
+          className="rounded-3xl border border-[#c5a45b]/30 bg-white/75 p-6 shadow-sm"
           method="post"
         >
           <h2 className="text-xl font-black">Organization</h2>
@@ -133,7 +135,7 @@ export default async function StudioStartPage({
 
             <label className="text-sm font-bold text-slate-700">
               Site URL
-              <div className="mt-2 flex border border-slate-300 bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/25">
+              <div className="mt-2 flex border border-slate-300 bg-white focus-within:border-[#c5a45b] focus-within:ring-2 focus-within:ring-[#c5a45b]/25">
                 <input
                   className="min-w-0 flex-1 bg-transparent px-4 py-3 text-slate-950 outline-none"
                   name="subdomain"
@@ -200,7 +202,7 @@ export default async function StudioStartPage({
           </div>
 
           <button
-            className="mt-6 w-full border border-emerald-700 bg-emerald-700 px-5 py-4 font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-600"
+            className="mt-6 w-full border border-[#c5a45b] bg-[#c5a45b] px-5 py-4 font-black uppercase tracking-[0.2em] text-[#17130d] transition hover:bg-[#d6bb73]"
             type="submit"
           >
             Create Site
@@ -208,7 +210,7 @@ export default async function StudioStartPage({
         </form>
 
         <aside className="space-y-6">
-          <section className="border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="rounded-3xl border border-[#c5a45b]/30 bg-white/75 p-6 shadow-sm">
             <h2 className="text-lg font-black">What Happens Next</h2>
             <div className="mt-5 space-y-3">
             {[
@@ -222,7 +224,7 @@ export default async function StudioStartPage({
                   className="flex gap-3 border border-slate-200 bg-slate-50 p-4"
                   key={item}
                 >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-emerald-200 bg-emerald-50 text-xs font-black text-emerald-700">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-[#c5a45b] bg-[#f8f1df] text-xs font-black text-[#8b6f2f]">
                     {index + 1}
                   </span>
                   <p className="pt-1 text-sm font-bold text-slate-700">{item}</p>
@@ -231,14 +233,14 @@ export default async function StudioStartPage({
             </div>
           </section>
 
-          <section className="border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="rounded-3xl border border-[#c5a45b]/30 bg-white/75 p-6 shadow-sm">
             <h2 className="text-lg font-black">Simple Pricing</h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
               TeamAlum is planned at $30/month, billed annually at $360. If the
               site does not raise enough to cover the fee, the site is on us.
             </p>
             <Link
-              className="mt-5 inline-flex border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-black text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+              className="mt-5 inline-flex border border-[#c5a45b] bg-[#f8f1df] px-4 py-3 text-sm font-black text-[#8b6f2f] transition hover:border-[#8b6f2f] hover:bg-[#efe3c7]"
               href="/studio/login"
             >
               Log In Later

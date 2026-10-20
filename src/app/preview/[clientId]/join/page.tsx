@@ -99,7 +99,7 @@ export default async function ClientPreviewJoinPage({
 
         <div className="relative z-10 mx-auto flex max-w-6xl flex-col px-6 pb-12">
           <div className="grid flex-1 gap-10 py-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-            <div className="border-l border-white/10 pl-6 lg:pt-8">
+            <div className="lg:pt-8">
               <p
                 className="text-sm font-black uppercase tracking-[0.28em]"
                 style={{ color: brand.accentColor }}
@@ -114,14 +114,14 @@ export default async function ClientPreviewJoinPage({
                 site is approved for public launch.
               </p>
 
-              <div className="mt-7 border border-white/10 bg-zinc-950/80 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.36)]">
-                <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+              <div className="mt-9 border-t border-white/25 pt-6">
+                <p className="text-xs font-black uppercase tracking-[3px] text-gray-300">
                   Annual Membership
                 </p>
                 <p className="mt-2 text-3xl font-black text-white">
                   {formatMembershipAmount(settings)}
                 </p>
-                <p className="mt-3 text-xs leading-5 text-gray-500">
+                <p className="mt-3 text-xs leading-5 text-gray-300">
                   Renews each year on the subscription date until opted out.
                 </p>
               </div>

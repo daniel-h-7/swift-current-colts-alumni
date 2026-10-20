@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteAdminLink } from "@/components/site-admin-link";
 import { EventsSlider } from "@/components/events-slider";
 import { JoinForm } from "@/components/join-form";
 import { SiteNotLaunched } from "@/components/site-not-launched";
@@ -100,7 +101,7 @@ export async function ClientSitePublic({
           />
           <div className="absolute inset-0 premium-grid opacity-25" />
 
-          <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+          <header className="relative z-10 mx-auto flex max-w-7xl flex-wrap gap-4 items-center justify-between px-6 py-6">
             <Link className="flex items-center gap-3" href="/">
               {brand.logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -124,28 +125,33 @@ export async function ClientSitePublic({
               )}
               <span className="font-black">{brand.siteTitle}</span>
             </Link>
+            <div className="flex flex-wrap items-center justify-end gap-3">
+            <SiteAdminLink />
             <Link
               className="rounded-full border border-white/15 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
               href="/"
             >
               Back Home
             </Link>
+            </div>
           </header>
 
           <div className="relative z-10 mx-auto flex max-w-6xl flex-col px-6 pb-12">
             <div className="grid flex-1 gap-10 py-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-              <div className="border-l border-white/10 pl-6 lg:pt-8">
+              <div className="lg:pt-8">
                 <p className="program-kicker" style={kickerStyle}>
                   {settings.membership_year_label}
                 </p>
-                <div className="mt-7 border border-white/10 bg-zinc-950/80 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.36)]">
-                  <p className="text-xs font-black uppercase tracking-[3px] text-gray-500">
+                <h1 className="mt-6 text-5xl font-black leading-[0.95] tracking-tight md:text-6xl">Your story.<br /><span className="font-serif italic font-normal">Our next chapter.</span></h1>
+                <p className="mt-6 max-w-sm text-lg leading-8 text-gray-300">Stay connected to the people, the memories, and the program. Help build what comes next.</p>
+                <div className="mt-9 border-t border-white/25 pt-6">
+                  <p className="text-xs font-black uppercase tracking-[3px] text-gray-300">
                     Annual Membership
                   </p>
-                  <p className="mt-2 text-3xl font-black text-white">
+                  <p className="mt-2 text-5xl font-black text-white">
                     {formatMembershipAmount(settings)}
                   </p>
-                  <p className="mt-3 text-xs leading-5 text-gray-500">
+                  <p className="mt-3 text-xs leading-5 text-gray-300">
                     Renews each year on the subscription date until opted out.
                   </p>
                   {!settings.join_is_open ? (
@@ -196,7 +202,7 @@ export async function ClientSitePublic({
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/72 to-black" />
         <div className="absolute inset-0 premium-grid opacity-30" />
 
-        <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <header className="relative z-10 mx-auto flex max-w-7xl flex-wrap gap-4 items-center justify-between px-6 py-6">
           <Link className="flex items-center gap-3" href="/">
             {brand.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -221,6 +227,7 @@ export async function ClientSitePublic({
             <span className="font-black">{brand.siteTitle}</span>
           </Link>
 
+          <div className="flex flex-wrap items-center justify-end gap-5">
           <nav className="hidden gap-5 text-sm font-black uppercase text-gray-300 md:flex">
             {visibleSections.some((section) => section.section_key === "sponsors") ? (
               <a href="#sponsors">Sponsors</a>
@@ -232,6 +239,8 @@ export async function ClientSitePublic({
               <Link href={joinPath}>Join</Link>
             ) : null}
           </nav>
+          <SiteAdminLink />
+          </div>
         </header>
 
         <div className="relative z-10 mx-auto flex min-h-[62vh] max-w-5xl items-center justify-center px-6 text-center">
@@ -361,7 +370,7 @@ export async function ClientSitePublic({
                               <p className="text-3xl font-black text-white">
                                 {campaign.raisedLabel}
                               </p>
-                              <p className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-gray-500">
+                              <p className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-gray-300">
                                 {campaign.goalLabel}
                               </p>
                             </div>

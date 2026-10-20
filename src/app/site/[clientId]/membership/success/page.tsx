@@ -1,3 +1,5 @@
+import { MembershipThanks } from "@/components/membership-thanks";
+import { SiteAdminLink } from "@/components/site-admin-link";
 import Link from "next/link";
 import { SiteNotLaunched } from "@/components/site-not-launched";
 import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
@@ -30,6 +32,7 @@ export default async function ClientMembershipSuccessPage({
       style={{ backgroundColor: brand.secondaryColor }}
     >
       <section className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-16 text-center">
+        <MembershipThanks logoUrl={brand.logoUrl} name={brand.siteTitle} />
         <p
           className="text-xs font-black uppercase tracking-[0.28em]"
           style={{ color: brand.accentColor }}
@@ -58,6 +61,7 @@ export default async function ClientMembershipSuccessPage({
             Join Page
           </Link>
         </div>
+        <div className="mt-10"><SiteAdminLink /></div>
       </section>
     </main>
   );

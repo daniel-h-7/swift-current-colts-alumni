@@ -265,3 +265,10 @@ body {
     transform: translateX(calc(-50% - 0.5rem));
   }
 }
+
+/* Start-page palette follows the public TeamAlum homepage. */
+.studio-gold-header { background: #17130d; border-color: #c5a45b; }
+.studio-gold-header h1 { color: #f8f1df; }
+.studio-gold-header p { color: #d9bd72; }
+.studio-gold-header nav { background: #f5f1e8; border-color: #c5a45b; color: #17130d; }
+.membership-thanks-script { font-family: "Snell Roundhand", "Brush Script MT", "Segoe Script", cursive; font-style: italic; }

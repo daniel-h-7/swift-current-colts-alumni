@@ -46,7 +46,7 @@ function getClientRewritePath(clientId: string, pathname: string) {
     return `/site/${clientId}/join`;
   }
 
-  if (pathname === "/membership/success") {
+  if ((pathname === "/membership/success" || pathname === "/success")) {
     return `/site/${clientId}/membership/success`;
   }
 

@@ -1,3 +1,4 @@
+import { MembershipThanks } from "@/components/membership-thanks";
 import Image from "next/image";
 import Link from "next/link";
 import { PublicNav } from "@/components/public-nav";
@@ -25,7 +26,8 @@ export default function MembershipSuccessPage() {
         <PublicNav compact />
 
         <div className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] max-w-7xl items-center justify-center px-6 pb-12">
-          <div className="w-full max-w-2xl border border-white/10 bg-zinc-950/90 p-8 text-center shadow-[0_28px_90px_rgba(0,0,0,0.42)]">
+          <div className="w-full max-w-2xl rounded-[2rem] bg-zinc-950/75 p-8 text-center shadow-[0_28px_90px_rgba(0,0,0,0.42)]">
+            <MembershipThanks logoUrl={brand.heroMarkImage || brand.navLogoImage} name={brand.programName} />
             <p className="program-kicker">
               Success!
             </p>

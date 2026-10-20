@@ -1,3 +1,4 @@
+import { SiteAdminLink } from "@/components/site-admin-link";
 import Image from "next/image";
 import Link from "next/link";
 import { getSiteBrand } from "@/lib/site-brand";
@@ -13,7 +14,7 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
 
   return (
     <nav
-      className={`relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 ${
+      className={`relative z-20 mx-auto flex max-w-7xl flex-wrap gap-4 items-center justify-between px-6 ${
         compact ? "py-5" : "py-6"
       }`}
     >
@@ -59,6 +60,7 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
         </span>
       </Link>
 
+      <div className="flex flex-wrap items-center justify-end gap-3">
       <div className="hidden items-center border border-white/10 bg-black/45 text-[11px] font-black uppercase tracking-[2px] text-gray-300 shadow-[0_18px_60px_rgba(0,0,0,0.32)] backdrop-blur md:flex">
         <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#sponsors">
           Sponsors
@@ -71,12 +73,11 @@ export function PublicNav({ compact = false }: { compact?: boolean }) {
         <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-white/10 hover:text-white" href="/#events">
           Events
         </Link>
-        <Link className="border-r border-white/10 px-4 py-3 transition hover:bg-blue-950/50 hover:text-white" href="/admin">
-          Admin
-        </Link>
         <Link className="bg-red-600 px-5 py-3 text-white transition hover:bg-red-500" href="/join">
           Support
         </Link>
+      </div>
+      <SiteAdminLink href="/admin" />
       </div>
     </nav>
   );

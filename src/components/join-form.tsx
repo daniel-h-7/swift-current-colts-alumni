@@ -12,7 +12,7 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 type GiftOption = "none" | "100" | "200" | "other";
 
 const fieldClass =
-  "mt-2 w-full border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full rounded-xl border border-white/20 bg-black/30 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-white/70 focus:ring-2 focus:ring-white/25";
 
 const labelClass = "text-sm font-bold text-gray-200";
 
@@ -142,13 +142,13 @@ export function JoinForm({
     <form
       id="join"
       onSubmit={handleSubmit}
-      className="border border-white/10 bg-zinc-950/90 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.24)] backdrop-blur md:p-8"
+      className="rounded-[2rem] border-t border-white/25 bg-zinc-950/75 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.24)] backdrop-blur md:p-10"
     >
       <div>
         <p className="program-kicker" style={{ color: accentColor }}>
           Help Build the Legacy
         </p>
-        <h2 className="mt-3 text-4xl font-black text-white">
+        <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-white">
           {headline}
         </h2>
         <p className="mt-4 text-gray-400">
