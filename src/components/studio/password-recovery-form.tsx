@@ -8,7 +8,7 @@ import { parsePasswordRecoveryFragment, validateNewPassword } from "@/lib/passwo
 const fieldClass = "mt-2 w-full rounded-xl border border-[#dfcc9a] bg-white px-4 py-3 text-[#17130d] outline-none focus:border-[#785d25] focus:ring-2 focus:ring-[#c5a45b]/25";
 const buttonClass = "mt-6 w-full rounded-full bg-[#17130d] px-6 py-4 font-bold text-white transition hover:bg-[#362b19] disabled:cursor-not-allowed disabled:opacity-50";
 
-export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" }) {
+export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" | "invite" }) {
   const client = useRef<ReturnType<typeof createBrowserSupabaseClient> | null>(null);
   const initialization = useRef<Promise<void> | null>(null);
   const [ready, setReady] = useState(mode === "request");
@@ -17,7 +17,7 @@ export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (mode !== "reset") return;
+    if (mode === "request") return;
     let active = true;
     // Keep a single verification promise across React's development effect replay.
     if (!initialization.current) {
@@ -25,7 +25,7 @@ export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" }) {
         const hash = window.location.hash;
         // Remove credentials from the address bar, including malformed/expired links.
         window.history.replaceState(null, "", window.location.pathname);
-        const tokens = parsePasswordRecoveryFragment(hash);
+        const tokens = parsePasswordRecoveryFragment(hash, mode === "invite" ? "invite" : "recovery");
         client.current = createBrowserSupabaseClient({ recovery: true });
         const { error: sessionError } = await client.current.auth.setSession(tokens);
         if (sessionError) throw new Error("This reset link has expired or is invalid. Request a new one.");
@@ -46,7 +46,7 @@ export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" }) {
     if (busy || !ready) return;
     setError("");
     const data = new FormData(event.currentTarget);
-    if (mode === "reset") {
+    if (mode !== "request") {
       const validation = validateNewPassword(String(data.get("password") ?? ""), String(data.get("confirmation") ?? ""));
       if (validation) { setError(validation); return; }
     }
@@ -86,7 +86,7 @@ export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" }) {
       ) : !error ? <p role="status" className="mt-5 text-sm">Checking your reset link…</p> : null}
       <div className="mt-6 flex flex-wrap gap-5 text-sm font-bold text-[#785d25]">
         <Link className="underline underline-offset-4" href="/studio/login">Back to login</Link>
-        {mode === "reset" && error ? <Link className="underline underline-offset-4" href="/studio/forgot-password">Request a new link</Link> : null}
+        {mode !== "request" && error ? <Link className="underline underline-offset-4" href="/studio/forgot-password">Request a new link</Link> : null}
       </div>
     </form>
   );

@@ -1,4 +1,7 @@
+import { getClientLaunchReadiness } from "@/lib/launch-review";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { HqAddClientUser } from "@/components/hq-add-client-user";
 import { HqClientUserEditor, type HqClientUser } from "@/components/hq-client-user-editor";
 import { HqHeader } from "@/components/hq-header";
 import { isHqAuthenticated } from "@/lib/hq-auth";
@@ -21,6 +24,7 @@ type PageSearchParams = {
   saved?: string;
   account_saved?: string;
   account_error?: string;
+  account_added?: string;
 };
 
 type ClientRow = {
@@ -152,6 +156,7 @@ export default async function HqClientPage({
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const { client, settings, contactCount, campaignCount, features, integrations, users, usersError } =
     await getClientDetail(id);
+  const readiness = await getClientLaunchReadiness(id);
   const membershipAmount = ((settings?.annual_membership_amount_cents ?? 10000) / 100).toFixed(2);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
   const resendStatus = getIntegrationStatus(integrations, "resend");
@@ -260,14 +265,23 @@ export default async function HqClientPage({
           </div>
         </section>
 
+        <section className="mt-8 rounded-3xl border border-[#dfcc9a] bg-white p-6">
+          <h2 className="text-xl font-black">Launch checklist · {readiness.completed}/{readiness.items.length}</h2>
+          <p className="mt-2 text-sm text-slate-600">The same checks appear in the client’s Builder Dashboard.</p>
+          <ul className="mt-4 grid gap-3 md:grid-cols-2">{readiness.items.map(item=><li key={item.key} className="rounded-xl bg-[#faf7ef] p-4"><p className="font-bold">{item.isComplete?"✓":"○"} {item.label}</p><p className="mt-1 text-sm text-slate-600">{item.note}</p>{item.href?<Link className="mt-2 inline-block text-sm font-bold text-[#785d25] underline" href={item.href}>Review →</Link>:null}</li>)}</ul>
+          <Link href={`/studio/${encodeURIComponent(id)}`} className="mt-5 inline-block font-bold text-[#785d25] underline">Confirm reviewed items / verify hosting in Studio</Link>
+        </section>
+
         <section id="account-access" className="mt-8 scroll-mt-6 rounded-3xl border border-[#e9e1d1] bg-white p-6 shadow-sm">
           <h2 className="text-xl font-black">Account access</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Manage the people who log in to this client’s Studio. Use Edit email to change their account address.</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Manage Studio logins for this client. Add an account first, then use Edit email to change an existing address.</p>
+          {query.account_added ? <p role="status" className="mt-4 rounded-xl bg-[#f1e7ce] p-4 text-sm font-bold">{query.account_added === "invited" ? "Account added. An invitation was sent so the user can set their password." : "Existing account linked to this client."}</p> : null}
           {query.account_saved === "1" ? <p role="status" className="mt-4 rounded-xl bg-[#f1e7ce] p-4 text-sm font-bold">Account email updated. Use the new address for future logins.</p> : null}
           {query.account_error ? <p role="alert" className="mt-4 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-800">{query.account_error}</p> : null}
           {usersError ? <p role="alert" className="mt-4 text-sm text-red-800">Unable to load client accounts. Reload the page to try again.</p> : users.length ? (
             <div className="mt-5 grid gap-4 md:grid-cols-2">{users.map(user => <HqClientUserEditor key={user.id} clientId={client.id} user={user} />)}</div>
           ) : <p className="mt-4 text-sm text-slate-500">No Studio login is linked to this client yet.</p>}
+          {!usersError ? <HqAddClientUser clientId={client.id} /> : null}
         </section>
 
         <form
@@ -491,29 +505,7 @@ export default async function HqClientPage({
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Integrations</h2>
               <div className="mt-5 space-y-5">
-                <label className="block text-sm font-bold text-slate-700">
-                  Client Stripe Status
-                  <select
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
-                    name="integration:stripe_connect:status"
-                    defaultValue={stripeStatus}
-                  >
-                    <option value="not_connected">Not connected</option>
-                    <option value="pending">Pending</option>
-                    <option value="connected">Connected</option>
-                    <option value="needs_attention">Needs attention</option>
-                    <option value="disabled">Disabled</option>
-                  </select>
-                </label>
-                <label className="block text-sm font-bold text-slate-700">
-                  Client Stripe Account ID
-                  <input
-                    className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
-                    name="integration:stripe_connect:external_account_id"
-                    placeholder="acct_..."
-                    defaultValue={stripeAccountId}
-                  />
-                </label>
+                <div className="rounded-2xl bg-[#faf7ef] p-5"><p className="text-sm font-bold">Verified client Stripe status</p><p className="mt-2 font-black">{stripeStatus.replaceAll("_"," ")}</p><p className="mt-2 break-all text-sm text-slate-600">{stripeAccountId || "No account linked"}</p><p className="mt-2 text-sm text-slate-600">Account authorization and status are managed through Payments. A pasted ID or manual status cannot enable checkout.</p><Link className="mt-4 inline-block font-bold text-[#785d25] underline" href={`/studio/${encodeURIComponent(id)}/payments`}>Check payment connection →</Link></div>
                 <label className="block text-sm font-bold text-slate-700">
                   TeamAlum Email Status
                   <select
@@ -610,6 +602,7 @@ export default async function HqClientPage({
               >
                 Save Client
               </button>
+              {!readiness.isReady ? <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-sm font-bold">Launch checks are incomplete.</p><label className="mt-3 flex gap-2 text-sm"><input type="checkbox" name="override_launch"/>Approve with an explicit HQ override</label><label className="mt-3 block text-sm font-bold">Reason for override<textarea name="override_reason" minLength={12} maxLength={2000} className="mt-2 w-full rounded-xl border border-amber-300 p-3" placeholder="Record why this site may launch despite the missing checks."/></label></div> : null}
               {isLaunchApproved ? (
                 <button
                   className="mt-3 w-full border border-amber-300 bg-amber-50 px-5 py-4 font-black uppercase tracking-[0.2em] text-amber-800 transition hover:bg-amber-100"

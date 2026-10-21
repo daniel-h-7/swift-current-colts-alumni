@@ -574,17 +574,17 @@ export function normalizeSiteContent(value: unknown, siteVariant?: string): Site
 
   return {
     brand,
-    events: events.length ? (events as SiteEvent[]) : defaultSiteContent.events,
-    fundraisingCampaigns: fundraisingCampaigns.length
+    events: Array.isArray(content.events) ? (events as SiteEvent[]) : defaultSiteContent.events,
+    fundraisingCampaigns: Array.isArray(content.fundraisingCampaigns)
       ? (fundraisingCampaigns as SiteFundraisingCampaign[])
       : defaultSiteContent.fundraisingCampaigns,
-    impactStats: impactStats.length
+    impactStats: Array.isArray(content.impactStats)
       ? (impactStats as SiteImpactStat[])
       : defaultSiteContent.impactStats,
-    sponsors: sponsors.length
+    sponsors: Array.isArray(content.sponsors)
       ? (sponsors as SiteSponsor[])
       : defaultSiteContent.sponsors,
-    spotlights: spotlights.length
+    spotlights: Array.isArray(content.spotlights)
       ? (spotlights as SiteSpotlight[])
       : defaultSiteContent.spotlights,
   };

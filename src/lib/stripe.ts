@@ -1,5 +1,6 @@
 import "server-only";
 
+import { verifyClientStripeAccount } from "@/lib/stripe-connection";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getClientIntegration } from "@/lib/client-integrations";
 import { getCurrentClientId } from "@/lib/client-context";
@@ -37,6 +38,7 @@ export type StripeCheckoutSessionCompleted = {
 };
 
 export type StripeWebhookEvent = {
+  livemode?: boolean;
   account?: string;
   data?: {
     object?: unknown;
@@ -75,7 +77,8 @@ export function getStripeMode() {
     return "mock";
   }
 
-  return secretKey.startsWith("sk_test_") ? "sandbox" : "live";
+  if (/^(sk|rk)_test_/.test(secretKey)) return "sandbox";
+  return /^(sk|rk)_live_/.test(secretKey) ? "live" : "mock";
 }
 
 export function isStripeConfigured() {
@@ -88,15 +91,8 @@ export function getStripeWebhookSecret() {
 
 async function getStripeConnectedAccountId(clientId: string) {
   const integration = await getClientIntegration(clientId, "stripe_connect");
-
-  if (
-    integration?.status === "connected" &&
-    integration.external_account_id?.startsWith("acct_")
-  ) {
-    return integration.external_account_id;
-  }
-
-  return getServerEnvValue("STRIPE_CONNECTED_ACCOUNT_ID");
+  await verifyClientStripeAccount(clientId, integration);
+  return integration!.external_account_id!;
 }
 
 function getStripeApplicationFeePercent() {

@@ -1,3 +1,4 @@
+import { studioLoginPath } from "@/lib/studio-navigation";
 import Link from "next/link";
 import { SiteAdminLink } from "@/components/site-admin-link";
 import { EventsSlider } from "@/components/events-slider";
@@ -126,7 +127,7 @@ export async function ClientSitePublic({
               <span className="font-black">{brand.siteTitle}</span>
             </Link>
             <div className="flex flex-wrap items-center justify-end gap-3">
-            <SiteAdminLink />
+            <SiteAdminLink href={studioLoginPath(`/studio/${encodeURIComponent(client.id)}`)} />
             <Link
               className="rounded-full border border-white/15 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
               href="/"
@@ -239,7 +240,7 @@ export async function ClientSitePublic({
               <Link href={joinPath}>Join</Link>
             ) : null}
           </nav>
-          <SiteAdminLink />
+          <SiteAdminLink href={studioLoginPath(`/studio/${encodeURIComponent(client.id)}`)} />
           </div>
         </header>
 

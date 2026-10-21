@@ -1,3 +1,5 @@
+import { handleStripeAccountEvent } from "@/lib/stripe-connection";
+import { stripePlatformMode } from "@/lib/stripe-connect";
 import { NextResponse } from "next/server";
 import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
@@ -386,6 +388,11 @@ export async function POST(request: Request) {
       signature: request.headers.get("stripe-signature"),
       webhookSecret,
     });
+    if (event.livemode !== (stripePlatformMode() === "live")) return NextResponse.json({ ok: true, ignored: "mode_mismatch" });
+    if (["account.updated", "account.application.deauthorized"].includes(event.type)) {
+      await handleStripeAccountEvent(event);
+      return NextResponse.json({ ok: true });
+    }
     const stripeAccountId = event.account;
 
     if (event.type === "checkout.session.completed") {

@@ -20,7 +20,7 @@ export function HqHeader({
   return (
     <header className="studio-gold-header border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-7 md:flex-row md:items-end md:justify-between">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[#785d25]">
             {eyebrow}
           </p>
@@ -34,10 +34,10 @@ export function HqHeader({
           ) : null}
         </div>
 
-        <nav className="flex flex-wrap overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-sm font-bold text-slate-700 shadow-sm">
+        <nav className="flex max-w-full shrink-0 flex-nowrap overflow-x-auto rounded-full md:max-w-[58%] border border-slate-200 bg-slate-50 text-sm font-bold text-slate-700 shadow-sm">
           {actions.map((action) => (
             <Link
-              className={`border-r border-slate-200 px-4 py-3 transition last:border-r-0 ${
+              className={`shrink-0 whitespace-nowrap border-r border-slate-200 px-4 py-3 transition last:border-r-0 ${
                 action.tone === "primary"
                   ? "bg-[#17130d] text-[#f8f1df] hover:bg-[#362b19]"
                   : action.tone === "danger"

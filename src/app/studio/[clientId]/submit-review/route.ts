@@ -1,3 +1,4 @@
+import { getClientLaunchReadiness } from "@/lib/launch-review";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { canAccessStudioClient, hasStudioOrHqSession } from "@/lib/studio-auth";
@@ -32,6 +33,8 @@ export async function POST(
     );
   }
 
+  const readiness = await getClientLaunchReadiness(clientId);
+  if (!readiness.isReady) return redirectTo(request, `${studioPath}?error=${encodeURIComponent("Complete the launch checklist before submitting: " + readiness.blockers.map(i=>i.label).join(", "))}`);
   const supabase = createServerSupabaseClient();
   const requestedAt = new Date().toISOString();
   const { error } = await supabase

@@ -1,3 +1,7 @@
+import { approveClientLaunch } from "@/lib/launch-review";
+import { updateSetupState } from "@/lib/setup-state";
+import { clientHostname, validateClientSubdomain } from "@/lib/client-address";
+import { getClientFeatures, getClientIntegrations, getPlatformClient, isClientToggleableFeature } from "@/lib/platform-data";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isHqAuthenticated } from "@/lib/hq-auth";
@@ -102,7 +106,19 @@ export async function POST(
     const supabase = createServerSupabaseClient();
     const updatedAt = new Date().toISOString();
     const subdomain = cleanNullable(formData.get("subdomain")) ?? id;
-    const primaryDomain = `${subdomain}.teamalum.com`;
+    const addressError = validateClientSubdomain(subdomain);
+    if (addressError) throw new Error(addressError);
+    const [previousClient, previousFeatures, previousIntegrations, previousSettingsResult] = await Promise.all([
+      getPlatformClient(id), getClientFeatures(id), getClientIntegrations(id),
+      supabase.from("crm_settings").select("annual_membership_amount_cents, membership_year_label, join_headline, join_body, join_is_open").eq("client_id",id).eq("id","default").maybeSingle(),
+    ]);
+    if (!previousClient || previousSettingsResult.error) throw new Error("Unable to check the current settings before saving.");
+    const previousSettings = previousSettingsResult.data;
+    const domainChanged = (previousClient.subdomain || id) !== subdomain;
+    const detailsChanged = previousClient.name !== name || previousClient.site_variant !== siteVariant || domainChanged ||
+      previousSettings?.annual_membership_amount_cents !== Math.round(parsedAmount * 100) || previousSettings?.membership_year_label !== membershipYearLabel ||
+      previousSettings?.join_headline !== joinHeadline || previousSettings?.join_body !== joinBody || previousSettings?.join_is_open !== (formData.get("join_is_open") === "on");
+    const primaryDomain = clientHostname({ id, subdomain }, process.env.TEAMALUM_ROOT_DOMAIN ?? "teamalum.com");
 
     const { error: clientError } = await supabase
       .from("clients")
@@ -122,18 +138,13 @@ export async function POST(
     }
 
     const platformClientUpdates: Record<string, string | null> = {
-      custom_domain: null,
+
       plan_key: String(formData.get("plan_key") ?? "starter").trim(),
       status: String(formData.get("status") ?? "active").trim(),
       subdomain,
       support_notes: cleanNullable(formData.get("support_notes")),
       updated_at: updatedAt,
     };
-
-    if (intent === "approve_launch") {
-      platformClientUpdates.launch_approved_at = updatedAt;
-      platformClientUpdates.published_at = updatedAt;
-    }
 
     if (intent === "unapprove_launch") {
       platformClientUpdates.launch_approved_at = null;
@@ -189,7 +200,7 @@ export async function POST(
     const featureRows = defaultClientFeatures.map((feature) => ({
       client_id: id,
       feature_key: feature.feature_key,
-      is_enabled: formData.get(`feature:${feature.feature_key}`) === "on",
+      is_enabled: isClientToggleableFeature(feature.feature_key) ? formData.get(`feature:${feature.feature_key}`) === "on" : previousFeatures.find(f=>f.feature_key===feature.feature_key)?.is_enabled ?? feature.is_enabled,
       updated_at: updatedAt,
     }));
     const { error: featuresError } = await supabase
@@ -205,11 +216,9 @@ export async function POST(
       );
     }
 
-    const integrationRows = defaultClientIntegrations.map((integration) => ({
+    const integrationRows = defaultClientIntegrations.filter(integration => integration.integration_key !== "stripe_connect" && (formData.has(`integration:${integration.integration_key}:status`) || formData.has(`integration:${integration.integration_key}:external_account_id`))).map((integration) => ({
       client_id: id,
-      external_account_id: cleanNullable(
-        formData.get(`integration:${integration.integration_key}:external_account_id`),
-      ),
+      external_account_id: formData.has(`integration:${integration.integration_key}:external_account_id`) ? cleanNullable(formData.get(`integration:${integration.integration_key}:external_account_id`)) : previousIntegrations.find(i=>i.integration_key===integration.integration_key)?.external_account_id ?? null,
       integration_key: integration.integration_key,
       status: getIntegrationStatusValue(formData, integration.integration_key),
       updated_at: updatedAt,
@@ -230,6 +239,9 @@ export async function POST(
       );
     }
 
+    const featuresChanged = featureRows.some(row=>previousFeatures.find(f=>f.feature_key===row.feature_key)?.is_enabled!==row.is_enabled);
+    if (detailsChanged || featuresChanged) await updateSetupState(id, { preview_reviewed_at: null, ...(domainChanged ? { domain_verified_at: null, domain_verified_hostname: null } : {}), ...(featuresChanged ? { features_reviewed_at: null } : {}) });
+    if (intent === "approve_launch") await approveClientLaunch(id, formData.get("override_launch") === "on" ? String(formData.get("override_reason") ?? "") : undefined);
     revalidatePath("/hq");
     revalidatePath(clientPath);
     revalidatePath("/");

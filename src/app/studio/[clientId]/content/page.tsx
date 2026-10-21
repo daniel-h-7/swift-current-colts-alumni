@@ -1,3 +1,4 @@
+import { studioLoginPath } from "@/lib/studio-navigation";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ColorSettingField } from "@/components/studio/color-setting-field";
@@ -64,11 +65,11 @@ export default async function StudioContentSetupPage({
   const isHqEditing = await isHqStudioAccess();
 
   if (!(await hasStudioOrHqSession())) {
-    redirect(`/studio/login?error=${encodeURIComponent("Log in to edit your site.")}`);
+    redirect(studioLoginPath(`/studio/${encodeURIComponent(clientId)}/content`, "Log in to edit your site."));
   }
 
   if (!(await canAccessStudioClient(clientId))) {
-    redirect(`/studio/login?error=${encodeURIComponent("That site is not connected to your login.")}`);
+    redirect(studioLoginPath(`/studio/${encodeURIComponent(clientId)}/content`, "That site is not connected to your login."));
   }
 
   const client = await getPlatformClient(clientId);

@@ -242,3 +242,12 @@ export async function hasStudioOrHqSession() {
 export async function isHqStudioAccess() {
   return isHqAuthenticated();
 }
+
+/** Payment setup always checks the initiating Studio owner, even beside an HQ session. */
+export async function getStudioClientOwner(clientId: string) {
+  const session = await getStudioSession();
+  if (!session) return null;
+  const { data, error } = await createServerSupabaseClient().from("client_users")
+    .select("auth_user_id, email, role").eq("client_id", clientId).eq("auth_user_id", session.authUserId).eq("role", "owner").maybeSingle();
+  return !error && data ? { authUserId: data.auth_user_id as string, email: data.email as string } : null;
+}

@@ -6,12 +6,12 @@ import {
 } from "@/lib/client-create";
 import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
 import {
-  addStudioClientUser,
   canUserAccessStudioClient,
   createStudioSession,
   createStudioUser,
   signInStudioUser,
 } from "@/lib/studio-auth";
+import { validateClientSubdomain } from "@/lib/client-address";
 import { isStudioStartUnlocked } from "@/lib/studio-start-gate";
 
 function redirectTo(request: Request, path: string) {
@@ -56,6 +56,8 @@ export async function POST(request: Request) {
       .toLowerCase();
     const password = String(formData.get("password") ?? "");
     const clientId = subdomain;
+    const addressError = validateClientSubdomain(subdomain);
+    if (addressError) throw new Error(addressError);
 
     if (!name || !subdomain || !adminEmail || !password) {
       return redirectTo(
@@ -107,6 +109,7 @@ export async function POST(request: Request) {
     const studioUser = await getOrCreateStudioUser(adminEmail, password);
 
     await createTeamAlumClient({
+      ownerAuthUserId: studioUser.authUserId,
       annualMembershipAmountCents: Math.round(parsedAmount * 100),
       clientId,
       membershipYearLabel: String(
@@ -116,13 +119,6 @@ export async function POST(request: Request) {
       siteVariant: template === "demo" ? "demo" : clientId,
       status: "trial",
       subdomain,
-    });
-    await addStudioClientUser({
-      authUserId: studioUser.authUserId,
-      clientId,
-      email: studioUser.email,
-      fullName: name,
-      role: "owner",
     });
     const createdClient = await getPlatformClientByStudioSlug(clientId);
 

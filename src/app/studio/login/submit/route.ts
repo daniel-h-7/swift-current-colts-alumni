@@ -1,3 +1,4 @@
+import { safeStudioNext, studioLoginPath } from "@/lib/studio-navigation";
 import { NextResponse } from "next/server";
 import {
   createStudioSession,
@@ -10,15 +11,17 @@ function redirectTo(request: Request, path: string) {
 }
 
 export async function POST(request: Request) {
+  let next = "/studio";
   try {
     const formData = await request.formData();
+    next = safeStudioNext(formData.get("next"));
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
 
     if (!email || !password) {
       return redirectTo(
         request,
-        "/studio/login?error=Enter%20your%20email%20and%20password.",
+        studioLoginPath(next, "Enter your email and password."),
       );
     }
 
@@ -28,19 +31,19 @@ export async function POST(request: Request) {
     if (!clientIds.length) {
       return redirectTo(
         request,
-        "/studio/login?error=No%20TeamAlum%20site%20is%20connected%20to%20that%20login.",
+        studioLoginPath(next, "No TeamAlum site is connected to that login. Contact HQ to link your account."),
       );
     }
 
     await createStudioSession(session);
 
-    return redirectTo(request, `/studio/${encodeURIComponent(clientIds[0])}`);
+    return redirectTo(request, next);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to log in.";
 
     return redirectTo(
       request,
-      `/studio/login?error=${encodeURIComponent(message)}`,
+      studioLoginPath(next, message),
     );
   }
 }

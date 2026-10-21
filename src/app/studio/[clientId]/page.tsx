@@ -1,3 +1,4 @@
+import { studioLoginPath } from "@/lib/studio-navigation";
 import { redirect } from "next/navigation";
 import { StudioDashboard } from "@/components/studio/studio-dashboard";
 import { getPlatformClientByStudioSlug } from "@/lib/platform-data";
@@ -25,7 +26,7 @@ export default async function ClientStudioPage({
   const [{ clientId }, query] = await Promise.all([params, searchParams]);
 
   if (!(await hasStudioOrHqSession())) {
-    redirect(`/studio/login?error=${encodeURIComponent("Log in to manage your site.")}`);
+    redirect(studioLoginPath(`/studio/${encodeURIComponent(clientId)}`, "Log in to manage your site."));
   }
 
   const client = await getPlatformClientByStudioSlug(clientId);

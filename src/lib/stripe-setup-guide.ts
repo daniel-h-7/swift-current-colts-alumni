@@ -5,11 +5,11 @@ export const stripeSetupSteps = [
   },
   {
     title: "Check whether a connection already exists",
-    body: "If an account is already listed, verify it belongs to your organization before continuing. If you already use Stripe but no account is listed, ask TeamAlum to verify and link the existing account first. The current setup creates a new account when no connection is saved.",
+    body: "If an account is already listed, choose Check connection. Otherwise, choose Connect an existing Stripe account or Create a new Stripe account. Select the business account already used by your memberships when authorizing Stripe.",
   },
   {
     title: "Start or continue setup on Stripe",
-    body: "For a new Stripe account, choose Connect Stripe. Stripe will guide the authorized representative through the organization details, identity checks, and bank information. Enter sensitive details only on Stripe’s secure pages.",
+    body: "For a new Stripe account, choose Create a new Stripe account. Stripe will guide the authorized representative through the organization details, identity checks, and bank information. Enter sensitive details only on Stripe’s secure pages.",
   },
   {
     title: "Return to TeamAlum",
@@ -17,7 +17,7 @@ export const stripeSetupSteps = [
   },
   {
     title: "Confirm payments and payouts",
-    body: "Sign in to your organization’s Stripe Dashboard and check for outstanding requirements, payment restrictions, and payout setup. TeamAlum’s current Connected label does not by itself confirm that payouts are enabled.",
+    body: "Sign in to your organization’s Stripe Dashboard and check for outstanding requirements, payment restrictions, and payout setup. TeamAlum shows payments, payouts, and submitted details separately. Connected requires all three to be ready.",
   },
   {
     title: "Ask TeamAlum to verify launch readiness",
@@ -28,7 +28,7 @@ export const stripeSetupSteps = [
 export const stripeSetupTroubleshooting = [
   {
     question: "I already have Stripe. Should I create another account?",
-    answer: "Ask TeamAlum to check your existing connection first. A Stripe login can contain several business accounts; using the same email does not prove it is the same account. The current TeamAlum flow creates a new Standard account if no account ID is saved. Do not replace an account used by active memberships without a migration plan.",
+    answer: "Choose Connect an existing Stripe account. A Stripe login can contain several business accounts; select the account used by this organization. TeamAlum keeps an existing mapping and rejects a different replacement account. Active memberships require a planned migration before switching accounts.",
   },
   {
     question: "Why does setup ask me to log in again?",
@@ -36,11 +36,11 @@ export const stripeSetupTroubleshooting = [
   },
   {
     question: "My setup link expired. What should I do?",
-    answer: "Return to your organization’s Payments page to continue setup. Stripe setup links expire and are single-use; do not bookmark or forward them. If the account is already connected, ask TeamAlum to check its status rather than reopening onboarding just to review it.",
+    answer: "Return to your organization’s Payments page to continue setup. Stripe setup links expire and are single-use; do not bookmark or forward them. If the account is already connected, choose Check connection or Open Stripe Dashboard. Reviewing a connection does not restart onboarding.",
   },
   {
     question: "Stripe says complete but TeamAlum still says pending.",
-    answer: "Confirm you returned to the same organization’s Payments page. Check Stripe for missing requirements and ask TeamAlum to refresh the saved status if needed. Do not create a second account to clear a pending label.",
+    answer: "Confirm you returned to the same organization’s Payments page. Choose Check connection and check Stripe for missing requirements. Do not create a second account to clear a pending label.",
   },
   {
     question: "A member paid, but their membership did not update.",

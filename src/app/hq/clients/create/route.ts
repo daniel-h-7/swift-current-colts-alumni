@@ -4,6 +4,7 @@ import {
   createTeamAlumClient,
   normalizeClientId,
 } from "@/lib/client-create";
+import { validateClientSubdomain } from "@/lib/client-address";
 import { isHqAuthenticated } from "@/lib/hq-auth";
 
 function redirectTo(request: Request, path: string) {
@@ -24,6 +25,8 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const id = normalizeClientId(String(formData.get("id") ?? ""));
+    const addressError = validateClientSubdomain(id);
+    if (addressError) throw new Error(addressError);
     const name = String(formData.get("name") ?? "").trim();
     const siteVariant = String(formData.get("site_variant") ?? "").trim();
     const amount = String(formData.get("annual_membership_amount") ?? "").trim();

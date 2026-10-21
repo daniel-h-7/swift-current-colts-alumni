@@ -20,6 +20,8 @@ export type { ClientFeature, ClientFeatureKey } from "@/lib/platform-shared";
 export type PlatformClient = {
   custom_domain?: string | null;
   id: string;
+  setup_state?: Record<string, unknown>;
+  updated_at?: string;
   launch_approved_at?: string | null;
   launch_review_requested_at?: string | null;
   name: string;
@@ -46,6 +48,7 @@ export type ClientIntegration = {
     | "needs_attention"
     | "disabled";
   updated_at?: string;
+  metadata?: Record<string, unknown>;
 };
 
 export const defaultClientIntegrations: ClientIntegration[] = [
@@ -55,7 +58,7 @@ export const defaultClientIntegrations: ClientIntegration[] = [
 ];
 
 const expandedClientSelect =
-  "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at";
+  "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at, setup_state, updated_at";
 
 export async function getPlatformClient(clientId: string) {
   try {
@@ -184,7 +187,7 @@ export async function getClientIntegrations(clientId: string) {
     const supabase = createServerSupabaseClient();
     const { data, error } = await supabase
       .from("client_integrations")
-      .select("integration_key, status, external_account_id, updated_at")
+      .select("integration_key, status, external_account_id, metadata, updated_at")
       .eq("client_id", clientId)
       .order("integration_key", { ascending: true });
 

@@ -1,3 +1,5 @@
+import { studioLoginPath } from "@/lib/studio-navigation";
+import { updateSetupState } from "@/lib/setup-state";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import {
@@ -334,7 +336,7 @@ export async function POST(
     if (!(await canAccessStudioClient(clientId))) {
       return redirectTo(
         request,
-        "/studio/login?error=Log%20in%20to%20edit%20your%20site.",
+        studioLoginPath(`/studio/${encodeURIComponent(clientId)}/content`, "Log in to edit your site."),
       );
     }
 
@@ -421,6 +423,7 @@ export async function POST(
       membershipYearLabel: `${siteTitle} Alumni and Booster Club`,
     });
 
+    await updateSetupState(clientId, { content_saved_at: new Date().toISOString(), content_reviewed_at: null, visual_reviewed_at: null, preview_reviewed_at: null });
     revalidatePath(`/studio/${clientId}`);
     revalidatePath(`/studio/${clientId}/content`);
     revalidatePath(`/preview/${clientId}`);

@@ -1,3 +1,4 @@
+import { studioLoginPath } from "@/lib/studio-navigation";
 import { MembershipThanks } from "@/components/membership-thanks";
 import { SiteAdminLink } from "@/components/site-admin-link";
 import Link from "next/link";
@@ -61,7 +62,7 @@ export default async function ClientMembershipSuccessPage({
             Join Page
           </Link>
         </div>
-        <div className="mt-10"><SiteAdminLink /></div>
+        <div className="mt-10"><SiteAdminLink href={studioLoginPath(`/studio/${encodeURIComponent(client.id)}`)} /></div>
       </section>
     </main>
   );

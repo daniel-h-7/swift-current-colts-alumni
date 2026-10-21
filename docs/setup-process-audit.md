@@ -1,6 +1,27 @@
 # TeamAlum setup audit
 
-Reviewed October 20, 2026 against the current local repository, including the pending HQ/account-email and client-default fixes. This is a code/path review, not an audit of live Stripe or Vercel configuration. Findings below are **not fixed by publishing the guide**.
+Original audit: October 20, 2026. All twelve findings below now have local implementation fixes. Production deployment and configuration remain pending; see `docs/setup-reliability-rollout.md`. The original findings are retained as historical evidence, not a description of the updated code.
+
+## Implementation status
+
+| Finding | Implemented fix |
+| --- | --- |
+| 1 | Checkout requires a verified per-client account and fresh Stripe readiness; shared fallback removed. |
+| 2 | Dashboard, check connection, and continue setup are separate; opening onboarding preserves established state. |
+| 3 | Explicit owner role required server-side, independent of simultaneous HQ sessions. |
+| 4 | Payments/payouts/details verified separately; current account state and deauthorization webhooks processed. |
+| 5 | Existing-account OAuth and new-account paths; durable idempotent attempts and recovery guard. |
+| 6 | Canonical Studio origin, validated return paths, same-host callbacks, multi-client chooser. |
+| 7 | Shared feature-aware checklist from explicit reviews, verified hosting, and payment readiness. |
+| 8 | Explicit empty content arrays persist without returning sample entries. |
+| 9 | Transactional, retry-safe database provisioning including owner linkage. |
+| 10 | HQ preserves custom domains/unrelated settings; Stripe state cannot be typed into a form. |
+| 11 | Shared reserved-name and hostname validation across provisioning, HQ, and routing. |
+| 12 | Server launch gate, recorded override reason, and stale-review protection. |
+
+Additional fixes: HQ offers Add account/invitation for clients without users, plus existing Edit email; Studio and HQ menus remain a single horizontally scrollable row. Tenant routing now uses the supported `src/proxy.ts` location.
+
+## Historical findings
 
 ## Findings, in recommended order
 
@@ -113,14 +134,26 @@ Keep one visible next action per stage. “Pending,” “not configured,” and
 
 ## Validation and limits
 
-Synthetic, in-memory checks reproduced the shared-account fallback for a pending client and the Connected result with `payouts_enabled: false`. These checks made no Stripe requests and changed no accounts. Other findings are based on the cited control flow and stored-state behavior. Live environment values, Stripe settings, and actual role assignments were not inspected.
+The regression suite exercises the SQL migration/functions against PGlite, interrupted/duplicate provisioning and Stripe setup, role isolation, OAuth replay and account replacement, webhook status refresh/disconnection, empty sections, HQ account linking, and launch approval. Synthetic tests send no live Stripe requests or invitations. All 47 tests passed. TypeScript, lint, and the webpack production build passed. Browser checks confirmed Add account opens its fields and the long menu remains one row at desktop and 390-pixel widths. The build retains the existing metadataBase warning.
 
-The guide passed the webpack production build, TypeScript, and targeted lint checks. The existing 22 tests passed. Browser review confirmed the guide layout, section links, and expandable troubleshooting answers. These checks validate the guide and existing regression suite; they do not establish live Stripe readiness.
+No production database migration, environment configuration, deployment, real invitation, or live Stripe mutation was performed. Local tests do not establish live account or hosting readiness. Apply the rollout guide and check existing mappings before enabling payments.
 
-## Delivered with this review
+## Delivered
 
-- Client/operator guide: `docs/stripe-account-setup-guide.md`.
-- In-product guide: `/studio/help/stripe`, linked from Studio Payments.
-- This prioritized audit with code evidence.
+- Updated in-product guide: `/studio/help/stripe`.
+- Client instructions: `docs/stripe-account-setup-guide.md`.
+- Operator rollout and recovery: `docs/setup-reliability-rollout.md`.
+- Implementation, additive SQL migration, and regression tests for all twelve findings.
 
-Payment routing, account creation, readiness logic, launch approval, live domains, and live Stripe settings were not changed as part of this review. Existing local changes from earlier tasks remain in place.
+## Main files changed
+
+| Area | Files |
+| --- | --- |
+| HQ account access | `src/components/hq-add-client-user.tsx`, `src/app/hq/clients/[id]/users/add/route.ts`, `src/app/hq/clients/[id]/page.tsx`, invitation page/form/parser |
+| Compact menus | `src/components/studio-header.tsx`, `src/components/hq-header.tsx` |
+| Stripe ownership, retries, authorization | `src/lib/stripe-connect.ts`, `stripe-connection.ts`, `stripe-onboarding.ts`, `stripe-oauth.ts`, `stripe.ts`, Studio payment routes and webhook route |
+| Setup and launch | `src/lib/launch-readiness.ts`, `launch-review.ts`, `setup-state.ts`, Studio setup/dashboard/review routes, HQ approval/save routes |
+| Provisioning and address policy | `src/lib/client-create.ts`, `client-address.ts`, Studio/HQ creation routes |
+| Routing and login | `src/proxy.ts` (replaces root middleware), `src/lib/studio-navigation.ts`, Studio login/chooser and client ADMIN links |
+| Data and content | `src/lib/platform-data.ts`, `site-content.ts`, feature/content save routes, `supabase/setup-reliability.sql` |
+| Guide and regression coverage | Stripe guide page/data, these docs, `tests/*setup*.test.cjs`, `stripe-state.test.cjs`, `hq-settings.test.cjs`, routing tests, test helper and development dependency |

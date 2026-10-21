@@ -1,129 +1,31 @@
 import { NextResponse } from "next/server";
-import {
-  getClientIntegration,
-  upsertClientIntegration,
-} from "@/lib/client-integrations";
+import { getClientIntegration } from "@/lib/client-integrations";
 import { getPlatformClient } from "@/lib/platform-data";
-import {
-  createStandardConnectedAccount,
-  createStripeAccountOnboardingLink,
-} from "@/lib/stripe-connect";
-import { canAccessStudioClient, getStudioSession } from "@/lib/studio-auth";
+import { createStripeAccountOnboardingLink } from "@/lib/stripe-connect";
+import { createOrResumeStripeAccount } from "@/lib/stripe-onboarding";
+import { getStudioClientOwner } from "@/lib/studio-auth";
+import { studioLoginPath, studioOrigin } from "@/lib/studio-navigation";
 
-type RouteParams = {
-  clientId: string;
-};
-
-function getOrigin(request: Request) {
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
-
-  if (configuredUrl) {
-    return configuredUrl.replace(/\/$/, "");
-  }
-
-  return new URL(request.url).origin;
-}
-
-function redirectTo(request: Request, path: string) {
-  return NextResponse.redirect(new URL(path, request.url), 303);
-}
-
-async function createOnboardingRedirect(
-  request: Request,
-  clientId: string,
-) {
-  const session = await getStudioSession();
-  const paymentsPath = `/studio/${encodeURIComponent(clientId)}/payments`;
-
-  if (!session) {
-    return redirectTo(
-      request,
-      `${paymentsPath}?error=${encodeURIComponent("Stripe onboarding must be started by the client owner from their Studio login.")}`,
-    );
-  }
-
-  if (!(await canAccessStudioClient(clientId))) {
-    return redirectTo(
-      request,
-      `/studio/login?error=${encodeURIComponent("That site is not connected to your login.")}`,
-    );
-  }
-
-  const client = await getPlatformClient(clientId);
-
-  if (!client) {
-    return redirectTo(
-      request,
-      `${paymentsPath}?error=${encodeURIComponent("Client site not found.")}`,
-    );
-  }
-
+async function onboard(request: Request, clientId: string) {
+  const path = `/studio/${encodeURIComponent(clientId)}/payments`;
+  const origin = studioOrigin(request.url);
+  const fail = (error: string) => NextResponse.redirect(new URL(`${path}?error=${encodeURIComponent(error)}`, origin), 303);
+  const owner = await getStudioClientOwner(clientId);
+  if (!owner) return NextResponse.redirect(new URL(studioLoginPath(path, "Stripe setup requires this organization's Studio owner login."), origin), 303);
+  if (request.method === "POST" && request.headers.get("origin") !== new URL(request.url).origin) return NextResponse.json({ error: "Submit from Studio." }, { status: 403 });
   try {
-    const existingIntegration = await getClientIntegration(
-      clientId,
-      "stripe_connect",
-    );
-    let accountId = existingIntegration?.external_account_id ?? null;
-
+    const client = await getPlatformClient(clientId);
+    if (!client) return fail("Organization not found.");
+    const existing = await getClientIntegration(clientId, "stripe_connect");
+    let accountId = existing?.external_account_id;
     if (!accountId) {
-      const account = await createStandardConnectedAccount({
-        clientId,
-        email: session.email,
-        name: client.name,
-        websiteUrl: client.custom_domain
-          ? `https://${client.custom_domain}`
-          : client.primary_domain
-            ? `https://${client.primary_domain}`
-            : null,
-      });
-
-      accountId = account.id;
+      const intent = request.method === "POST" ? String((await request.formData()).get("intent")) : "continue";
+      if (intent !== "new") return fail("Choose Create a new Stripe account or Connect an existing account first.");
+      accountId = await createOrResumeStripeAccount(client, owner);
     }
-
-    await upsertClientIntegration({
-      clientId,
-      externalAccountId: accountId,
-      integrationKey: "stripe_connect",
-      metadata: {
-        source: "studio_onboarding",
-      },
-      status: "pending",
-    });
-
-    const origin = getOrigin(request);
-    const accountLink = await createStripeAccountOnboardingLink({
-      accountId,
-      refreshUrl: `${origin}/studio/${encodeURIComponent(clientId)}/payments/connect`,
-      returnUrl: `${origin}/studio/${encodeURIComponent(clientId)}/payments/return`,
-    });
-
-    return NextResponse.redirect(accountLink.url, 303);
-  } catch (error) {
-    return redirectTo(
-      request,
-      `${paymentsPath}?error=${encodeURIComponent(
-        error instanceof Error
-          ? error.message
-          : "Unable to start Stripe onboarding.",
-      )}`,
-    );
-  }
+    const link = await createStripeAccountOnboardingLink({ accountId, refreshUrl: `${origin}${path}/connect`, returnUrl: `${origin}${path}/return` });
+    return NextResponse.redirect(link.url, 303);
+  } catch (error) { return fail(error instanceof Error ? error.message : "Unable to continue Stripe setup."); }
 }
-
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<RouteParams> },
-) {
-  const { clientId } = await params;
-
-  return createOnboardingRedirect(request, clientId);
-}
-
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<RouteParams> },
-) {
-  const { clientId } = await params;
-
-  return createOnboardingRedirect(request, clientId);
-}
+export async function POST(request: Request, { params }: { params: Promise<{ clientId: string }> }) { return onboard(request, (await params).clientId); }
+export async function GET(request: Request, { params }: { params: Promise<{ clientId: string }> }) { return onboard(request, (await params).clientId); }

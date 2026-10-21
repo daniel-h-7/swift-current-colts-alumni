@@ -6,6 +6,8 @@ export type StripeConnectedAccount = {
   charges_enabled?: boolean;
   details_submitted?: boolean;
   id: string;
+  metadata?: Record<string, string>;
+  type?: string;
   payouts_enabled?: boolean;
   requirements?: {
     currently_due?: string[];
@@ -19,6 +21,7 @@ type CreateStandardConnectedAccountInput = {
   email: string;
   name: string;
   websiteUrl?: string | null;
+  idempotencyKey: string;
 };
 
 type CreateAccountLinkInput = {
@@ -47,8 +50,10 @@ async function stripeRequest<T>({
   body,
   method = "POST",
   path,
+  idempotencyKey,
 }: {
   body?: URLSearchParams;
+  idempotencyKey?: string;
   method?: "GET" | "POST";
   path: string;
 }) {
@@ -57,6 +62,7 @@ async function stripeRequest<T>({
     body,
     headers: {
       Authorization: `Bearer ${secretKey}`,
+      ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
       ...(body ? { "Content-Type": "application/x-www-form-urlencoded" } : {}),
     },
     method,
@@ -84,6 +90,7 @@ export async function createStandardConnectedAccount({
   email,
   name,
   websiteUrl,
+  idempotencyKey,
 }: CreateStandardConnectedAccountInput) {
   const body = new URLSearchParams();
   body.set("type", "standard");
@@ -98,6 +105,7 @@ export async function createStandardConnectedAccount({
   return stripeRequest<StripeConnectedAccount>({
     body,
     path: "/v1/accounts",
+    idempotencyKey,
   });
 }
 
@@ -126,13 +134,24 @@ export async function retrieveConnectedAccount(accountId: string) {
 }
 
 export function getStripeAccountStatus(account: StripeConnectedAccount) {
-  if (account.charges_enabled && account.details_submitted) {
-    return "connected";
-  }
-
-  if (account.requirements?.disabled_reason) {
-    return "needs_attention";
-  }
-
+  if (account.requirements?.disabled_reason || account.requirements?.past_due?.length) return "needs_attention";
+  if (account.charges_enabled && account.payouts_enabled && account.details_submitted) return "connected";
   return "pending";
+}
+
+export function stripePlatformMode() {
+  const key = getRequiredStripePlatformSecretKey();
+  if (!/^(?:sk|rk)_(?:test|live)_/.test(key)) throw new Error("Stripe platform key is not a recognized live or test key.");
+  return key.includes("_test_") ? "sandbox" : "live";
+}
+
+export async function exchangeStripeOAuthCode(code: string) {
+  const response = await fetch("https://connect.stripe.com/oauth/token", {
+    method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ client_secret: getRequiredStripePlatformSecretKey(), code, grant_type: "authorization_code" }),
+  });
+  const result = await response.json() as { stripe_user_id?: string; livemode?: boolean; error?: string };
+  if (!response.ok || !result.stripe_user_id) throw new Error("Stripe could not authorize this account. It may be controlled by another platform. Your existing connection was not replaced.");
+  if (result.livemode !== (stripePlatformMode() === "live")) throw new Error("Stripe authorization mode does not match this deployment.");
+  return result.stripe_user_id;
 }

@@ -1,11 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { resolveClientSlug } from "./src/lib/client-slugs";
+import { resolveClientSlug } from "./lib/client-slugs";
 
 const demoCookieName = "teamalum_demo_session";
-const reservedSubdomains = new Set(["app", "www", "teamalum"]);
+import { reservedSubdomains } from "./lib/client-address";
+import { studioOrigin } from "./lib/studio-navigation";
 
 function isBypassedPath(pathname: string) {
   return (
+    pathname === "/.well-known/teamalum-site" ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/hq") ||
@@ -63,7 +65,16 @@ async function createDemoToken(password: string, secret: string) {
     .join("");
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  if ((request.nextUrl.pathname === "/studio" || request.nextUrl.pathname.startsWith("/studio/")) && process.env.TEAMALUM_STUDIO_URL) {
+    const canonical = studioOrigin(request.url);
+    if (canonical !== request.nextUrl.origin) {
+      const target = new URL(request.nextUrl.pathname + request.nextUrl.search, canonical);
+      if (!["GET", "HEAD"].includes(request.method)) return NextResponse.json({ error: `Open Studio at ${canonical} and sign in before submitting this form.` }, { status: 409 });
+      return NextResponse.redirect(target, 307);
+    }
+  }
+
   const clientId = getTeamAlumSubdomain(request.headers.get("host"));
   const rewritePath = clientId
     ? getClientRewritePath(clientId, request.nextUrl.pathname)

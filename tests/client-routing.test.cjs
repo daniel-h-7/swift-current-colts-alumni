@@ -11,7 +11,7 @@ function load(path, imports = {}) {
   return api;
 }
 const slugs = load('src/lib/client-slugs.ts');
-const { middleware } = load('middleware.ts', {'./src/lib/client-slugs':slugs});
+const { proxy: middleware } = load('src/proxy.ts', {'./lib/client-slugs':slugs,'./lib/client-address':load('src/lib/client-address.ts'),'./lib/studio-navigation':load('src/lib/studio-navigation.ts')});
 function request(url) { return new NextRequest(url, { headers: { host: new URL(url).host } }); }
 
 test('legacy hostnames share the canonical client record', () => {

@@ -27,7 +27,7 @@ export default function StripeSetupGuidePage() {
           <div>
             <section id="existing-account" className="scroll-mt-6 rounded-[2rem] border-l-4 border-[#c5a45b] bg-white p-7 md:p-9">
               <h2 className="text-2xl font-black">Already have a Stripe account?</h2>
-              <p className="mt-3 leading-7 text-slate-600">Have TeamAlum verify the existing account before starting a new connection. Today’s setup creates a new account when no connection is saved. The same Stripe email can contain more than one account.</p>
+              <p className="mt-3 leading-7 text-slate-600">Choose “Connect an existing Stripe account” on your organization’s Payments page. Sign in on Stripe and authorize the correct business account. The same Stripe email can contain more than one account.</p>
               <p className="mt-3 font-semibold leading-7">Preserve the account used by existing memberships. Rebuilding your site’s content does not require a new Stripe account.</p>
             </section>
             <section id="new-account" className="mt-10 scroll-mt-6">

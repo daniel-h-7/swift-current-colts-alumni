@@ -1,3 +1,4 @@
+import { safeStudioNext } from "@/lib/studio-navigation";
 import Link from "next/link";
 import { StudioHeader } from "@/components/studio-header";
 
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 type LoginSearchParams = {
   error?: string;
   reset?: string;
+  next?: string;
 };
 
 const fieldClass =
@@ -35,6 +37,7 @@ export default async function StudioLoginPage({
           className="rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_16px_50px_rgba(23,19,13,0.06)]"
           method="post"
         >
+          <input name="next" type="hidden" value={safeStudioNext(params.next)} />
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#785d25]">Your program. Your people.</p>
           <h2 className="mt-3 text-4xl font-black tracking-tight">Welcome back.</h2>
           <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">

@@ -1,3 +1,5 @@
+import { buildLaunchReadiness } from "@/lib/launch-readiness";
+import { getStripeMode } from "@/lib/stripe";
 import Link from "next/link";
 import { FeatureSettingsForm } from "@/components/studio/feature-settings-form";
 import { StudioHeader } from "@/components/studio-header";
@@ -14,22 +16,6 @@ import {
 } from "@/lib/platform-data";
 import { getSiteContentForClient } from "@/lib/site-content";
 import { getSiteSections } from "@/lib/site-sections";
-
-const setupItems = [
-  "Create organization",
-  "Choose site template",
-  "Add homepage content",
-  "Upload logo and photos",
-  "Connect Stripe",
-  "Submit for review",
-];
-
-type LaunchChecklistItem = {
-  href?: string;
-  isComplete: boolean;
-  label: string;
-  note: string;
-};
 
 export async function StudioDashboard({
   client,
@@ -56,61 +42,13 @@ export async function StudioDashboard({
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
   const previewHref = `/preview/${encodeURIComponent(client.id)}`;
   const liveUrl = `https://${client.subdomain || client.id}.teamalum.com`;
-  const enabledFeatures = features.filter((feature) => feature.is_enabled);
-  const hasHomepageContent = Boolean(
-    siteContent.brand.siteTitle &&
-      siteContent.brand.heroTitle &&
-      siteContent.brand.heroBody,
-  );
-  const hasVisualIdentity = Boolean(
-    siteContent.brand.logoUrl || siteContent.brand.heroImageUrl,
-  );
-  const hasPublicAddress = Boolean(
-    client.subdomain || client.id,
-  );
   const isReviewRequested = Boolean(client.launch_review_requested_at);
   const isLaunchApproved = Boolean(client.launch_approved_at);
-  const checklist: LaunchChecklistItem[] = [
-    {
-      href: `/studio/${encodeURIComponent(client.id)}/content`,
-      isComplete: hasHomepageContent,
-      label: "Homepage copy",
-      note: "Site title, hero headline, and intro copy are filled in.",
-    },
-    {
-      href: `/studio/${encodeURIComponent(client.id)}/content`,
-      isComplete: hasVisualIdentity,
-      label: "Logo and imagery",
-      note: "Logo or hero image is ready for review.",
-    },
-    {
-      isComplete: enabledFeatures.length > 0,
-      label: "Feature selection",
-      note: "At least one public site feature is enabled.",
-    },
-    {
-      href: `/studio/${encodeURIComponent(client.id)}/payments`,
-      isComplete: stripeStatus === "connected",
-      label: "Client Stripe",
-      note: "Membership payments are connected to the client Stripe account.",
-    },
-    {
-      isComplete: hasPublicAddress,
-      label: "TeamAlum URL",
-      note: "A client.teamalum.com address is assigned.",
-    },
-    {
-      href: previewHref,
-      isComplete: true,
-      label: "Preview available",
-      note: "Review the parked site before submitting.",
-    },
-  ];
-  const completedChecklistItems = checklist.filter((item) => item.isComplete)
-    .length;
-  const completedSetup =
-    3 + (stripeStatus === "connected" ? 1 : 0) +
-    (isReviewRequested ? 1 : 0);
+  const readiness = buildLaunchReadiness({ client, features, content: siteContent, stripe: integrations.find(i=>i.integration_key==="stripe_connect"), mode:getStripeMode(), rootDomain:process.env.TEAMALUM_ROOT_DOMAIN??"teamalum.com" });
+  const checklist = readiness.items;
+  const completedChecklistItems = readiness.completed;
+  const completedSetup = readiness.completed;
+  const setupItems = checklist.map(item=>item.label);
 
   return (
     <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
@@ -351,6 +289,16 @@ export async function StudioDashboard({
               </p>
             </div>
 
+            <div className="mt-5 rounded-2xl border border-[#dfcc9a] bg-[#faf7ef] p-5">
+              <p className="font-bold">{readiness.nextAction ? `Next: ${readiness.nextAction.label}` : "All launch checks are complete."}</p>
+              <form action={`/studio/${encodeURIComponent(client.id)}/setup`} method="post" className="mt-4 space-y-3">
+                <input type="hidden" name="intent" value="review" />
+                {[["content","I reviewed the homepage copy"],["visual","I reviewed the logo and images"],["features","I confirmed the selected features"],["preview","I opened and reviewed the current preview"]].map(([key,label])=><label className="flex gap-3 text-sm" key={key}><input type="checkbox" name={key} className="accent-[#785d25]"/>{label}</label>)}
+                <button type="submit" className="rounded-full bg-[#17130d] px-4 py-3 text-sm font-bold text-white">Confirm reviewed items</button>
+              </form>
+              <form action={`/studio/${encodeURIComponent(client.id)}/setup`} method="post" className="mt-4"><input type="hidden" name="intent" value="verify_domain"/><button type="submit" className="text-sm font-bold text-[#785d25] underline underline-offset-4">Verify public hosting</button></form>
+            </div>
+
             <form
               action={`/studio/${encodeURIComponent(client.id)}/submit-review`}
               className="mt-5"
@@ -358,7 +306,7 @@ export async function StudioDashboard({
             >
               <button
                 className="w-full border border-[#785d25] bg-[#785d25] px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-[#8b6f2f]"
-                disabled={isLaunchApproved}
+                disabled={isLaunchApproved || !readiness.isReady}
                 type="submit"
               >
                 {isReviewRequested ? "Resubmit For Review" : "Submit For Review"}
@@ -379,25 +327,7 @@ export async function StudioDashboard({
                 }}
               />
             </div>
-            <div className="mt-5 space-y-3">
-              {setupItems.map((item, index) => (
-                <div
-                  className="flex items-center justify-between gap-3 border border-slate-200 bg-slate-50 px-4 py-3"
-                  key={item}
-                >
-                  <span className="text-sm font-bold">{item}</span>
-                  <span
-                    className={`text-xs font-black uppercase tracking-[0.16em] ${
-                      index < completedSetup
-                        ? "text-[#785d25]"
-                        : "text-slate-400"
-                    }`}
-                  >
-                    {index < completedSetup ? "Done" : "Next"}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-600">Use the checklist above to review each remaining step.</p>
           </section>
 
           <section className="border border-slate-200 bg-white p-6 shadow-sm">

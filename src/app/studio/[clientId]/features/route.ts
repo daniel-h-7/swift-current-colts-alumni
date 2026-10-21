@@ -1,3 +1,5 @@
+import { studioLoginPath } from "@/lib/studio-navigation";
+import { updateSetupState } from "@/lib/setup-state";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import {
@@ -38,7 +40,7 @@ export async function POST(
     if (!(await canAccessStudioClient(clientId))) {
       return redirectTo(
         request,
-        "/studio/login?error=Log%20in%20to%20manage%20your%20site.",
+        studioLoginPath(`/studio/${encodeURIComponent(clientId)}`, "Log in to manage your site."),
       );
     }
 
@@ -87,6 +89,7 @@ export async function POST(
 
     await saveSiteSections(clientId, sections);
 
+    await updateSetupState(clientId, { features_reviewed_at: now, preview_reviewed_at: null });
     revalidatePath(`/studio/${clientId}`);
     revalidatePath(`/preview/${clientId}`);
 
