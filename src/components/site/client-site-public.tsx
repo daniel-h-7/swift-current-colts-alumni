@@ -1,3 +1,5 @@
+import { UnitySite } from "@/components/site/unity/unity-site";
+import { usesUnityPilot } from "@/lib/unity-pilot";
 import { studioLoginPath } from "@/lib/studio-navigation";
 import Link from "next/link";
 import { SiteAdminLink } from "@/components/site-admin-link";
@@ -58,6 +60,8 @@ export async function ClientSitePublic({
     getClientFeatures(client.id),
     getSiteSections(client.id),
   ]);
+  if (usesUnityPilot(client)) return <UnitySite client={client} content={siteContent} settings={settings} features={features} sections={sections} showJoin={showJoin} />;
+
   const featureMap = new Map(
     features.map((feature: ClientFeature) => [
       feature.feature_key,

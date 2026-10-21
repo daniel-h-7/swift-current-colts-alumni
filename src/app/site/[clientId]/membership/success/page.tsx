@@ -1,3 +1,5 @@
+import { UnitySuccess } from "@/components/site/unity/unity-site";
+import { usesUnityPilot } from "@/lib/unity-pilot";
 import { studioLoginPath } from "@/lib/studio-navigation";
 import { MembershipThanks } from "@/components/membership-thanks";
 import { SiteAdminLink } from "@/components/site-admin-link";
@@ -25,6 +27,7 @@ export default async function ClientMembershipSuccessPage({
   }
 
   const siteContent = await getSiteContentForClient(client.id);
+  if (usesUnityPilot(client)) return <UnitySuccess client={client} content={siteContent} />;
   const brand = siteContent.brand;
 
   return (

@@ -1,3 +1,6 @@
+import { UnitySite } from "@/components/site/unity/unity-site";
+import { usesUnityPilot } from "@/lib/unity-pilot";
+import { getMembershipSettingsForClient } from "@/lib/membership-settings";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventsSlider } from "@/components/events-slider";
@@ -34,6 +37,10 @@ export default async function ClientPreviewPage({
     getClientFeatures(previewClient.id),
     getSiteSections(previewClient.id),
   ]);
+  if (usesUnityPilot(client)) {
+    const settings = await getMembershipSettingsForClient(client.id);
+    return <UnitySite client={client} content={siteContent} settings={settings} features={features} sections={sections} preview />;
+  }
   const featureMap = new Map(
     features.map((feature: ClientFeature) => [
       feature.feature_key,

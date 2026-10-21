@@ -1,3 +1,7 @@
+import { UnitySite } from "@/components/site/unity/unity-site";
+import { usesUnityPilot } from "@/lib/unity-pilot";
+import { getClientFeatures } from "@/lib/platform-data";
+import { getSiteSections } from "@/lib/site-sections";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JoinForm } from "@/components/join-form";
@@ -30,6 +34,10 @@ export default async function ClientPreviewJoinPage({
     getSiteContentForClient(client.id),
     getMembershipSettingsForClient(client.id),
   ]);
+  if (usesUnityPilot(client)) {
+    const [features, sections] = await Promise.all([getClientFeatures(client.id), getSiteSections(client.id)]);
+    return <UnitySite client={client} content={siteContent} settings={settings} features={features} sections={sections} preview showJoin />;
+  }
   const brand = siteContent.brand;
   const heroImage = brand.heroImageUrl || "/images/stadium.jpg";
   const heroImagePosition = brand.heroImagePosition || "50% 50%";
