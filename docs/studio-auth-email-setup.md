@@ -6,7 +6,13 @@ Live inspection on October 21, 2026 confirmed the cause in **master**: Site URL 
 
 The Site URL has now been saved as `https://www.teamalum.com`, and both exact callbacks below were added successfully. The saved dashboard displayed both entries and the success message “Successfully added 2 URLs.” Request a fresh reset link after this change; previously sent links can retain the old destination. A real password change/login has not yet been verified.
 
-Custom SMTP is currently **disabled** in master. The dashboard states that default email templates are used and custom SMTP is required to edit their subject/body. Sender and template changes therefore remain pending a verified sending provider and From address. SMTP was left disabled; no incomplete provider configuration was saved.
+Custom SMTP is currently **disabled** in master. The dashboard states that default email templates are used and custom SMTP is required to edit their subject/body. Sender and template changes therefore remain pending a verified sending provider and From address. SMTP was left disabled on the server; no incomplete provider configuration was saved.
+
+Subsequent sender setup: the user selected **Resend** with **TeamAlum <accounts@teamalum.com>**. After explicit approval, three records were saved in Vercel DNS (the authoritative nameserver provider): TXT `resend._domainkey` with the Resend public DKIM key, TXT `send` with `v=spf1 include:amazonses.com ~all`, and MX `send` with priority 10 to `feedback-smtp.us-east-1.amazonses.com`. All three resolve publicly, and Resend now displays **Verified** for the domain and each record. Existing website and inbox records were not changed.
+
+The user entered the Resend API key privately and saved SMTP. The dashboard confirmed SMTP enabled and a stored hidden password, with sender name `TeamAlum`, configured sender `accounts@teamalum.com`, host `smtp.resend.com`, port `465`, and username `resend`. No API key was read or stored in this repository.
+
+Both hosted **Invite user** and **Reset password** templates were then saved from the HTML files below, using their listed TeamAlum subjects and retaining `{{ .ConfirmationURL }}`. Dashboard previews confirmed the branding, copy and buttons; the invitation save returned “Successfully updated email template.” The reset save returned to its saved state with the Reset template control available. Real email verification is a separate check; see the latest delivery status below.
 
 The reported live HQ is `https://www.teamalum.com/hq`, using **daniel-h-7's PHM ALUMNI BUILD**. Inspection of live Studio public browser assets confirmed `https://dkzugzinrdbvgbvxmuew.supabase.co` (project reference `dkzugzinrdbvgbvxmuew`). The non-www address currently redirects to www. The local `.env.local` uses a different Supabase project; apply hosted Auth changes to this confirmed live project, not the local or old standalone client project.
 
