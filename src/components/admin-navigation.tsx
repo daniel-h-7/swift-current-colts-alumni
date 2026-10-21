@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 import {
   createContext,
   useContext,

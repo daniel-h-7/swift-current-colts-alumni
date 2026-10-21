@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 import { LegendsWorkspace } from "@/components/legends-workspace";
 import { AdminNavigationProvider } from "@/components/admin-navigation";
 import {

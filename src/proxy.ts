@@ -1,4 +1,4 @@
-import { teamAdminHeader, teamAdminRoute } from "./lib/team-admin-routing";
+import { teamAdminHeader, teamAdminPathHeader, teamAdminRoute } from "./lib/team-admin-routing";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveClientSlug } from "./lib/client-slugs";
 
@@ -79,12 +79,14 @@ export async function proxy(request: NextRequest) {
   // Never trust a tenant header supplied by the browser, including on legacy routes.
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete(teamAdminHeader);
+  requestHeaders.delete(teamAdminPathHeader);
   const teamAdmin = teamAdminRoute(request.nextUrl.pathname);
   if (teamAdmin) {
     if (!["GET", "HEAD"].includes(request.method) && request.headers.get("origin") !== request.nextUrl.origin) {
       return NextResponse.json({ error: "Submit team changes from your signed-in workspace." }, { status: 403 });
     }
     requestHeaders.set(teamAdminHeader, teamAdmin.clientId);
+    requestHeaders.set(teamAdminPathHeader, request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 

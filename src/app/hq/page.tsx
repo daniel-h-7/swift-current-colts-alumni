@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 import { redirect } from "next/navigation";
 import { HqHeader } from "@/components/hq-header";
 import { isHqAuthenticated } from "@/lib/hq-auth";

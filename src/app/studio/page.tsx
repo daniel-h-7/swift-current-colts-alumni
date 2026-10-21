@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 import { redirect } from "next/navigation";
 import { StudioHeader } from "@/components/studio-header";
 import { getStudioClientIdsForUser, getStudioSession } from "@/lib/studio-auth";

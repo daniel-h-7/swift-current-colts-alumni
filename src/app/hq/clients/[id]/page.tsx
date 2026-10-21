@@ -1,5 +1,5 @@
 import { getClientLaunchReadiness } from "@/lib/launch-review";
-import Link from "next/link";
+import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 import { notFound, redirect } from "next/navigation";
 import { HqAddClientUser } from "@/components/hq-add-client-user";
 import { HqClientUserEditor, type HqClientUser } from "@/components/hq-client-user-editor";

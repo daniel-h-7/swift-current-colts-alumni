@@ -1,3 +1,4 @@
+export const teamAdminPathHeader = "x-teamalum-admin-path";
 export const teamAdminHeader = "x-teamalum-admin-client";
 export function teamAdminRoute(pathname: string) {
   const match = /^\/studio\/([a-zA-Z0-9_-]+)\/admin(\/.*)?$/.exec(pathname);

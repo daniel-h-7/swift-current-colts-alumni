@@ -7,8 +7,12 @@ import { isHqAuthenticated } from "@/lib/hq-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getPlatformClient } from "@/lib/platform-data";
 import { getSiteBrand } from "@/lib/site-brand";
-import { studioLoginPath } from "@/lib/studio-navigation";
-import { teamAdminHeader, teamAdminPath } from "@/lib/team-admin-routing";
+import { safeStudioNext, studioLoginPath } from "@/lib/studio-navigation";
+import {
+  teamAdminHeader,
+  teamAdminPath,
+  teamAdminPathHeader,
+} from "@/lib/team-admin-routing";
 
 export async function getTeamAdminClientId() {
   return (await headers()).get(teamAdminHeader);
@@ -38,8 +42,14 @@ export async function getWorkspaceClientId() {
 }
 export async function adminPath(path: string) {
   const clientId = await getTeamAdminClientId();
-  if (clientId && path === "/admin/login")
-    return studioLoginPath(`/studio/${encodeURIComponent(clientId)}/hub`);
+  if (clientId && path === "/admin/login") {
+    const requested = (await headers()).get(teamAdminPathHeader);
+    return studioLoginPath(
+      safeStudioNext(
+        requested || `/studio/${encodeURIComponent(clientId)}/admin`,
+      ),
+    );
+  }
   return teamAdminPath(path, clientId);
 }
 export async function getAdminBrand() {

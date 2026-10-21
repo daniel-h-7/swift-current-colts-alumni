@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 
 type StudioHeaderAction = {
   href: string;

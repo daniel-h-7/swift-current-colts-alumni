@@ -73,10 +73,11 @@ test("each team admin URL forwards a server supplied scope without trusting brow
     const response = await proxy(
       new NextRequest(
         `https://www.teamalum.com/studio/rmrfootball/admin${suffix}?q=rams`,
-        { headers: { "x-teamalum-admin-client": "colts" } },
+        { headers: { "x-teamalum-admin-client": "colts", "x-teamalum-admin-path": "/studio/colts/admin" } },
       ),
     );
     assert.equal(response.headers.get("x-middleware-next"), "1");
+    assert.equal(response.headers.get("x-middleware-request-x-teamalum-admin-path"), `/studio/rmrfootball/admin${suffix}?q=rams`);
     assert.equal(
       response.headers.get("x-middleware-request-x-teamalum-admin-client"),
       "rmrfootball",
@@ -84,13 +85,14 @@ test("each team admin URL forwards a server supplied scope without trusting brow
   }
   const legacy = await proxy(
     new NextRequest("https://www.teamalum.com/admin", {
-      headers: { "x-teamalum-admin-client": "rmrfootball" },
+      headers: { "x-teamalum-admin-client": "rmrfootball", "x-teamalum-admin-path": "/studio/rmrfootball/admin" },
     }),
   );
   assert.equal(
     legacy.headers.get("x-middleware-request-x-teamalum-admin-client"),
     null,
   );
+  assert.equal(legacy.headers.get("x-middleware-request-x-teamalum-admin-path"), null);
   const denied = await proxy(
     new NextRequest(
       "https://www.teamalum.com/studio/rmrfootball/admin/settings/email",
