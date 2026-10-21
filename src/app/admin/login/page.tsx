@@ -1,5 +1,10 @@
+import { getTeamAdminClientId } from "@/lib/team-admin";
+import { studioLoginPath } from "@/lib/studio-navigation";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
 import Image from "next/image";
-import Link from "next/link";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import {
   createAdminSession,
@@ -7,7 +12,7 @@ import {
   isAdminPasswordConfigured,
   verifyAdminPassword,
 } from "@/lib/admin-auth";
-import { getSiteBrand } from "@/lib/site-brand";
+import { getAdminBrand } from "@/lib/team-admin";
 
 type LoginSearchParams = {
   error?: string;
@@ -19,11 +24,11 @@ async function login(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   if (!verifyAdminPassword(password)) {
-    redirect("/admin/login?error=1");
+    redirect(await adminPath("/admin/login?error=1"));
   }
 
   await createAdminSession();
-  redirect("/admin");
+  redirect(await adminPath("/admin"));
 }
 
 export default async function AdminLoginPage({
@@ -32,13 +37,15 @@ export default async function AdminLoginPage({
   searchParams: Promise<LoginSearchParams>;
 }) {
   if (await isAdminAuthenticated()) {
-    redirect("/admin");
+    redirect(await adminPath("/admin"));
   }
 
+  const teamId = await getTeamAdminClientId();
+  if (teamId) redirect(studioLoginPath(`/studio/${encodeURIComponent(teamId)}/hub`));
   const params = await searchParams;
   const hasError = params.error === "1";
   const isConfigured = isAdminPasswordConfigured();
-  const brand = getSiteBrand();
+  const brand = (await getAdminBrand());
 
   return (
     <main className={`min-h-screen bg-black text-white ${brand.themeClass}`}>
@@ -104,7 +111,7 @@ export default async function AdminLoginPage({
             </div>
           ) : null}
 
-          <form action={login} className="mt-6">
+          <AdminForm action={login} className="mt-6">
             <label className="text-sm font-bold text-gray-200">
               Password
               <input
@@ -122,7 +129,7 @@ export default async function AdminLoginPage({
             >
               Open Dashboard
             </button>
-          </form>
+          </AdminForm>
 
           <Link
             className="mt-6 inline-flex text-sm font-bold text-gray-400 hover:text-white"

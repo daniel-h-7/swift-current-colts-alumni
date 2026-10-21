@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import { relationshipTypes, sports } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -16,7 +17,7 @@ export default async function ContactImportPage({
   searchParams: Promise<ImportSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const params = await searchParams;

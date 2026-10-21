@@ -1,4 +1,7 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import type { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -11,7 +14,7 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { logContactActivity } from "@/lib/contact-activity";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
 import {
@@ -74,7 +77,7 @@ async function getContact(id: string) {
   const { data, error } = await supabase
     .from("contacts")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", id)
     .maybeSingle();
 
@@ -90,7 +93,7 @@ async function getContactActivities(contactId: string) {
   const { data, error } = await supabase
     .from("contact_activities")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("contact_id", contactId)
     .order("created_at", { ascending: false })
     .limit(25);
@@ -106,7 +109,7 @@ async function updateContact(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const id = String(formData.get("id") ?? "");
@@ -155,7 +158,7 @@ async function updateContact(formData: FormData) {
   };
 
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { data: existingContact, error: existingContactError } = await supabase
     .from("contacts")
     .select("id")
@@ -164,7 +167,7 @@ async function updateContact(formData: FormData) {
     .maybeSingle();
 
   if (existingContactError || !existingContact) {
-    redirect(getErrorRedirect(id, "Contact was not found for this client."));
+    redirect(await adminPath(getErrorRedirect(id, "Contact was not found for this client.")));
   }
 
   const { error } = await supabase
@@ -174,11 +177,12 @@ async function updateContact(formData: FormData) {
     .eq("id", id);
 
   if (error) {
-    redirect(getErrorRedirect(id, error));
+    redirect(await adminPath(getErrorRedirect(id, error)));
   }
 
   if (updates.membership_status === "Active Member" && updates.email_opt_in) {
     await runNewSignupAutomation({
+            clientId,
       contactId: id,
       source: "admin",
     }).catch((error: unknown) => {
@@ -188,6 +192,7 @@ async function updateContact(formData: FormData) {
 
   try {
     await logContactActivity({
+      clientId: await getWorkspaceClientId(),
       body: `Status: ${updates.status}. Membership: ${updates.membership_status}.`,
       contactId: id,
       metadata: {
@@ -203,9 +208,9 @@ async function updateContact(formData: FormData) {
     console.error("Unable to log contact activity", error);
   }
 
-  revalidatePath("/admin");
-  revalidatePath(`/admin/contacts/${id}`);
-  redirect(`/admin/contacts/${id}?saved=1`);
+  revalidatePath(await adminPath("/admin"));
+  revalidatePath(await adminPath(`/admin/contacts/${id}`));
+  redirect(await adminPath(`/admin/contacts/${id}?saved=1`));
 }
 
 function DetailItem({
@@ -233,7 +238,7 @@ export default async function ContactDetailPage({
   searchParams: Promise<ContactSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const { id } = await params;
@@ -454,7 +459,7 @@ export default async function ContactDetailPage({
             </div>
           ) : null}
 
-          <form action={updateContact} className="mt-6 space-y-5">
+          <AdminForm action={updateContact} className="mt-6 space-y-5">
             <input name="id" type="hidden" value={contact.id} />
 
             <div className="grid gap-5 md:grid-cols-2">
@@ -722,7 +727,7 @@ export default async function ContactDetailPage({
             >
               Save Contact
             </button>
-          </form>
+          </AdminForm>
         </section>
       </div>
     </main>

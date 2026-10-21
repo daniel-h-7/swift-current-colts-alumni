@@ -1,12 +1,13 @@
+import { adminPath } from "@/lib/team-admin";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { getSiteContent, normalizeSiteContent } from "@/lib/site-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-function redirectTo(request: Request, path: string) {
-  return NextResponse.redirect(new URL(path, request.url), 303);
+async function redirectTo(request: Request, path: string) {
+  return NextResponse.redirect(new URL(await adminPath(path), request.url), 303);
 }
 
 export async function POST(request: Request) {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   const siteContent = normalizeSiteContent({...previousContent, ...incoming}, undefined, previousContent);
   const supabase = createServerSupabaseClient();
   const { error } = await supabase.from("crm_settings").upsert({
-    client_id: getCurrentClientId(),
+    client_id: (await getWorkspaceClientId()),
     id: "default",
     site_content: siteContent,
     updated_at: new Date().toISOString(),
@@ -34,11 +35,11 @@ export async function POST(request: Request) {
     throw error;
   }
 
-  revalidatePath("/");
-  revalidatePath("/preview", "layout");
-  revalidatePath("/site", "layout");
-  revalidatePath("/join");
-  revalidatePath("/admin/settings/site-content");
+  revalidatePath(await adminPath("/"));
+  revalidatePath(await adminPath("/preview"), "layout");
+  revalidatePath(await adminPath("/site"), "layout");
+  revalidatePath(await adminPath("/join"));
+  revalidatePath(await adminPath("/admin/settings/site-content"));
 
   return redirectTo(request, "/admin/settings/site-content?saved=1");
 }

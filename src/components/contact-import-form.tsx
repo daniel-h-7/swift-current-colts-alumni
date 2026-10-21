@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminForm } from "@/components/admin-navigation";
+
 import { useState } from "react";
 
 const fieldClass =
@@ -10,7 +12,7 @@ export function ContactImportForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
-    <form
+    <AdminForm
       action="/admin/import/upload"
       className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl"
       encType="multipart/form-data"
@@ -82,6 +84,6 @@ export function ContactImportForm() {
       >
         {isSubmitting ? "Importing Contacts..." : "Import Contacts"}
       </button>
-    </form>
+    </AdminForm>
   );
 }

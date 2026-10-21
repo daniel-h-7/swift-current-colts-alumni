@@ -1,7 +1,7 @@
 import { getLegendsCopy, type LegendsCopy } from "@/lib/legends-copy";
 import "server-only";
 
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { getSiteBrand } from "@/lib/site-brand";
 import { getPlatformClient } from "@/lib/platform-data";
 import { resolveClientSlug } from "@/lib/client-slugs";
@@ -592,7 +592,7 @@ export function normalizeSiteContent(value: unknown, siteVariant?: string, defau
 }
 
 export async function getSiteContent() {
-  return getSiteContentForClient(getCurrentClientId());
+  return getSiteContentForClient(await getWorkspaceClientId());
 }
 
 export async function getSiteContentForClient(clientId: string) {

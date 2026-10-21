@@ -1,4 +1,6 @@
 "use client";
+
+import { AdminForm } from "@/components/admin-navigation";
 import { LegendsCopyFields } from "@/components/legends-copy-fields";
 import { getLegendsCopy } from "@/lib/legends-copy";
 
@@ -193,7 +195,7 @@ export function SiteContentForm({
   }
 
   return (
-    <form action="/admin/settings/site-content/save" className="space-y-6" method="post">
+    <AdminForm action="/admin/settings/site-content/save" className="space-y-6" method="post">
       <input name="site_content" type="hidden" value={serializedContent} />
       <LegendsCopyFields name={content.brand.siteTitle} value={legends} onChange={(key,value)=>setLegends(current=>({...current,[key]:value}))} />
 
@@ -769,6 +771,6 @@ export function SiteContentForm({
       >
         Save Site Content
       </button>
-    </form>
+    </AdminForm>
   );
 }

@@ -16,7 +16,7 @@ function getSiteUrl() {
   return getServerEnvValue("NEXT_PUBLIC_SITE_URL")?.replace(/\/$/, "");
 }
 
-function signUnsubscribeToken(contactId: string) {
+function signUnsubscribeToken(contactId: string, clientId: string) {
   const secret = getUnsubscribeSecret();
 
   if (!secret) {
@@ -24,7 +24,7 @@ function signUnsubscribeToken(contactId: string) {
   }
 
   return createHmac("sha256", secret)
-    .update(`unsubscribe:${getCurrentClientId()}:${contactId}`)
+    .update(`unsubscribe:${clientId}:${contactId}`)
     .digest("hex");
 }
 
@@ -38,9 +38,9 @@ function isSameToken(value: string, expected: string) {
   );
 }
 
-export function createUnsubscribeUrl(contactId: string) {
+export function createUnsubscribeUrl(contactId: string, clientId = getCurrentClientId()) {
   const siteUrl = getSiteUrl();
-  const token = signUnsubscribeToken(contactId);
+  const token = signUnsubscribeToken(contactId, clientId);
 
   if (!siteUrl || !token) {
     return null;
@@ -48,13 +48,14 @@ export function createUnsubscribeUrl(contactId: string) {
 
   const url = new URL("/unsubscribe", siteUrl);
   url.searchParams.set("contact", contactId);
+  url.searchParams.set("client", clientId);
   url.searchParams.set("token", token);
 
   return url.toString();
 }
 
-export function verifyUnsubscribeToken(contactId: string, token: string) {
-  const expectedToken = signUnsubscribeToken(contactId);
+export function verifyUnsubscribeToken(contactId: string, token: string, clientId = getCurrentClientId()) {
+  const expectedToken = signUnsubscribeToken(contactId, clientId);
 
   return Boolean(expectedToken && token && isSameToken(token, expectedToken));
 }

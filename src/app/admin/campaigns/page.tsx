@@ -1,10 +1,13 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Campaign } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateCampaignWithBlasts } from "@/lib/campaign-duplication";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { formatDate } from "@/lib/contact-format";
 import { ensureNewSignupAutomationCampaign } from "@/lib/new-signup-automation";
 import { ensureRenewalReminderCampaign } from "@/lib/renewal-reminder-automation";
@@ -149,7 +152,7 @@ function CampaignSortHeader({
 
 async function getCampaigns(filters: CampaignsSearchParams) {
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { data: campaigns, error: campaignsError } = await supabase
     .from("campaigns")
     .select("*")
@@ -221,21 +224,21 @@ async function duplicateCampaign(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
   const newCampaignId = await duplicateCampaignWithBlasts(campaignId);
 
-  revalidatePath("/admin/campaigns");
-  redirect(`/admin/campaigns/${newCampaignId}`);
+  revalidatePath(await adminPath("/admin/campaigns"));
+  redirect(await adminPath(`/admin/campaigns/${newCampaignId}`));
 }
 
 async function deleteCampaign(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
@@ -243,15 +246,15 @@ async function deleteCampaign(formData: FormData) {
   const { error } = await supabase
     .from("campaigns")
     .delete()
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", campaignId);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/admin/campaigns");
-  redirect("/admin/campaigns");
+  revalidatePath(await adminPath("/admin/campaigns"));
+  redirect(await adminPath("/admin/campaigns"));
 }
 
 export default async function CampaignsPage({
@@ -260,7 +263,7 @@ export default async function CampaignsPage({
   searchParams: Promise<CampaignsSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const filters = await searchParams;
@@ -365,7 +368,7 @@ export default async function CampaignsPage({
                         >
                           Edit
                         </Link>
-                        <form action={duplicateCampaign}>
+                        <AdminForm action={duplicateCampaign}>
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <button
                             className="font-black text-slate-600 hover:text-[#17130d]"
@@ -373,8 +376,8 @@ export default async function CampaignsPage({
                           >
                             Duplicate
                           </button>
-                        </form>
-                        <form action={deleteCampaign}>
+                        </AdminForm>
+                        <AdminForm action={deleteCampaign}>
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <ConfirmSubmitButton
                             className="font-black text-red-700 hover:text-red-700"
@@ -382,7 +385,7 @@ export default async function CampaignsPage({
                           >
                             Delete
                           </ConfirmSubmitButton>
-                        </form>
+                        </AdminForm>
                       </div>
                     </td>
                   </tr>

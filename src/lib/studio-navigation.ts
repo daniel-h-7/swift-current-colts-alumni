@@ -22,3 +22,10 @@ export function studioOrigin(requestUrl: string) {
   if (origin.username || origin.password || (origin.protocol !== "https:" && !(origin.protocol === "http:" && loopback))) throw new Error("Studio requires a secure canonical URL.");
   return origin.origin;
 }
+
+/** Public ADMIN links always enter the assigned team's central workspace. */
+export function teamHubHref(clientId: string) {
+  const path = `/studio/${encodeURIComponent(clientId)}/hub`;
+  const canonical = process.env.TEAMALUM_STUDIO_URL || (process.env.NODE_ENV === "production" ? "https://www.teamalum.com" : "");
+  return canonical ? `${studioOrigin(canonical)}${path}` : path;
+}

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import { SiteContentForm } from "@/components/site-content-form";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -16,7 +17,7 @@ export default async function SiteContentSettingsPage({
   searchParams: Promise<SiteContentSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const [content, params] = await Promise.all([getSiteContent(), searchParams]);

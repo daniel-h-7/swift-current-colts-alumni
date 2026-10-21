@@ -12,7 +12,7 @@ Subsequent sender setup: the user selected **Resend** with **TeamAlum <accounts@
 
 The user entered the Resend API key privately and saved SMTP. The dashboard confirmed SMTP enabled and a stored hidden password, with sender name `TeamAlum`, configured sender `accounts@teamalum.com`, host `smtp.resend.com`, port `465`, and username `resend`. No API key was read or stored in this repository.
 
-Both hosted **Invite user** and **Reset password** templates were then saved from the HTML files below, using their listed TeamAlum subjects and retaining `{{ .ConfirmationURL }}`. Dashboard previews confirmed the branding, copy and buttons; the invitation save returned “Successfully updated email template.” The reset save returned to its saved state with the Reset template control available. Real email verification is a separate check; see the latest delivery status below.
+Both hosted **Invite user** and **Reset password** templates were then saved from the HTML files below, using their listed TeamAlum subjects and retaining `{{ .ConfirmationURL }}`. Dashboard previews confirmed the branding, copy and buttons; the invitation save returned “Successfully updated email template.” The reset save returned to its saved state with the Reset template control available. The recovery email was subsequently delivered successfully; see the latest delivery status below.
 
 The reported live HQ is `https://www.teamalum.com/hq`, using **daniel-h-7's PHM ALUMNI BUILD**. Inspection of live Studio public browser assets confirmed `https://dkzugzinrdbvgbvxmuew.supabase.co` (project reference `dkzugzinrdbvgbvxmuew`). The non-www address currently redirects to www. The local `.env.local` uses a different Supabase project; apply hosted Auth changes to this confirmed live project, not the local or old standalone client project.
 
@@ -60,7 +60,11 @@ These HTML files are ready to paste; committing/deploying them does not automati
 4. For a future new client invitation, confirm the email opens `/studio/accept-invite`, sets a password, and the resulting login reaches only the client's authorized site(s).
 5. Verify expired/used links offer a new request. If a fresh message still uses localhost, inspect that email's destination and the active project's Auth logs/settings. Do not share token-bearing URLs, SMTP passwords or service-role keys.
 
-Live email sending and password changes require an authorized test recipient; automated tests use mocks and do not send mail.
+## Latest delivery status
+
+On October 21, 2026, the user explicitly authorized one password-reset test to their Studio account. The request was submitted through the live canonical forgot-password page and returned its success state. Resend’s sending history showed **Delivered** for the message with subject **Reset your TeamAlum Studio password**. This confirms the SMTP credential and verified sender domain can deliver the live recovery email. The recipient must still open the link and verify the reset page; no password was changed by the agent, and no invitation was sent to another user.
+
+Automated tests use mocks and do not send mail. Additional live email tests require an authorized recipient.
 
 ## References
 

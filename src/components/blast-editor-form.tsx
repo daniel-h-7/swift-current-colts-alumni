@@ -1,4 +1,6 @@
-import Link from "next/link";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { ReactNode } from "react";
 import { EmailEditor } from "@/components/email-editor";
 import {
@@ -8,12 +10,12 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { parseAudienceFilter } from "@/lib/campaign-options";
-import { getSiteBrand } from "@/lib/site-brand";
+import { getAdminBrand } from "@/lib/team-admin";
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-[#e9e1d1] bg-white px-4 py-3 text-[#17130d] outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#c5a45b]/30";
 
-export function BlastEditorForm({
+export async function BlastEditorForm({
   action,
   backHref,
   blastId,
@@ -40,7 +42,7 @@ export function BlastEditorForm({
   heading: string;
   submitLabel: string;
 }) {
-  const brand = getSiteBrand();
+  const brand = await getAdminBrand();
   const audience = parseAudienceFilter(defaultAudience);
 
   return (
@@ -56,7 +58,7 @@ export function BlastEditorForm({
           </p>
           <h1 className="mt-3 text-4xl font-black tracking-tight md:text-5xl">{heading}</h1>
 
-          <form action={action} className="mt-8 space-y-5">
+          <AdminForm action={action} className="mt-8 space-y-5">
             <input name="campaign_id" type="hidden" value={campaignId} />
             {blastId ? <input name="blast_id" type="hidden" value={blastId} /> : null}
 
@@ -282,7 +284,7 @@ export function BlastEditorForm({
             >
               {submitLabel}
             </button>
-          </form>
+          </AdminForm>
         </section>
 
         {children ? <div className="mt-6 space-y-6">{children}</div> : null}

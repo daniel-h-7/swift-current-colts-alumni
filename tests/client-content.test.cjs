@@ -22,6 +22,7 @@ const api = load('src/lib/site-content.ts', {
   '@/lib/legends-copy': load('src/lib/legends-copy.ts'),
   '@/lib/site-brand': branding,
   '@/lib/client-slugs': slugs,
+  '@/lib/team-admin': {getWorkspaceClientId:async()=> 'colts'},
   '@/lib/client-context': {getCurrentClientId:()=> 'colts'},
   '@/lib/platform-data': {getPlatformClient:async id=> ({id,site_variant:id==='ram-club'?'rmrfootball':id})},
   '@/lib/supabase/server': {createServerSupabaseClient:()=>({from:()=>({select:()=>({eq(key,value){if(key==='client_id')queriedClient=value;return this;},maybeSingle:async()=>({data:{site_content:savedContent},error:null})})})})},

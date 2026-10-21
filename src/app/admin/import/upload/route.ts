@@ -1,3 +1,4 @@
+import { adminPath } from "@/lib/team-admin";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -6,8 +7,8 @@ import { importContactsFromCsv } from "@/lib/contact-import";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function getImportUrl(request: Request, params: Record<string, string>) {
-  const url = new URL("/admin/import", request.url);
+async function getImportUrl(request: Request, params: Record<string, string>) {
+  const url = new URL(await adminPath("/admin/import"), request.url);
 
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.set(key, value);
@@ -16,13 +17,13 @@ function getImportUrl(request: Request, params: Record<string, string>) {
   return url;
 }
 
-function getErrorResponse(request: Request, message: string) {
-  return NextResponse.redirect(getImportUrl(request, { error: message }), 303);
+async function getErrorResponse(request: Request, message: string) {
+  return NextResponse.redirect(await getImportUrl(request, { error: message }), 303);
 }
 
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.redirect(new URL("/admin/login", request.url), 303);
+    return NextResponse.redirect(new URL(await adminPath("/admin/login"), request.url), 303);
   }
 
   try {
@@ -41,11 +42,11 @@ export async function POST(request: Request) {
     const csvText = await file.text();
     const importedCount = await importContactsFromCsv(csvText, optInMode);
 
-    revalidatePath("/admin");
-    revalidatePath("/admin/import");
+    revalidatePath(await adminPath("/admin"));
+    revalidatePath(await adminPath("/admin/import"));
 
     return NextResponse.redirect(
-      getImportUrl(request, { imported: String(importedCount) }),
+      await getImportUrl(request, { imported: String(importedCount) }),
       303,
     );
   } catch (error) {

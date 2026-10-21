@@ -1,11 +1,12 @@
+import { adminPath } from "@/lib/team-admin";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-function redirectTo(request: Request, path: string) {
-  return NextResponse.redirect(new URL(path, request.url), 303);
+async function redirectTo(request: Request, path: string) {
+  return NextResponse.redirect(new URL(await adminPath(path), request.url), 303);
 }
 
 export async function POST(request: Request) {
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const supabase = createServerSupabaseClient();
     const { error } = await supabase.from("crm_settings").upsert({
-      client_id: getCurrentClientId(),
+      client_id: (await getWorkspaceClientId()),
       email_from_address: String(formData.get("email_from_address") ?? "")
         .trim()
         .toLowerCase(),
@@ -51,8 +52,8 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    revalidatePath("/admin/settings");
-    revalidatePath("/admin/campaigns");
+    revalidatePath(await adminPath("/admin/settings"));
+    revalidatePath(await adminPath("/admin/campaigns"));
 
     if (wantsJson) {
       return NextResponse.json({ ok: true });

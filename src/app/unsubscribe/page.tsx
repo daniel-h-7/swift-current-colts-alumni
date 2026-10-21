@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getPlatformClient } from "@/lib/platform-data";
 import { getCurrentClientId } from "@/lib/client-context";
 import { logContactActivity } from "@/lib/contact-activity";
 import { getSiteBrand } from "@/lib/site-brand";
@@ -6,6 +7,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { verifyUnsubscribeToken } from "@/lib/unsubscribe";
 
 type UnsubscribeSearchParams = {
+  client?: string;
   contact?: string;
   token?: string;
 };
@@ -17,18 +19,19 @@ export default async function UnsubscribePage({
 }: {
   searchParams: Promise<UnsubscribeSearchParams>;
 }) {
-  const brand = getSiteBrand();
   const params = await searchParams;
   const contactId = params.contact ?? "";
   const token = params.token ?? "";
-  const isValid = verifyUnsubscribeToken(contactId, token);
+  const clientId = params.client || getCurrentClientId();
+  const isValid = verifyUnsubscribeToken(contactId, token, clientId);
+  const client = isValid ? await getPlatformClient(clientId) : null;
+  const brand = {...getSiteBrand(client?.site_variant), programName: client?.name || "your team"};
   let title = "Unable to unsubscribe";
   let message =
     "This unsubscribe link is invalid or expired. Please contact the club to update your email preferences.";
 
   if (isValid) {
     const supabase = createServerSupabaseClient();
-    const clientId = getCurrentClientId();
     const { data, error } = await supabase
       .from("contacts")
       .update({ email_opt_in: false })
@@ -47,6 +50,7 @@ export default async function UnsubscribePage({
         `Your email opt-in has been turned off. You will no longer receive ${brand.programName} blast emails.`;
 
       await logContactActivity({
+        clientId,
         body: "Email opt-in was turned off from an unsubscribe link.",
         contactId: data.id,
         metadata: {

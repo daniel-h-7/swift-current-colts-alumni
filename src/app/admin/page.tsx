@@ -1,4 +1,7 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
@@ -9,9 +12,9 @@ import {
   sports,
 } from "@/lib/contact-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { runNewSignupAutomation } from "@/lib/new-signup-automation";
-import { getSiteBrand } from "@/lib/site-brand";
+import { getAdminBrand } from "@/lib/team-admin";
 import {
   createServerSupabaseClient,
   getServerEnvValue,
@@ -141,7 +144,7 @@ async function getSummaryStats() {
   const { data, error } = await supabase
     .from("contacts")
     .select("membership_status, paid_through, email_opt_in, sms_opt_in")
-    .eq("client_id", getCurrentClientId());
+    .eq("client_id", (await getWorkspaceClientId()));
 
   if (error) {
     throw new Error(error.message);
@@ -185,7 +188,7 @@ async function getContacts(filters: SearchParams) {
   let query = supabase
     .from("contacts")
     .select("*")
-    .eq("client_id", getCurrentClientId());
+    .eq("client_id", (await getWorkspaceClientId()));
 
   if (searchTerm) {
     query = query.or(
@@ -257,7 +260,7 @@ async function bulkContactAction(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const contactIds = String(formData.get("contact_ids") ?? "")
@@ -267,11 +270,11 @@ async function bulkContactAction(formData: FormData) {
   const bulkAction = String(formData.get("bulk_action") ?? "");
 
   if (!contactIds.length) {
-    redirect("/admin");
+    redirect(await adminPath("/admin"));
   }
 
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
 
   if (bulkAction === "delete") {
     const { error } = await supabase
@@ -324,6 +327,7 @@ async function bulkContactAction(formData: FormData) {
       await Promise.all(
         contactIds.map((contactId) =>
           runNewSignupAutomation({
+            clientId,
             contactId,
             source: "admin",
           }).catch((error: unknown) => {
@@ -334,8 +338,8 @@ async function bulkContactAction(formData: FormData) {
     }
   }
 
-  revalidatePath("/admin");
-  redirect("/admin");
+  revalidatePath(await adminPath("/admin"));
+  redirect(await adminPath("/admin"));
 }
 
 export default async function AdminPage({
@@ -344,7 +348,7 @@ export default async function AdminPage({
   searchParams: Promise<SearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const filters = await searchParams;
@@ -371,7 +375,7 @@ export default async function AdminPage({
     );
   }
 
-  const brand = getSiteBrand();
+  const brand = (await getAdminBrand());
   const backendSetupMessage =
     errorMessage ||
     summaryErrorMessage;
@@ -438,7 +442,7 @@ export default async function AdminPage({
             </p>
           </div>
 
-          <form action="/admin" className="mt-6 grid gap-5 md:grid-cols-6">
+          <AdminForm action="/admin" className="mt-6 grid gap-5 md:grid-cols-6">
             <input name="sort_by" type="hidden" value={getSort(filters).sortBy} />
             <input
               name="sort_dir"
@@ -615,7 +619,7 @@ export default async function AdminPage({
                 Clear
               </Link>
             </div>
-          </form>
+          </AdminForm>
         </section>
 
         {errorMessage ? (

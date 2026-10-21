@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -35,7 +35,7 @@ export function getDefaultMembershipSettings(): MembershipSettings {
 }
 
 export async function getMembershipSettings() {
-  return getMembershipSettingsForClient(getCurrentClientId());
+  return getMembershipSettingsForClient(await getWorkspaceClientId());
 }
 
 export async function getMembershipSettingsForClient(clientId: string) {

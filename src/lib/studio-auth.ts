@@ -116,7 +116,7 @@ export async function createStudioSession(session: StudioSession) {
 export async function clearStudioSession() {
   const cookieStore = await cookies();
 
-  cookieStore.delete(studioCookieName);
+  cookieStore.set(studioCookieName, "", { path: "/studio", maxAge: 0, httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
 }
 
 export async function signInStudioUser(email: string, password: string) {

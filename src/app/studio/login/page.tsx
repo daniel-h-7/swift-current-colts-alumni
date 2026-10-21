@@ -1,7 +1,10 @@
+import { getStudioSession } from "@/lib/studio-auth";
+import { redirect } from "next/navigation";
 import { safeStudioNext } from "@/lib/studio-navigation";
 import Link from "next/link";
 import { StudioHeader } from "@/components/studio-header";
 
+export const metadata = { title: "Team Login | TeamAlum", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 type LoginSearchParams = {
@@ -19,6 +22,7 @@ export default async function StudioLoginPage({
   searchParams: Promise<LoginSearchParams>;
 }) {
   const params = await searchParams;
+  if (!params.error && await getStudioSession()) redirect(safeStudioNext(params.next));
 
   return (
     <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
@@ -27,8 +31,8 @@ export default async function StudioLoginPage({
           { href: "/", label: "TeamAlum" },
           { href: "/studio/start", label: "Start Site", tone: "primary" },
         ]}
-        subtitle="Log back in to edit your TeamAlum site, update content, and manage launch steps."
-        title="Studio Login"
+        subtitle="Sign in to your team hub to manage your site, contacts, donors, and campaigns."
+        title="Team Login"
       />
 
       <section className="mx-auto grid max-w-5xl gap-6 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_340px]">

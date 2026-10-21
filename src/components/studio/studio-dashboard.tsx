@@ -55,7 +55,8 @@ export async function StudioDashboard({
       <StudioHeader
         actions={[
           ...(isHqEditing ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }] : []),
-          { href: `/studio/${client.id}`, label: "Builder Dashboard", tone: "primary" },
+          { href: `/studio/${client.id}/hub`, label: "Team Hub" },
+          { href: `/studio/${client.id}`, label: "Site Setup", tone: "primary" },
           { href: "/studio/start", label: "Start Site" },
           { href: isHqEditing ? "/hq/logout" : "/studio/logout", label: "Log Out" },
         ]}

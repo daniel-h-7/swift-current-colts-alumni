@@ -1,11 +1,12 @@
+import { adminPath } from "@/lib/team-admin";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-function redirectTo(request: Request, path: string) {
-  return NextResponse.redirect(new URL(path, request.url), 303);
+async function redirectTo(request: Request, path: string) {
+  return NextResponse.redirect(new URL(await adminPath(path), request.url), 303);
 }
 
 export async function POST(request: Request) {
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     const supabase = createServerSupabaseClient();
     const { error } = await supabase.from("crm_settings").upsert({
       annual_membership_amount_cents: Math.round(parsedAmount * 100),
-      client_id: getCurrentClientId(),
+      client_id: (await getWorkspaceClientId()),
       id: "default",
       join_body: String(formData.get("join_body") ?? "").trim(),
       join_headline: String(formData.get("join_headline") ?? "").trim(),
@@ -50,8 +51,8 @@ export async function POST(request: Request) {
       );
     }
 
-    revalidatePath("/join");
-    revalidatePath("/admin/settings");
+    revalidatePath(await adminPath("/join"));
+    revalidatePath(await adminPath("/admin/settings"));
 
     return redirectTo(request, "/admin/settings/?saved=1");
   } catch (error) {

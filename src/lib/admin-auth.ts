@@ -1,4 +1,5 @@
 import "server-only";
+import { canManageTeamOperations, getTeamAdminClientId } from "@/lib/team-admin";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
@@ -49,6 +50,8 @@ export function verifyAdminPassword(password: string) {
 }
 
 export async function isAdminAuthenticated() {
+  const clientId = await getTeamAdminClientId();
+  if (clientId) return canManageTeamOperations(clientId);
   const expectedToken = signToken();
 
   if (!expectedToken) {

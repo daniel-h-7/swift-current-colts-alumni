@@ -7,7 +7,7 @@ import type { MembershipSettings } from "@/lib/membership-settings";
 import type { SiteSection } from "@/lib/site-sections-shared";
 import { SupportShareBar } from "@/components/support-share-bar";
 import { JoinForm } from "@/components/join-form";
-import { studioLoginPath } from "@/lib/studio-navigation";
+import { teamHubHref } from "@/lib/studio-navigation";
 import {
   legendsColors,
   safeLegendsLink,
@@ -109,7 +109,7 @@ function Header({
         </Link>
         <nav className={styles.headerNav} aria-label="Main navigation">
           <Link
-            href={studioLoginPath(`/studio/${encodeURIComponent(client.id)}`)}
+            href={teamHubHref(client.id)}
           >
             ADMIN
           </Link>

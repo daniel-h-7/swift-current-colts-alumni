@@ -1,4 +1,7 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
@@ -7,7 +10,7 @@ import {
   campaignStatuses,
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type EditCampaignParams = {
@@ -22,7 +25,7 @@ async function getCampaign(id: string) {
   const { data, error } = await supabase
     .from("campaigns")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", id)
     .maybeSingle();
 
@@ -37,7 +40,7 @@ async function updateCampaign(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
@@ -51,16 +54,16 @@ async function updateCampaign(formData: FormData) {
       title: String(formData.get("title") ?? "").trim(),
       updated_at: new Date().toISOString(),
     })
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", campaignId);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/admin/campaigns");
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  redirect(`/admin/campaigns/${campaignId}`);
+  revalidatePath(await adminPath("/admin/campaigns"));
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}`));
 }
 
 export default async function EditCampaignPage({
@@ -69,7 +72,7 @@ export default async function EditCampaignPage({
   params: Promise<EditCampaignParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const { id } = await params;
@@ -90,7 +93,7 @@ export default async function EditCampaignPage({
             Edit Campaign
           </p>
           <h1 className="mt-3 text-4xl font-black">Campaign Settings</h1>
-          <form action={updateCampaign} className="mt-8 space-y-5">
+          <AdminForm action={updateCampaign} className="mt-8 space-y-5">
             <input name="campaign_id" type="hidden" value={campaign.id} />
             <label className="block text-sm font-bold text-slate-700">
               Campaign title
@@ -131,7 +134,7 @@ export default async function EditCampaignPage({
             >
               Save Campaign
             </button>
-          </form>
+          </AdminForm>
         </section>
       </div>
     </main>

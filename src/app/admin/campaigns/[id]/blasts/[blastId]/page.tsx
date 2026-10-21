@@ -1,3 +1,6 @@
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
@@ -9,7 +12,7 @@ import {
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateBlast } from "@/lib/campaign-duplication";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import {
   getAudienceContacts,
   getAudiencePreview,
@@ -33,7 +36,7 @@ async function getBlast(blastId: string) {
   const { data, error } = await supabase
     .from("campaign_blasts")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", blastId)
     .maybeSingle();
 
@@ -49,7 +52,7 @@ async function getBlastEvents(blastId: string) {
   const { data, error } = await supabase
     .from("campaign_blast_events")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("blast_id", blastId)
     .order("created_at", { ascending: false })
     .limit(10);
@@ -65,13 +68,13 @@ async function updateBlast(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
   const blastId = String(formData.get("blast_id") ?? "");
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { error } = await supabase
     .from("campaign_blasts")
     .update({
@@ -89,22 +92,22 @@ async function updateBlast(formData: FormData) {
     throw error;
   }
 
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  redirect(`/admin/campaigns/${campaignId}`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}`));
 }
 
 async function recordTestSend(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
   const blastId = String(formData.get("blast_id") ?? "");
   const email = String(formData.get("test_email") ?? "").trim().toLowerCase();
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const emailProviderMode = getEmailProviderMode();
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
@@ -115,9 +118,9 @@ async function recordTestSend(formData: FormData) {
 
   if (blastError || !blast) {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?test_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?test_error=${encodeURIComponent(
         blastError?.message ?? "Unable to load this blast before sending.",
-      )}`,
+      )}`),
     );
   }
 
@@ -177,29 +180,29 @@ async function recordTestSend(formData: FormData) {
       },
     });
 
-    revalidatePath(`/admin/campaigns/${campaignId}/blasts/${blastId}`);
+    revalidatePath(await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}`));
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?test_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?test_error=${encodeURIComponent(
         message,
-      )}`,
+      )}`),
     );
   }
 
-  revalidatePath(`/admin/campaigns/${campaignId}/blasts/${blastId}`);
-  redirect(`/admin/campaigns/${campaignId}/blasts/${blastId}?test_sent=1`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?test_sent=1`));
 }
 
 async function sendBlast(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
   const blastId = String(formData.get("blast_id") ?? "");
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
     .select("audience_filter, html_content, preheader, status, subject")
@@ -209,17 +212,17 @@ async function sendBlast(formData: FormData) {
 
   if (blastError || !blast) {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
         blastError?.message ?? "Unable to load this blast before sending.",
-      )}`,
+      )}`),
     );
   }
 
   if (blast.status === "Sent") {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
         "This blast has already been sent.",
-      )}`,
+      )}`),
     );
   }
 
@@ -229,17 +232,17 @@ async function sendBlast(formData: FormData) {
     contacts = await getAudienceContacts(blast.audience_filter);
   } catch (error) {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
         error instanceof Error ? error.message : "Unable to load the audience.",
-      )}`,
+      )}`),
     );
   }
 
   if (!contacts.length) {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
         "This saved audience has no email opt-in recipients.",
-      )}`,
+      )}`),
     );
   }
 
@@ -257,7 +260,7 @@ async function sendBlast(formData: FormData) {
       replyTo: emailSettings.email_reply_to,
       subject: blast.subject,
       to: contact.email,
-      unsubscribeUrl: createUnsubscribeUrl(contact.id),
+      unsubscribeUrl: createUnsubscribeUrl(contact.id, clientId),
     }).catch((error: unknown) => {
       failedCount += 1;
       return {
@@ -305,9 +308,9 @@ async function sendBlast(formData: FormData) {
 
   if (!sentCount) {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
         `No emails were sent. ${failedCount} failed.`,
-      )}`,
+      )}`),
     );
   }
 
@@ -325,16 +328,16 @@ async function sendBlast(formData: FormData) {
 
   if (updateError) {
     redirect(
-      `/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
+      await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_error=${encodeURIComponent(
         updateError.message,
-      )}`,
+      )}`),
     );
   }
 
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  revalidatePath(`/admin/campaigns/${campaignId}/blasts/${blastId}`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}`));
   redirect(
-    `/admin/campaigns/${campaignId}/blasts/${blastId}?send_sent=${sentCount}&send_failed=${failedCount}`,
+    await adminPath(`/admin/campaigns/${campaignId}/blasts/${blastId}?send_sent=${sentCount}&send_failed=${failedCount}`),
   );
 }
 
@@ -342,14 +345,14 @@ async function duplicateBlastAction(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const blastId = String(formData.get("blast_id") ?? "");
   const { campaignId, blastId: newBlastId } = await duplicateBlast(blastId);
 
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  redirect(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`));
 }
 
 function getEventProviderDetail(event: BlastEvent) {
@@ -383,7 +386,7 @@ export default async function EditBlastPage({
   }>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const { blastId, id } = await params;
@@ -437,7 +440,7 @@ export default async function EditBlastPage({
                 Create a fresh draft copy with the same content and audience.
               </p>
             </div>
-            <form action={duplicateBlastAction}>
+            <AdminForm action={duplicateBlastAction}>
               <input name="blast_id" type="hidden" value={blast.id} />
               <button
                 className="rounded-full border border-[#dfcc9a] bg-white/25 px-5 py-3 text-sm font-black uppercase tracking-[2px] text-slate-700 transition hover:border-[#a18442] hover:bg-[#f1e7ce] hover:text-[#17130d]"
@@ -445,7 +448,7 @@ export default async function EditBlastPage({
               >
                 Duplicate Blast
               </button>
-            </form>
+            </AdminForm>
           </div>
         </section>
 
@@ -483,7 +486,7 @@ export default async function EditBlastPage({
               This blast has already been sent.
             </div>
           ) : (
-            <form action={sendBlast} className="mt-5">
+            <AdminForm action={sendBlast} className="mt-5">
               <input name="campaign_id" type="hidden" value={id} />
               <input name="blast_id" type="hidden" value={blast.id} />
               <button
@@ -494,7 +497,7 @@ export default async function EditBlastPage({
                 Send Blast to {emailAudiencePreview.count} Email Recipient
                 {emailAudiencePreview.count === 1 ? "" : "s"}
               </button>
-            </form>
+            </AdminForm>
           )}
         </section>
 
@@ -526,7 +529,7 @@ export default async function EditBlastPage({
             </div>
           ) : null}
 
-          <form action={recordTestSend} className="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
+          <AdminForm action={recordTestSend} className="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
             <input name="campaign_id" type="hidden" value={id} />
             <input name="blast_id" type="hidden" value={blast.id} />
             <input
@@ -542,7 +545,7 @@ export default async function EditBlastPage({
             >
               Send Test
             </button>
-          </form>
+          </AdminForm>
 
           <div className="mt-5 space-y-3">
             {blastEvents.map((event) => {

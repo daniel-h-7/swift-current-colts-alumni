@@ -1,11 +1,12 @@
+import { adminPath } from "@/lib/team-admin";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { serializeAudienceFilter } from "@/lib/campaign-options";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { BlastEditorForm } from "@/components/blast-editor-form";
-import { getSiteBrand } from "@/lib/site-brand";
+import { getAdminBrand } from "@/lib/team-admin";
 
 type NewBlastParams = {
   id: string;
@@ -15,12 +16,12 @@ async function createBlast(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { data, error } = await supabase
     .from("campaign_blasts")
     .insert({
@@ -40,8 +41,8 @@ async function createBlast(formData: FormData) {
     throw error;
   }
 
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  redirect(`/admin/campaigns/${campaignId}/blasts/${data.id}`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}/blasts/${data.id}`));
 }
 
 export default async function NewBlastPage({
@@ -50,11 +51,11 @@ export default async function NewBlastPage({
   params: Promise<NewBlastParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const { id } = await params;
-  const brand = getSiteBrand();
+  const brand = (await getAdminBrand());
 
   return (
     <BlastEditorForm

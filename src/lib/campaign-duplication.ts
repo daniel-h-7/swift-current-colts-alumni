@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function copyTitle(title: string) {
@@ -9,7 +9,7 @@ function copyTitle(title: string) {
 
 export async function duplicateCampaignWithBlasts(campaignId: string) {
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { data: campaign, error: campaignError } = await supabase
     .from("campaigns")
     .select("description, title")
@@ -84,7 +84,7 @@ export async function duplicateCampaignWithBlasts(campaignId: string) {
 
 export async function duplicateBlast(blastId: string) {
   const supabase = createServerSupabaseClient();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
   const { data: blast, error: blastError } = await supabase
     .from("campaign_blasts")
     .select(

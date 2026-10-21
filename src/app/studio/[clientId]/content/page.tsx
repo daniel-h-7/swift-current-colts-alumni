@@ -121,7 +121,7 @@ export default async function StudioContentSetupPage({
   return (
     <main className="min-h-screen bg-[#f5f1e8] text-slate-950">
       <StudioHeader
-        actions={[
+        actions={[{ href: `/studio/${client.id}/hub`, label: "Team Hub" },
           ...(isHqEditing
             ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }]
             : []),

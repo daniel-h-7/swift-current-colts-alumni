@@ -189,6 +189,7 @@ test("legacy admin saves wording without replacing existing branding", async () 
       "next/server": { NextResponse },
       "next/cache": { revalidatePath() {} },
       "@/lib/admin-auth": { isAdminAuthenticated: async () => true },
+      "@/lib/team-admin": {getWorkspaceClientId: async()=> "lions", adminPath:async path=>path},
       "@/lib/client-context": { getCurrentClientId: () => "lions" },
       "@/lib/site-content": {
         getSiteContent: async () => original,

@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminForm } from "@/components/admin-navigation";
+
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { EmailSettings } from "@/lib/email-settings";
@@ -59,7 +61,7 @@ export function EmailSettingsForm({
   }
 
   return (
-    <form
+    <AdminForm
       action="/admin/settings/email"
       className="mt-6 space-y-5"
       method="post"
@@ -134,6 +136,6 @@ export function EmailSettingsForm({
       >
         {isPending ? "Saving..." : "Save Email Settings"}
       </button>
-    </form>
+    </AdminForm>
   );
 }

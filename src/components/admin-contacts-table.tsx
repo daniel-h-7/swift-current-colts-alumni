@@ -1,6 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { AdminForm } from "@/components/admin-navigation";
+
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { useMemo, useState } from "react";
 import {
   Contact,
@@ -190,7 +192,7 @@ export function AdminContactsTable({
             </svg>
           </summary>
           <div className="absolute right-auto z-30 mt-2 w-72 overflow-hidden border border-white/10 bg-zinc-950 p-2 shadow-[0_22px_80px_rgba(0,0,0,0.65)] ring-1 ring-black/60 md:right-0">
-            <form action={bulkAction} className="space-y-2">
+            <AdminForm action={bulkAction} className="space-y-2">
               <input name="contact_ids" type="hidden" value={selectedValue} />
               <input name="bulk_action" type="hidden" value="status" />
               <label className="block text-xs font-black uppercase tracking-[2px] text-gray-500">
@@ -213,8 +215,8 @@ export function AdminContactsTable({
               >
                 Apply Status
               </button>
-            </form>
-            <form action={bulkAction} className="mt-2 space-y-2 border-t border-white/10 pt-2">
+            </AdminForm>
+            <AdminForm action={bulkAction} className="mt-2 space-y-2 border-t border-white/10 pt-2">
               <input name="contact_ids" type="hidden" value={selectedValue} />
               <input name="bulk_action" type="hidden" value="membership_status" />
               <label className="block text-xs font-black uppercase tracking-[2px] text-gray-500">
@@ -237,8 +239,8 @@ export function AdminContactsTable({
               >
                 Apply Membership
               </button>
-            </form>
-            <form action={bulkAction} className="mt-2 border-t border-white/10 pt-2">
+            </AdminForm>
+            <AdminForm action={bulkAction} className="mt-2 border-t border-white/10 pt-2">
               <input name="contact_ids" type="hidden" value={selectedValue} />
               <input name="bulk_action" type="hidden" value="delete" />
               <ConfirmSubmitButton
@@ -248,7 +250,7 @@ export function AdminContactsTable({
               >
                 Delete Selected
               </ConfirmSubmitButton>
-            </form>
+            </AdminForm>
           </div>
         </details>
       </div>

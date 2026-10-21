@@ -2,19 +2,19 @@ import "server-only";
 
 import { Contact } from "@/lib/contact-options";
 import { BlastAudienceFilter, parseAudienceFilter } from "@/lib/campaign-options";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function getTodayDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function applyAudienceFilter(filter: BlastAudienceFilter) {
+function applyAudienceFilter(filter: BlastAudienceFilter, clientId: string) {
   const supabase = createServerSupabaseClient();
   let query = supabase
     .from("contacts")
     .select("*", { count: "exact" })
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", clientId)
     .order("last_name", { ascending: true })
     .order("first_name", { ascending: true });
 
@@ -67,7 +67,7 @@ function applyAudienceFilter(filter: BlastAudienceFilter) {
 
 export async function getAudiencePreview(audienceFilter: string | null | undefined) {
   const filter = parseAudienceFilter(audienceFilter);
-  const { count, data, error } = await applyAudienceFilter(filter).limit(25);
+  const { count, data, error } = await applyAudienceFilter(filter, await getWorkspaceClientId()).limit(25);
 
   if (error) {
     throw new Error(error.message);
@@ -85,7 +85,7 @@ export async function getEmailAudiencePreview(audienceFilter: string | null | un
     ...parseAudienceFilter(audienceFilter),
     email_opt_in: true,
   };
-  const { count, error } = await applyAudienceFilter(filter).limit(1);
+  const { count, error } = await applyAudienceFilter(filter, await getWorkspaceClientId()).limit(1);
 
   if (error) {
     throw new Error(error.message);
@@ -102,7 +102,7 @@ export async function getAudienceContacts(audienceFilter: string | null | undefi
     ...parseAudienceFilter(audienceFilter),
     email_opt_in: true,
   };
-  const { data, error } = await applyAudienceFilter(filter);
+  const { data, error } = await applyAudienceFilter(filter, await getWorkspaceClientId());
 
   if (error) {
     throw new Error(error.message);

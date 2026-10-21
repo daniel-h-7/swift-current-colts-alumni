@@ -1,4 +1,7 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
@@ -10,7 +13,7 @@ import {
 } from "@/lib/campaign-options";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { duplicateBlast } from "@/lib/campaign-duplication";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { formatDate } from "@/lib/contact-format";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin-header";
@@ -152,7 +155,7 @@ async function getCampaign(id: string) {
   const { data, error } = await supabase
     .from("campaigns")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", id)
     .maybeSingle();
 
@@ -168,7 +171,7 @@ async function getBlasts(campaignId: string) {
   const { data, error } = await supabase
     .from("campaign_blasts")
     .select("*")
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("campaign_id", campaignId)
     .order("updated_at", { ascending: false });
 
@@ -183,21 +186,21 @@ async function duplicateBlastAction(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const blastId = String(formData.get("blast_id") ?? "");
   const { campaignId, blastId: newBlastId } = await duplicateBlast(blastId);
 
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  redirect(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}/blasts/${newBlastId}`));
 }
 
 async function deleteBlastAction(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const campaignId = String(formData.get("campaign_id") ?? "");
@@ -206,7 +209,7 @@ async function deleteBlastAction(formData: FormData) {
   const { error } = await supabase
     .from("campaign_blasts")
     .delete()
-    .eq("client_id", getCurrentClientId())
+    .eq("client_id", (await getWorkspaceClientId()))
     .eq("id", blastId)
     .eq("campaign_id", campaignId);
 
@@ -214,8 +217,8 @@ async function deleteBlastAction(formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath(`/admin/campaigns/${campaignId}`);
-  redirect(`/admin/campaigns/${campaignId}`);
+  revalidatePath(await adminPath(`/admin/campaigns/${campaignId}`));
+  redirect(await adminPath(`/admin/campaigns/${campaignId}`));
 }
 
 export default async function CampaignDetailPage({
@@ -226,7 +229,7 @@ export default async function CampaignDetailPage({
   searchParams: Promise<CampaignDetailSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const [{ id }, filters] = await Promise.all([params, searchParams]);
@@ -341,7 +344,7 @@ export default async function CampaignDetailPage({
                         <Link className="font-black text-[#785d25] hover:text-[#785d25]" href={`/admin/campaigns/${campaign.id}/blasts/${blast.id}`}>
                           Edit
                         </Link>
-                        <form action={duplicateBlastAction}>
+                        <AdminForm action={duplicateBlastAction}>
                           <input name="blast_id" type="hidden" value={blast.id} />
                           <button
                             className="font-black text-slate-600 hover:text-[#17130d]"
@@ -349,8 +352,8 @@ export default async function CampaignDetailPage({
                           >
                             Duplicate
                           </button>
-                        </form>
-                        <form action={deleteBlastAction}>
+                        </AdminForm>
+                        <AdminForm action={deleteBlastAction}>
                           <input name="campaign_id" type="hidden" value={campaign.id} />
                           <input name="blast_id" type="hidden" value={blast.id} />
                           <ConfirmSubmitButton
@@ -359,7 +362,7 @@ export default async function CampaignDetailPage({
                           >
                             Delete
                           </ConfirmSubmitButton>
-                        </form>
+                        </AdminForm>
                       </div>
                     </td>
                   </tr>

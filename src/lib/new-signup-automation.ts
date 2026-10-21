@@ -3,8 +3,9 @@ import "server-only";
 import { logContactActivity } from "@/lib/contact-activity";
 import { getCurrentClientId } from "@/lib/client-context";
 import { Contact } from "@/lib/contact-options";
-import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
+import { formatFromEmail, getEmailSettingsForClient } from "@/lib/email-settings";
 import { sendCampaignTestEmail } from "@/lib/email-provider";
+import { getPlatformClient } from "@/lib/platform-data";
 import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createUnsubscribeUrl } from "@/lib/unsubscribe";
@@ -12,13 +13,17 @@ import { createUnsubscribeUrl } from "@/lib/unsubscribe";
 const campaignTitle = "New Signups";
 const blastTitle = "Thank You for Your Support";
 
-function getDefaultBlastCopy() {
-  const brand = getSiteBrand();
+async function getDefaultBlastCopy(clientId?: string) {
+  const client = clientId ? await getPlatformClient(clientId) : null;
+  const fallback = getSiteBrand(client?.site_variant);
+  const escape = (value: string) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+  const name = client?.name || (clientId ? "your team" : fallback.programName);
+  const brand = {...fallback, programName: name, ...(clientId ? { joinSubtext: "Your support helps create opportunities for our student-athletes.", successProgramLine: "Stay connected for updates from your team." } : {})};
 
   return {
     html: `
 <h2 style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:900;color:#0f172a;">Thank you for your support!</h2>
-<p style="margin:0 0 16px;">Thank you for supporting ${brand.programName}.</p>
+<p style="margin:0 0 16px;">Thank you for supporting ${escape(brand.programName)}.</p>
 <p style="margin:0 0 16px;">${brand.joinSubtext}</p>
 <p style="margin:0;">${brand.successProgramLine}</p>
 `.trim(),
@@ -108,7 +113,7 @@ async function getOrCreateCampaign(clientId?: string) {
 }
 
 async function getOrCreateBlast(campaignId: string, clientId?: string) {
-  const defaultCopy = getDefaultBlastCopy();
+  const defaultCopy = await getDefaultBlastCopy(clientId);
   const supabase = createServerSupabaseClient();
   const resolvedClientId = resolveClientId(clientId);
   const { data: existing, error: existingError } = await supabase
@@ -243,7 +248,7 @@ export async function runNewSignupAutomation({
     const eventType = "new_signup_email_sent";
 
     if (!(await hasAlreadySent(blastId, contact.id, eventType, clientId))) {
-      const emailSettings = await getEmailSettings();
+      const emailSettings = await getEmailSettingsForClient(resolveClientId(clientId));
 
       try {
         const result = await sendCampaignTestEmail({
@@ -253,7 +258,7 @@ export async function runNewSignupAutomation({
           replyTo: emailSettings.email_reply_to,
           subject: blast.subject,
           to: contact.email,
-          unsubscribeUrl: createUnsubscribeUrl(contact.id),
+          unsubscribeUrl: createUnsubscribeUrl(contact.id, resolveClientId(clientId)),
         });
 
         await recordBlastEvent({

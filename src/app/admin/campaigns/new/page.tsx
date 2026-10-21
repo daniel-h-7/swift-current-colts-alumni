@@ -1,7 +1,10 @@
-import Link from "next/link";
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
+import { AdminLink as Link } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const fieldClass =
@@ -11,14 +14,14 @@ async function createCampaign(formData: FormData) {
   "use server";
 
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
     .from("campaigns")
     .insert({
-      client_id: getCurrentClientId(),
+      client_id: (await getWorkspaceClientId()),
       description: String(formData.get("description") ?? "").trim() || null,
       status: "Draft",
       title: String(formData.get("title") ?? "").trim(),
@@ -30,12 +33,12 @@ async function createCampaign(formData: FormData) {
     throw error;
   }
 
-  redirect(`/admin/campaigns/${data.id}`);
+  redirect(await adminPath(`/admin/campaigns/${data.id}`));
 }
 
 export default async function NewCampaignPage() {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   return (
@@ -49,7 +52,7 @@ export default async function NewCampaignPage() {
             New Campaign
           </p>
           <h1 className="mt-3 text-4xl font-black">Create a campaign</h1>
-          <form action={createCampaign} className="mt-8 space-y-5">
+          <AdminForm action={createCampaign} className="mt-8 space-y-5">
             <label className="block text-sm font-bold text-slate-700">
               Campaign title
               <input
@@ -73,7 +76,7 @@ export default async function NewCampaignPage() {
             >
               Create Campaign
             </button>
-          </form>
+          </AdminForm>
         </section>
       </div>
     </main>

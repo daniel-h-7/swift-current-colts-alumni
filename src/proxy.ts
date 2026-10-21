@@ -1,3 +1,4 @@
+import { teamAdminHeader, teamAdminRoute } from "./lib/team-admin-routing";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveClientSlug } from "./lib/client-slugs";
 
@@ -75,6 +76,18 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Never trust a tenant header supplied by the browser, including on legacy routes.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete(teamAdminHeader);
+  const teamAdmin = teamAdminRoute(request.nextUrl.pathname);
+  if (teamAdmin) {
+    if (!["GET", "HEAD"].includes(request.method) && request.headers.get("origin") !== request.nextUrl.origin) {
+      return NextResponse.json({ error: "Submit team changes from your signed-in workspace." }, { status: 403 });
+    }
+    requestHeaders.set(teamAdminHeader, teamAdmin.clientId);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   const clientId = getTeamAlumSubdomain(request.headers.get("host"));
   const rewritePath = clientId
     ? getClientRewritePath(clientId, request.nextUrl.pathname)
@@ -84,13 +97,13 @@ export async function proxy(request: NextRequest) {
     const rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = rewritePath;
 
-    return NextResponse.rewrite(rewriteUrl);
+    return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
   }
 
   const demoPassword = process.env.DEMO_PASSWORD;
 
   if (!demoPassword || isBypassedPath(request.nextUrl.pathname)) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   const demoSecret = process.env.DEMO_SESSION_SECRET ?? demoPassword;
@@ -98,7 +111,7 @@ export async function proxy(request: NextRequest) {
   const sessionToken = request.cookies.get(demoCookieName)?.value;
 
   if (sessionToken === expectedToken) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (request.nextUrl.pathname.startsWith("/api/")) {

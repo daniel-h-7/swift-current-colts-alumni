@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AdminLink as Link } from "@/components/admin-navigation";
 type AdminHeaderAction = {
   href: string;
   label: string;

@@ -6,7 +6,7 @@ import {
   relationshipTypes,
   sports,
 } from "@/lib/contact-options";
-import { getCurrentClientId } from "@/lib/client-context";
+import { getWorkspaceClientId } from "@/lib/team-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type CsvRow = Record<string, string>;
@@ -180,7 +180,7 @@ function normalizeRow(row: CsvRow, index: number, optInMode: string) {
 export async function importContactsFromCsv(csvText: string, optInMode: string) {
   const rows = parseCsv(csvText);
   const contactsByEmail = new Map<string, ReturnType<typeof normalizeRow>>();
-  const clientId = getCurrentClientId();
+  const clientId = (await getWorkspaceClientId());
 
   rows.forEach((row, index) => {
     const contact = normalizeRow(row, index, optInMode);

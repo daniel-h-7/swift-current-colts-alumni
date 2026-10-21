@@ -1,3 +1,6 @@
+import { adminPath } from "@/lib/team-admin";
+
+import { AdminForm } from "@/components/admin-navigation";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { formatFromEmail, getEmailSettings } from "@/lib/email-settings";
@@ -25,7 +28,7 @@ export default async function AdminSettingsPage({
   searchParams: Promise<SettingsSearchParams>;
 }) {
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    redirect(await adminPath("/admin/login"));
   }
 
   const [settings, emailSettings] = await Promise.all([
@@ -67,7 +70,7 @@ export default async function AdminSettingsPage({
               </div>
             ) : null}
 
-            <form action="/admin/settings/membership" className="mt-6 space-y-5" method="post">
+            <AdminForm action="/admin/settings/membership" className="mt-6 space-y-5" method="post">
               <label className="block text-sm font-bold text-gray-200">
                 Annual membership amount
                 <input
@@ -135,7 +138,7 @@ export default async function AdminSettingsPage({
               >
                 Save Settings
               </button>
-            </form>
+            </AdminForm>
           </section>
 
           <section className="border border-white/10 bg-zinc-950 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
