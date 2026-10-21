@@ -35,3 +35,13 @@ The standalone `/admin` shared-password flow remains available for existing dedi
 Automated tests cover header spoofing, same-origin writes, per-team owner/admin checks, revoked/restricted access, standalone compatibility, scoped forms/links, actual settings writes, campaign audiences, client-bound unsubscribe tokens, hub choices and canonical ADMIN entry links. Local browser checks verified the desktop/mobile layout and unauthenticated CRM redirect back to Studio with the correct team hub destination. The local-only layout fixture was removed before the production build.
 
 After deployment, verify with an assigned account: ADMIN → hub → CRM/contact edit → campaign audience/composer → Edit Site → hub → logout. Compare contact counts and recorded amounts with expected HQ data. Do not send a campaign or change a real supporter's record merely as a smoke test.
+
+## Session persistence and tool return addresses
+
+The reported live loop was reproduced after login: the hub rendered, but visiting a tool (or reloading the hub) returned to login. The hub's Log Out navigation used Next.js Link, which may fetch its target in the background in production. The logout GET handler cleared authentication unconditionally, including during those background requests. Development mode does not automatically prefetch, so a development-only browser check did not catch this.
+
+All Studio/HQ/admin logout links now use ordinary document navigation. Their handlers ignore RSC and prefetch requests without reading or clearing session cookies and return a non-cacheable 204. Explicit logout still expires the intended sessions. CRM and mailer login redirects now preserve the exact requested tool path and filters, rather than always returning to the hub; Proxy strips incoming client/path headers before setting its own values.
+
+The three hub choices now use lightweight gold outline SVG icons for the website, contact list and email. No new image or icon dependency was added.
+
+A local production build was exercised with a synthetic session: it survived hub loading and a full reload, and an explicit Log Out click cleared it. Automated regression tests exercise background logout requests across all three auth areas and the selected-tool return path. The temporary synthetic-session routes were removed before the final production build. The fix still requires deployment to verify the real client's authenticated CRM/editor/mailer screens end to end.
