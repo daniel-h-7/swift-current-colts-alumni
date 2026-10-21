@@ -1,5 +1,5 @@
 .site {
-  --unity-paper: #f5f4ef;
+  --legends-paper: #f5f4ef;
   background: #fff;
   color: #171917;
   min-height: 100vh;
@@ -16,7 +16,7 @@
 }
 .site a:focus-visible,
 .site button:focus-visible {
-  outline: 3px solid var(--unity-brand-ink);
+  outline: 3px solid var(--legends-brand-ink);
   outline-offset: 5px;
 }
 .site h1,
@@ -116,13 +116,13 @@
   letter-spacing: -0.16em;
   padding-right: 17px;
   line-height: 1;
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .monogram > span {
   position: absolute;
   right: 0;
   top: -3px;
-  color: var(--unity-accent);
+  color: var(--legends-accent);
   font-weight: 500;
 }
 .headerNav {
@@ -143,8 +143,8 @@
   align-items: center;
   gap: 28px;
   padding: 17px 23px;
-  background: var(--unity-brand);
-  color: var(--unity-on-brand);
+  background: var(--legends-brand);
+  color: var(--legends-on-brand);
   font-size: 12px;
   font-weight: 750;
   line-height: 1.3;
@@ -161,7 +161,7 @@
   line-height: 0.8;
 }
 .eyebrow {
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
   font-size: 10px;
   font-weight: 800;
   line-height: 1.6;
@@ -179,7 +179,7 @@
   width: fit-content;
 }
 .textLink:hover {
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .hero {
   max-width: 1600px;
@@ -197,7 +197,7 @@
 }
 .heroCopy > .eyebrow {
   max-width: 370px;
-  border-left: 3px solid var(--unity-accent);
+  border-left: 3px solid var(--legends-accent);
   padding-left: 14px;
   margin-bottom: 30px;
 }
@@ -205,7 +205,7 @@
   max-width: 700px;
 }
 .heroCopy h1 em {
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .heroCopy > p:not(.eyebrow) {
   max-width: 410px;
@@ -288,7 +288,7 @@
   padding: 0 0.15em 0 0;
 }
 .largeMonogram > span {
-  color: var(--unity-accent);
+  color: var(--legends-accent);
   font-weight: 500;
   position: absolute;
   right: -0.03em;
@@ -308,7 +308,7 @@
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  border-bottom: 2px solid var(--unity-accent);
+  border-bottom: 2px solid var(--legends-accent);
   padding-bottom: 10px;
 }
 .sectionNav {
@@ -336,8 +336,8 @@
   flex-shrink: 0;
 }
 .sectionNav a:hover {
-  border-color: var(--unity-brand);
-  color: var(--unity-brand-ink);
+  border-color: var(--legends-brand);
+  color: var(--legends-brand-ink);
 }
 .story {
   position: relative;
@@ -377,7 +377,7 @@
   font-style: italic;
   line-height: 1;
   letter-spacing: -0.1em;
-  color: var(--unity-brand);
+  color: var(--legends-brand);
   opacity: 0.035;
   z-index: -1;
   pointer-events: none;
@@ -461,7 +461,7 @@
   color: #4c5149;
 }
 .alumni {
-  background: var(--unity-paper);
+  background: var(--legends-paper);
   max-width: none;
   padding-inline: max(5%, calc((100% - 1152px) / 2));
 }
@@ -508,7 +508,7 @@
   font-weight: 850;
   font-style: italic;
   background: #e4e4d9;
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
   letter-spacing: -0.08em;
 }
 .alumniStory h3 {
@@ -533,7 +533,7 @@
 .eventDate {
   font-size: 12px;
   font-weight: 750;
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .event h3 {
   font-size: 23px;
@@ -549,7 +549,7 @@
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 90px;
-  border-top: 4px solid var(--unity-brand);
+  border-top: 4px solid var(--legends-brand);
   padding: 50px 0 20px;
 }
 .campaign + .campaign {
@@ -590,7 +590,7 @@
 .progress > span {
   display: block;
   height: 100%;
-  background: var(--unity-brand);
+  background: var(--legends-brand);
 }
 .campaignProgress > small {
   color: #60645c;
@@ -601,7 +601,7 @@
 }
 .invite {
   position: relative;
-  background: var(--unity-paper);
+  background: var(--legends-paper);
   isolation: isolate;
   overflow: hidden;
 }
@@ -616,7 +616,7 @@
   font-size: clamp(3.2rem, 6vw, 6rem);
 }
 .invite h2 em {
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .inviteBottom {
   display: flex;
@@ -653,7 +653,7 @@
   position: absolute;
   bottom: -105px;
   right: 7%;
-  color: var(--unity-brand);
+  color: var(--legends-brand);
   opacity: 0.045;
   font-size: 550px;
   font-style: italic;
@@ -719,7 +719,7 @@
 .joinAside > .largeMonogram {
   font-size: 90px;
   margin: 30px 0;
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .joinAside > p:not(.eyebrow):not(.finePrint) {
   font-size: 15px;
@@ -751,8 +751,8 @@
 }
 .joinForm {
   padding: 34px;
-  background: var(--unity-paper);
-  border-top: 3px solid var(--unity-brand);
+  background: var(--legends-paper);
+  border-top: 3px solid var(--legends-brand);
 }
 .joinForm > form {
   background: transparent;
@@ -769,7 +769,7 @@
   margin: 12px 0;
 }
 .joinForm :global(.program-kicker) {
-  color: var(--unity-brand-ink) !important;
+  color: var(--legends-brand-ink) !important;
   font-size: 10px;
 }
 .joinForm p {
@@ -792,7 +792,7 @@
 .joinForm input:focus,
 .joinForm select:focus,
 .joinForm textarea:focus {
-  outline-color: var(--unity-brand-ink);
+  outline-color: var(--legends-brand-ink);
 }
 .joinForm option {
   background: #fff;
@@ -819,10 +819,10 @@
   border-radius: 3px;
 }
 .joinForm button[type="button"][style*="background-color"] {
-  color: var(--unity-on-brand) !important;
+  color: var(--legends-on-brand) !important;
 }
 .joinForm button[type="submit"] {
-  color: var(--unity-on-brand);
+  color: var(--legends-on-brand);
   font-size: 12px;
   padding: 18px;
 }
@@ -846,7 +846,7 @@
   width: 150px;
   height: 150px;
   font-size: 120px;
-  color: var(--unity-brand-ink);
+  color: var(--legends-brand-ink);
 }
 .success h1 {
   margin: 25px 0;
@@ -869,7 +869,7 @@
   font-family: "Brush Script MT", "Segoe Script", cursive;
   font-size: clamp(5rem, 15vw, 12rem);
   font-style: italic;
-  color: var(--unity-brand);
+  color: var(--legends-brand);
   opacity: 0.25;
   z-index: -1;
   pointer-events: none;
@@ -1179,5 +1179,47 @@
   }
   .button:hover {
     transform: none;
+  }
+}
+
+/* Retain the existing sharing controls on the new light confirmation page. */
+.success > .textLink {
+  margin: 24px auto 0;
+}
+.share {
+  margin-top: 45px;
+  text-align: center;
+}
+.share p {
+  color: #60645c;
+}
+.share p:first-child {
+  color: #171917;
+}
+.share a,
+.share button {
+  color: var(--legends-brand-ink);
+  border-color: #d1d4ca;
+  background: transparent;
+}
+.share button:has(+ div),
+.share button[class*="bg-red"] {
+  background: var(--legends-brand);
+  color: var(--legends-on-brand);
+}
+.share :global(.bg-black\/35) {
+  background: var(--legends-paper);
+  border-color: #dedfd7;
+}
+.share a:hover,
+.share button:hover {
+  background: var(--legends-paper);
+}
+.heroEmblem .largeMonogram[data-length="3"] {
+  font-size: clamp(80px, 13vw, 180px);
+}
+@media (max-width: 700px) {
+  .heroEmblem .largeMonogram[data-length="3"] {
+    font-size: 80px;
   }
 }

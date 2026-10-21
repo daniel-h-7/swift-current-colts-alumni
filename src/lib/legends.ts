@@ -1,12 +1,27 @@
 import type { SiteContent, SiteEvent } from "@/lib/site-content";
 import type { SiteSection, SiteSectionKey } from "@/lib/site-sections-shared";
 
-// Keep the design trial isolated until it is approved for other organizations.
-export function usesUnityPilot(client: { id: string }) {
-  return client.id === "unity-warriors";
+export function legendsIdentity(name: string) {
+  const words =
+    name
+      .replace(
+        /\b(football|basketball|baseball|hockey|soccer|volleyball|athletics|alumni|and|boosters?|club|&|the)\b/gi,
+        " ",
+      )
+      .match(/[\p{L}\p{N}]+/gu) ?? [];
+  const initials = (words.length ? words : ["Team"])
+    .slice(0, 3)
+    .map((word) => Array.from(word)[0])
+    .join("")
+    .toUpperCase();
+  return {
+    initials,
+    watermark: initials.slice(-1),
+    photoWord: words[0]?.toUpperCase() || "TOGETHER",
+  };
 }
 
-export function safePilotLink(value: string) {
+export function safeLegendsLink(value: string) {
   const link = value.trim();
   if (!link || /[\\\u0000-\u001f]/.test(link)) return null;
   if (link.startsWith("/") && !link.startsWith("//")) return link;
@@ -20,7 +35,7 @@ export function safePilotLink(value: string) {
 
 // Stored dates are free text. Only hide events with an unambiguous, complete
 // English calendar date or ISO date; keep seasonal/undated announcements.
-export function pilotEventDate(event: SiteEvent) {
+export function legendsEventDate(event: SiteEvent) {
   const value = event.date.trim();
   if (!/^(?:\d{4}-\d{2}-\d{2}|[A-Za-z]+\s+\d{1,2},?\s+\d{4})$/.test(value))
     return null;
@@ -30,7 +45,7 @@ export function pilotEventDate(event: SiteEvent) {
   return Number.isFinite(timestamp) ? new Date(timestamp) : null;
 }
 
-export function unityPresentation(
+export function legendsPresentation(
   content: SiteContent,
   features: { feature_key: string; is_enabled: boolean }[],
   sections: SiteSection[],
@@ -87,7 +102,7 @@ export function unityPresentation(
       !e.imageUrl
     )
       return false;
-    const date = pilotEventDate(e);
+    const date = legendsEventDate(e);
     return !date || date.getTime() >= today;
   });
   return {
@@ -99,9 +114,21 @@ export function unityPresentation(
   };
 }
 
-export function pilotColors(primary: string, accent: string) {
-  const valid = (color: string, fallback: string) =>
-    /^#[a-f\d]{6}$/i.test(color) ? color : fallback;
+export function legendsColors(primary: string, accent: string) {
+  const valid = (color: string, fallback: string) => {
+    if (/^#[a-f\d]{6}$/i.test(color)) return color;
+    const rgb = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/.exec(
+      color,
+    );
+    if (!rgb || rgb.slice(1).some((v) => Number(v) > 255)) return fallback;
+    return (
+      "#" +
+      rgb
+        .slice(1)
+        .map((v) => Number(v).toString(16).padStart(2, "0"))
+        .join("")
+    );
+  };
   const brand = valid(primary, "#785d25");
   const luminance = (hex: string) => {
     const channels = [1, 3, 5]

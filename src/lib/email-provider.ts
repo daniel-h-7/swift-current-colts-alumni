@@ -102,27 +102,36 @@ function buildEmailHtml({
     ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(preheader)}</div>`
     : "";
   const unsubscribeFooter = unsubscribeUrl
-    ? `<div style="margin-top:14px;">
-          <a href="${escapeHtml(unsubscribeUrl)}" style="display:inline-block;border:1px solid #dfcc9a;border-radius:24px;padding:10px 18px;color:#785d25;text-decoration:none;font-weight:bold;">
-            Unsubscribe from emails
-          </a>
-        </div>`
+    ? `<a href="${escapeHtml(unsubscribeUrl)}" style="color:#785d25;text-decoration:underline;text-underline-offset:3px;">Unsubscribe from emails</a>`
     : "";
+  const senderName = from.replace(/<[^>]*>/g, "").trim() || from;
 
+  // Table layout and inline styles work without web fonts, remote decoration,
+  // CSS variables, or JavaScript in email clients. The authored body is intact.
   return `<!doctype html>
-<html>
-  <body style="margin:0;background:#ffffff;padding:24px;font-family:Arial,Helvetica,sans-serif;">
+<html lang="en">
+  <head><meta name="viewport" content="width=device-width,initial-scale=1" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+  <body style="margin:0;background:#ffffff;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#17130d;">
     ${hiddenPreheader}
-    <div style="margin:0 auto;max-width:680px;background:#ffffff;border:1px solid #e9e1d1;border-radius:28px;overflow:hidden;">
-      <div style="height:6px;background:#c5a45b;border-radius:28px 28px 0 0;"></div>
-      <div style="padding:36px 28px;color:#17130d;font-size:16px;line-height:1.6;">
-        ${html}
-      </div>
-      <div style="border-top:1px solid #e9e1d1;background:#faf7ef;padding:24px 28px;color:#62563f;font-size:12px;">
-        ${escapeHtml(from)}
-        ${unsubscribeFooter}
-      </div>
-    </div>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;background:#ffffff;">
+      <tr><td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:680px;border-collapse:collapse;">
+          <tr><td style="padding:18px 16px 26px;border-bottom:1px solid #dedfd7;">
+            <div style="width:44px;height:3px;background:#c5a45b;margin-bottom:18px;"></div>
+            <p style="margin:0;font-size:11px;line-height:1.6;letter-spacing:2px;text-transform:uppercase;font-weight:bold;color:#785d25;">Alumni &amp; Community</p>
+            <p style="margin:10px 0 0;font-size:27px;line-height:1.25;letter-spacing:-0.5px;font-weight:bold;color:#17130d;">${escapeHtml(senderName)}</p>
+          </td></tr>
+          <tr><td style="padding:32px 16px 40px;color:#17130d;font-size:16px;line-height:1.75;">
+            ${html}
+          </td></tr>
+          <tr><td style="padding:24px 16px;border-top:1px solid #dedfd7;color:#62563f;font-size:12px;line-height:1.8;">
+            <p style="margin:0 0 12px;font-family:Georgia,serif;font-size:20px;font-style:italic;color:#17130d;">Always part of the team.</p>
+            <p style="margin:0;">${escapeHtml(from)}</p>
+            ${unsubscribeFooter ? `<p style="margin:14px 0 0;">${unsubscribeFooter}</p>` : ""}
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
   </body>
 </html>`;
 }

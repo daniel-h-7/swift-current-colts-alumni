@@ -248,7 +248,7 @@ export function EmailEditor({
     <div>
       <input name={name} type="hidden" value={html} />
 
-      <div className="flex flex-wrap gap-2 rounded-3xl bg-[#faf7ef] p-3">
+      <div data-mailer-toolbar className="flex flex-wrap gap-2 rounded-3xl bg-[#faf7ef] p-3">
         <button
           className={buttonClass}
           onMouseDown={keepEditorSelection}
@@ -412,6 +412,7 @@ export function EmailEditor({
           aria-label="Email body editor"
           role="textbox"
           aria-multiline="true"
+          data-email-content
           contentEditable
           dangerouslySetInnerHTML={{ __html: defaultValue }}
           onBlur={saveEditorRange}

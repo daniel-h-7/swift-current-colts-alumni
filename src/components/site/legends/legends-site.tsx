@@ -4,14 +4,16 @@ import type { CSSProperties } from "react";
 import type { SiteContent } from "@/lib/site-content";
 import type { MembershipSettings } from "@/lib/membership-settings";
 import type { SiteSection } from "@/lib/site-sections-shared";
+import { SupportShareBar } from "@/components/support-share-bar";
 import { JoinForm } from "@/components/join-form";
 import { studioLoginPath } from "@/lib/studio-navigation";
 import {
-  pilotColors,
-  safePilotLink,
-  unityPresentation,
-} from "@/lib/unity-pilot";
-import styles from "./unity-site.module.css";
+  legendsColors,
+  safeLegendsLink,
+  legendsPresentation,
+  legendsIdentity,
+} from "@/lib/legends";
+import styles from "./legends-site.module.css";
 
 type Client = { id: string; name: string };
 type Props = {
@@ -22,39 +24,50 @@ type Props = {
   sections: SiteSection[];
   preview?: boolean;
   showJoin?: boolean;
+  manageHref?: string;
 };
 
 function theme(content: SiteContent) {
-  const colors = pilotColors(
+  const colors = legendsColors(
     content.brand.primaryColor,
     content.brand.accentColor,
   );
   return {
-    "--unity-brand": colors.brand,
-    "--unity-accent": colors.accent,
-    "--unity-on-brand": colors.onBrand,
-    "--unity-brand-ink": colors.ink,
+    "--legends-brand": colors.brand,
+    "--legends-accent": colors.accent,
+    "--legends-on-brand": colors.onBrand,
+    "--legends-brand-ink": colors.ink,
   } as CSSProperties;
 }
 function Mark({
   content,
   large = false,
+  surface = "light",
 }: {
   content: SiteContent;
   large?: boolean;
+  surface?: "light" | "dark";
 }) {
-  return content.brand.logoUrl ? (
+  // Preserve the existing Rams mark while selecting its supplied light-surface variant.
+  const logoUrl =
+    surface === "light" &&
+    content.brand.logoUrl === "/images/rmr-flat-logo-wht.png"
+      ? "/images/rmr-flat-logo-blk.png"
+      : content.brand.logoUrl;
+  return logoUrl ? (
     <img
-      src={content.brand.logoUrl}
+      src={logoUrl}
       alt={`${content.brand.siteTitle} logo`}
       className={large ? styles.largeLogo : styles.logo}
     />
   ) : (
     <span
       className={large ? styles.largeMonogram : styles.monogram}
-      aria-label="Unity Warriors"
+      data-length={legendsIdentity(content.brand.siteTitle).initials.length}
+      aria-label={content.brand.siteTitle}
     >
-      UW<span aria-hidden="true">/</span>
+      {legendsIdentity(content.brand.siteTitle).initials}
+      <span aria-hidden="true">/</span>
     </span>
   );
 }
@@ -78,7 +91,7 @@ function Header({
     <>
       {preview && (
         <div className={styles.preview}>
-          Design preview <span>Unity Warriors only</span>
+          Site preview <span>{client.name}</span>
           <Link href={`/studio/${encodeURIComponent(client.id)}/content`}>
             Back to editor ↗
           </Link>
@@ -100,7 +113,10 @@ function Header({
           </Link>
           {join ? (
             <Link className={styles.button} href={join}>
-              Join the Warriors <Arrow />
+              {client.id === "unity-warriors"
+                ? "Join the Warriors"
+                : "Become a member"}{" "}
+              <Arrow />
             </Link>
           ) : (
             <Link href={home}>
@@ -153,7 +169,11 @@ function Amount({ settings }: { settings: MembershipSettings }) {
 function MembershipInvite({
   settings,
   join,
+  content,
+  client,
 }: {
+  content: SiteContent;
+  client: Client;
   settings: MembershipSettings;
   join: string;
 }) {
@@ -162,7 +182,9 @@ function MembershipInvite({
       <div className={styles.inviteInner}>
         <p className={styles.eyebrow}>Your next chapter</p>
         <h2>
-          Still a Warrior.
+          {client.id === "unity-warriors"
+            ? "Still a Warrior."
+            : "Still part of the team."}
           <br />
           <em>Always welcome.</em>
         </h2>
@@ -184,13 +206,13 @@ function MembershipInvite({
         </div>
       </div>
       <span className={styles.inviteMark} aria-hidden="true">
-        W
+        {legendsIdentity(content.brand.siteTitle).watermark}
       </span>
     </section>
   );
 }
 
-export function UnitySite({
+export function LegendsSite({
   client,
   content,
   settings,
@@ -198,8 +220,9 @@ export function UnitySite({
   sections,
   preview = false,
   showJoin = false,
+  manageHref,
 }: Props) {
-  const view = unityPresentation(content, features, sections);
+  const view = legendsPresentation(content, features, sections);
   const home = preview ? `/preview/${encodeURIComponent(client.id)}` : "/";
   const join = preview ? `${home}/join` : "/join";
   const brand = content.brand;
@@ -211,7 +234,7 @@ export function UnitySite({
 
   if (showJoin)
     return (
-      <main className={styles.site} style={theme(content)}>
+      <main data-legends-page className={styles.site} style={theme(content)}>
         <Header
           client={client}
           content={content}
@@ -221,7 +244,7 @@ export function UnitySite({
         <div className={styles.joinLayout}>
           <aside className={styles.joinAside}>
             <Link href={home} className={styles.textLink}>
-              ← Back to the Warriors
+              ← Back home
             </Link>
             <p className={styles.eyebrow}>A connection that lasts</p>
             <h1>
@@ -239,6 +262,11 @@ export function UnitySite({
                 Annual membership · {settings.membership_year_label}
               </small>
             </div>
+            {manageHref && (
+              <Link className={styles.textLink} href={manageHref}>
+                Manage or cancel your membership
+              </Link>
+            )}
             <p className={styles.finePrint}>
               Renews annually until canceled. An optional one-time gift is added
               to your first checkout.
@@ -255,7 +283,7 @@ export function UnitySite({
               subtext={settings.join_body}
               isOpen={settings.join_is_open && view.memberships}
               primaryColor={
-                pilotColors(brand.primaryColor, brand.accentColor).brand
+                legendsColors(brand.primaryColor, brand.accentColor).brand
               }
               accentColor={brand.accentColor}
               programName={client.name}
@@ -277,11 +305,11 @@ export function UnitySite({
                 Community, <em>in our corner.</em>
               </h2>
             </div>
-            <p>Thank you to the partners who stand with the Warriors.</p>
+            <p>Thank you to the partners who stand with {client.name}.</p>
           </div>
           <div className={styles.sponsorLogos}>
             {view.sponsors.map((s) => {
-              const href = safePilotLink(s.linkUrl);
+              const href = safeLegendsLink(s.linkUrl);
               const inner = s.imageUrl ? (
                 <img src={s.imageUrl} alt={s.name} loading="lazy" />
               ) : (
@@ -305,7 +333,7 @@ export function UnitySite({
             <div>
               <p className={styles.eyebrow}>Part of our story</p>
               <h2>
-                Warriors, <em>wherever life leads.</em>
+                Our alumni, <em>wherever life leads.</em>
               </h2>
             </div>
           </div>
@@ -332,7 +360,7 @@ export function UnitySite({
                 )}
                 <div>
                   <p className={styles.eyebrow}>
-                    {s.classYear || "Warriors community"}
+                    {s.classYear || "Our community"}
                   </p>
                   <h3>{s.name}</h3>
                   <p>{s.descriptor}</p>
@@ -356,7 +384,7 @@ export function UnitySite({
           </div>
           <div className={styles.eventList}>
             {view.events.map((e, i) => {
-              const href = safePilotLink(e.linkUrl);
+              const href = safeLegendsLink(e.linkUrl);
               return (
                 <article key={`${e.title}-${i}`} className={styles.event}>
                   <div className={styles.eventDate}>
@@ -381,7 +409,7 @@ export function UnitySite({
       return (
         <section id="support" className={styles.campaigns} key={key}>
           {view.campaigns.map((c, i) => {
-            const href = safePilotLink(c.buttonUrl);
+            const href = safeLegendsLink(c.buttonUrl);
             return (
               <article className={styles.campaign} key={`${c.title}-${i}`}>
                 <div>
@@ -427,11 +455,19 @@ export function UnitySite({
         </section>
       );
     if (key === "memberships" && view.memberships)
-      return <MembershipInvite key={key} settings={settings} join={join} />;
+      return (
+        <MembershipInvite
+          key={key}
+          settings={settings}
+          join={join}
+          content={content}
+          client={client}
+        />
+      );
     return null;
   }
   return (
-    <main className={styles.site} style={theme(content)}>
+    <main data-legends-page className={styles.site} style={theme(content)}>
       <Header
         client={client}
         content={content}
@@ -442,14 +478,20 @@ export function UnitySite({
       <section className={styles.hero}>
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>
-            {brand.heroKicker || "Unity Warriors · Alumni & supporters"}
+            {brand.heroKicker || `${client.name} · Alumni & supporters`}
           </p>
           <h1>
             {starterTitle ? (
               <>
-                Once a Warrior.
+                {client.id === "unity-warriors"
+                  ? "Once a Warrior."
+                  : "Your team."}
                 <br />
-                <em>Always a Warrior.</em>
+                <em>
+                  {client.id === "unity-warriors"
+                    ? "Always a Warrior."
+                    : "Your next chapter."}
+                </em>
               </>
             ) : (
               brand.heroTitle
@@ -457,13 +499,16 @@ export function UnitySite({
           </h1>
           <p>
             {starterBody
-              ? "The game brings us together. Being a Warrior keeps us connected. A home for everyone who carries this program with them."
+              ? "The game brings us together. Our community keeps us connected. A home for everyone who carries this program with them."
               : brand.heroBody}
           </p>
           <div className={styles.heroActions}>
             {view.memberships ? (
               <Link className={styles.button} href={join}>
-                Join the Warriors <Arrow />
+                {client.id === "unity-warriors"
+                  ? "Join the Warriors"
+                  : "Become a member"}{" "}
+                <Arrow />
               </Link>
             ) : (
               <a className={styles.textLink} href="#our-story">
@@ -484,16 +529,16 @@ export function UnitySite({
           />
           <div className={styles.photoShade} />
           <span className={styles.photoWord} aria-hidden="true">
-            UNITY
+            {legendsIdentity(brand.siteTitle).photoWord}
           </span>
           <div className={styles.heroEmblem}>
-            <Mark content={content} large />
+            <Mark content={content} large surface="dark" />
             <span>
               One program.
               <br />A lifetime of belonging.
             </span>
           </div>
-          <span className={styles.photoCaption}>Warriors / Together</span>
+          <span className={styles.photoCaption}>{client.name} / Together</span>
         </div>
       </section>
       <nav className={styles.sectionNav} aria-label="Explore this site">
@@ -519,7 +564,9 @@ export function UnitySite({
         </div>
         <div className={styles.storyBody}>
           <p className={styles.lead}>
-            You don’t stop being a Warrior when the final whistle blows.
+            {client.id === "unity-warriors"
+              ? "You don’t stop being a Warrior when the final whistle blows."
+              : `Your connection to ${client.name} lasts beyond the final whistle.`}
           </p>
           <p>
             Former players. Proud families. Coaches, volunteers, and fans. This
@@ -528,7 +575,7 @@ export function UnitySite({
           </p>
         </div>
         <span className={styles.storyWatermark} aria-hidden="true">
-          W
+          {legendsIdentity(content.brand.siteTitle).watermark}
         </span>
       </section>
       {content.impactStats.length > 0 && (
@@ -549,15 +596,17 @@ export function UnitySite({
   );
 }
 
-export function UnitySuccess({
+export function LegendsSuccess({
   client,
   content,
+  manageHref,
 }: {
   client: Client;
   content: SiteContent;
+  manageHref?: string;
 }) {
   return (
-    <main className={styles.site} style={theme(content)}>
+    <main data-legends-page className={styles.site} style={theme(content)}>
       <Header client={client} content={content} home="/" preview={false} />
       <section className={styles.success}>
         <span className={styles.thanksScript} aria-hidden="true">
@@ -575,8 +624,18 @@ export function UnitySuccess({
           connected.
         </p>
         <Link href="/" className={styles.button}>
-          Back to the Warriors <Arrow />
+          Back home <Arrow />
         </Link>
+        {manageHref && (
+          <Link className={styles.textLink} href={manageHref}>
+            Manage your membership
+          </Link>
+        )}
+        <div className={styles.share}>
+          <SupportShareBar
+            shareText={`Join me in supporting ${client.name} and our alumni community.`}
+          />
+        </div>
       </section>
       <Footer client={client} content={content} home="/" />
     </main>

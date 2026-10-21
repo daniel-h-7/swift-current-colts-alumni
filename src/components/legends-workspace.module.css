@@ -1,0 +1,248 @@
+.workspace {
+  --workspace-brand: #171917;
+  --workspace-on-brand: #fff;
+  --workspace-ink: #785d25;
+  color: #171917;
+  background: #fff;
+  min-height: 100vh;
+}
+/* Email content is an authored document, not part of the application skin. */
+.workspace
+  :where(main, section, aside, fieldset, form):not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: #171917;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+.workspace main:not([data-email-content] *) {
+  background: #fff;
+}
+.workspace
+  :where(section, aside):not([data-email-content], [data-email-content] *) {
+  border-width: 0;
+  border-top: 1px solid #dedfd7;
+}
+.workspace
+  :where(h1, h2, h3):not([data-email-content], [data-email-content] *) {
+  color: #171917;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.workspace h1:not([data-email-content] *) {
+  font-size: clamp(2.5rem, 4vw, 3.8rem);
+  line-height: 1.04;
+}
+.workspace
+  :where([class*="text-gray-"], [class*="text-slate-"]):not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: #62675e;
+}
+.workspace
+  :where(p, span, div, label, td)[class~="text-white"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: #171917;
+}
+.workspace
+  :where(div, table, thead, tbody)[class*="bg-black"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ),
+.workspace
+  :where(div, table, thead, tbody)[class*="bg-zinc-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ),
+.workspace
+  div[class*="bg-[linear-gradient"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  background: #f5f4ef;
+  color: #171917;
+}
+.workspace
+  :where(div, section)[class*="shadow-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  box-shadow: none;
+}
+.workspace
+  :where(div, section, aside, form)[class*="rounded-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  border-radius: 0;
+}
+.workspace
+  :where(div, td, th, table, thead, tbody)[class*="border-white"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  border-color: #dedfd7;
+}
+.workspace
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+    select,
+    textarea
+  ):not([data-email-content] *) {
+  background: #fff;
+  color: #171917;
+  border-color: #cdd1c7;
+  border-radius: 4px;
+  box-shadow: none;
+}
+.workspace
+  :where(input, select, textarea):not([data-email-content] *):focus-visible {
+  outline: 2px solid var(--workspace-ink);
+  outline-offset: 2px;
+}
+.workspace :where(option):not([data-email-content] *) {
+  background: #fff;
+  color: #171917;
+}
+.workspace
+  :where(button, a)[class*="bg-"]:not([class*="red-"]):not(
+    [data-email-content],
+    [data-email-content] *
+  ):not([data-mailer-toolbar] *) {
+  background: var(--workspace-brand);
+  color: var(--workspace-on-brand);
+  border-radius: 4px;
+  box-shadow: none;
+}
+.workspace
+  :where(button, a)[class*="bg-red-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  background: #a32a24;
+  color: #fff;
+  border-radius: 4px;
+}
+.workspace :where(a, button):not([data-email-content] *):focus-visible {
+  outline: 2px solid var(--workspace-ink);
+  outline-offset: 4px;
+}
+.workspace
+  :where(p, span, a)[class*="text-blue-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: var(--workspace-ink);
+}
+.workspace
+  :where(p, span)[class*="text-red-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: #a32a24;
+}
+.workspace
+  :where(p, div, section)[class*="bg-red-9"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  background: #fff1ef;
+  color: #95251f;
+}
+.workspace
+  :where(p, div, section)[class*="bg-blue-9"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  background: #f5f1e5;
+  color: #6c5426;
+}
+.workspace
+  :where(p, div, section)[class*="bg-amber-9"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  background: #fcf4dd;
+  color: #73510c;
+}
+.workspace
+  :where(div, p, span)[class*="text-amber-"]:not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: #73510c;
+}
+.workspace :where(th):not([data-email-content] *) {
+  background: #f5f4ef;
+  color: #484e44;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 750;
+}
+.workspace :where(td):not([data-email-content] *) {
+  border-color: #e3e5dd;
+}
+.workspace :where(tbody tr):not([data-email-content] *):hover {
+  background: #fafaf7;
+}
+.workspace
+  :where([class*="tracking-[3px]"], [class*="tracking-[5px]"]):not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  letter-spacing: 0.12em;
+}
+.workspace :where([class~="program-kicker"]):not([data-email-content] *) {
+  color: var(--workspace-ink);
+}
+.workspace [data-mailer-toolbar] {
+  border: 0;
+  border-block: 1px solid #dedfd7;
+  background: #f5f4ef;
+  padding: 16px;
+  border-radius: 0;
+}
+.workspace [data-mailer-toolbar] :where(button, select, input) {
+  color: #3c4237;
+  background: #fff;
+  border: 1px solid #dedfd7;
+  border-radius: 4px;
+  box-shadow: none;
+  font-size: 12px;
+}
+.workspace [data-mailer-toolbar] button:hover {
+  background: #eaece4;
+  color: #171917;
+}
+.workspace main > section > img[alt*="stadium"],
+.workspace main > section > img[alt*="Football"] {
+  display: none;
+}
+.workspace main > section > div[class*="bg-gradient"],
+.workspace main > section > div:global(.premium-grid) {
+  display: none;
+}
+@media (max-width: 700px) {
+  .workspace h1:not([data-email-content] *) {
+    font-size: 2.5rem;
+  }
+  .workspace :where(section, aside)[class*="p-8"] {
+    padding: 24px 0;
+  }
+  .workspace [data-mailer-toolbar] {
+    gap: 7px;
+    padding: 12px;
+  }
+}
+.workspace
+  a[class~="text-white"]:not([class*="bg-"]):not(
+    [data-email-content],
+    [data-email-content] *
+  ) {
+  color: #171917;
+}

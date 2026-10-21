@@ -1,3 +1,5 @@
+> Superseded: Legends is now the shared client design. See [Legends rollout](legends-design.md). The notes below describe the original Unity-only trial.
+
 # Unity Warriors design pilot
 
 The new presentation is enabled only for the exact client ID `unity-warriors` in `src/lib/unity-pilot.ts`. All other clients keep their existing rendering. No schema, stored content, Stripe integration, account access, or launch approval is changed.

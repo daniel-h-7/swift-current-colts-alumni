@@ -418,8 +418,7 @@ function cleanColor(value: unknown, fallback: string) {
   return fallback;
 }
 
-function normalizeBrandContent(value: unknown, siteVariant?: string): SiteBrandContent {
-  const defaults = createDefaultBrandContent(siteVariant);
+function normalizeBrandContent(value: unknown, siteVariant?: string, defaults = createDefaultBrandContent(siteVariant)): SiteBrandContent {
 
   if (!value || typeof value !== "object") {
     return defaults;
@@ -547,15 +546,14 @@ function normalizeFundraisingCampaign(value: unknown): SiteFundraisingCampaign |
   };
 }
 
-export function normalizeSiteContent(value: unknown, siteVariant?: string): SiteContent {
-  const defaultSiteContent = getDefaultSiteContent(siteVariant);
+export function normalizeSiteContent(value: unknown, siteVariant?: string, defaultSiteContent = getDefaultSiteContent(siteVariant)): SiteContent {
 
   if (!value || typeof value !== "object") {
     return defaultSiteContent;
   }
 
   const content = value as Partial<SiteContent>;
-  const brand = normalizeBrandContent(content.brand, siteVariant);
+  const brand = normalizeBrandContent(content.brand, siteVariant, defaultSiteContent.brand);
   const spotlights = Array.isArray(content.spotlights)
     ? content.spotlights.map(normalizeSpotlight).filter(Boolean)
     : [];
@@ -602,10 +600,11 @@ export async function getSiteContentForClient(clientId: string) {
     : undefined;
   const siteVariant = client?.site_variant ?? knownVariant;
   const brand = getSiteBrand(siteVariant);
-  const defaultSiteContent = getDefaultSiteContent(siteVariant);
+  const isKnownVariant = ["colts", "rmrfootball", "rams", "demo", "bfbadgers", "bf-badgers", "badgers"].includes(siteVariant?.trim().toLowerCase() ?? "");
+  const defaultSiteContent = client && !isKnownVariant ? createStarterSiteContent(client.name) : getDefaultSiteContent(siteVariant);
 
   if (
-    brand.isDemo &&
+    brand.isDemo && isKnownVariant &&
     process.env.DEMO_USE_DATABASE_SITE_CONTENT?.toLowerCase() !== "true"
   ) {
     return defaultSiteContent;
@@ -624,7 +623,7 @@ export async function getSiteContentForClient(clientId: string) {
       return defaultSiteContent;
     }
 
-    return normalizeSiteContent(data.site_content, siteVariant);
+    return normalizeSiteContent(data.site_content, siteVariant, defaultSiteContent);
   } catch {
     return defaultSiteContent;
   }
