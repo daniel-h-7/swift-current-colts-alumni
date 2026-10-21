@@ -73,11 +73,19 @@ test("each team admin URL forwards a server supplied scope without trusting brow
     const response = await proxy(
       new NextRequest(
         `https://www.teamalum.com/studio/rmrfootball/admin${suffix}?q=rams`,
-        { headers: { "x-teamalum-admin-client": "colts", "x-teamalum-admin-path": "/studio/colts/admin" } },
+        {
+          headers: {
+            "x-teamalum-admin-client": "colts",
+            "x-teamalum-admin-path": "/studio/colts/admin",
+          },
+        },
       ),
     );
     assert.equal(response.headers.get("x-middleware-next"), "1");
-    assert.equal(response.headers.get("x-middleware-request-x-teamalum-admin-path"), `/studio/rmrfootball/admin${suffix}?q=rams`);
+    assert.equal(
+      response.headers.get("x-middleware-request-x-teamalum-admin-path"),
+      `/studio/rmrfootball/admin${suffix}?q=rams`,
+    );
     assert.equal(
       response.headers.get("x-middleware-request-x-teamalum-admin-client"),
       "rmrfootball",
@@ -85,14 +93,20 @@ test("each team admin URL forwards a server supplied scope without trusting brow
   }
   const legacy = await proxy(
     new NextRequest("https://www.teamalum.com/admin", {
-      headers: { "x-teamalum-admin-client": "rmrfootball", "x-teamalum-admin-path": "/studio/rmrfootball/admin" },
+      headers: {
+        "x-teamalum-admin-client": "rmrfootball",
+        "x-teamalum-admin-path": "/studio/rmrfootball/admin",
+      },
     }),
   );
   assert.equal(
     legacy.headers.get("x-middleware-request-x-teamalum-admin-client"),
     null,
   );
-  assert.equal(legacy.headers.get("x-middleware-request-x-teamalum-admin-path"), null);
+  assert.equal(
+    legacy.headers.get("x-middleware-request-x-teamalum-admin-path"),
+    null,
+  );
   const denied = await proxy(
     new NextRequest(
       "https://www.teamalum.com/studio/rmrfootball/admin/settings/email",
@@ -229,18 +243,16 @@ test("actual email settings endpoint writes only to the authorized team and refu
     form.set("client_id", "colts");
     form.set("email_from_name", "Rams");
     form.set("email_from_address", "accounts@teamalum.com");
-    const res = await c
-      .load("src/app/admin/settings/email/route.ts")
-      .POST(
-        new Request(
-          "https://www.teamalum.com/studio/rmrfootball/admin/settings/email",
-          {
-            method: "POST",
-            headers: { accept: "application/json" },
-            body: form,
-          },
-        ),
-      );
+    const res = await c.load("src/app/admin/settings/email/route.ts").POST(
+      new Request(
+        "https://www.teamalum.com/studio/rmrfootball/admin/settings/email",
+        {
+          method: "POST",
+          headers: { accept: "application/json" },
+          body: form,
+        },
+      ),
+    );
     assert.equal(res.status, role === "owner" ? 200 : 401);
     assert.equal(c.writes.length, role === "owner" ? 1 : 0);
     if (c.writes.length) assert.equal(c.writes[0][1].client_id, "rmrfootball");
@@ -369,14 +381,43 @@ test("the hub offers the three team-specific tools and hides CRM/mailer links fr
     /REDIRECT:\/studio\/login\?next=.*rmrfootball.*hub/,
   );
 });
-test('public ADMIN links enter the correct team hub on the canonical host',()=>{
- for(const [env,expected] of [[{NODE_ENV:'production'},'https://www.teamalum.com'],[{NODE_ENV:'production',TEAMALUM_STUDIO_URL:'https://www.teamalum.com/'},'https://www.teamalum.com'],[{NODE_ENV:'development'},'']]){
-  const api=loader({env})('src/lib/studio-navigation.ts');assert.equal(api.teamHubHref('rmrfootball'),expected+'/studio/rmrfootball/hub');
- }
+test("public ADMIN links enter the correct team hub on the canonical host", () => {
+  for (const [env, expected] of [
+    [{ NODE_ENV: "production" }, "https://www.teamalum.com"],
+    [
+      {
+        NODE_ENV: "production",
+        TEAMALUM_STUDIO_URL: "https://www.teamalum.com/",
+      },
+      "https://www.teamalum.com",
+    ],
+    [{ NODE_ENV: "development" }, ""],
+  ]) {
+    const api = loader({ env })("src/lib/studio-navigation.ts");
+    assert.equal(
+      api.teamHubHref("rmrfootball"),
+      expected + "/studio/rmrfootball/hub",
+    );
+  }
 });
-test('team logout clears both the Studio cookie and any accompanying HQ session',async()=>{
- const cleared=[];
- const load=loader({mocks:{'@/lib/studio-auth':{clearStudioSession:async()=>cleared.push('studio')},'@/lib/hq-auth':{clearHqSession:async()=>cleared.push('hq')},'next/navigation':{redirect:path=>{throw Error('REDIRECT:'+path);}}}});
- await assert.rejects(load('src/app/studio/logout/route.ts').GET(),/REDIRECT:\/studio\/login/);
- assert.deepEqual(cleared,['studio','hq']);
+test("team logout clears both the Studio cookie and any accompanying HQ session", async () => {
+  const cleared = [];
+  const load = loader({
+    mocks: {
+      "@/lib/studio-auth": {
+        clearStudioSession: async () => cleared.push("studio"),
+      },
+      "@/lib/hq-auth": { clearHqSession: async () => cleared.push("hq") },
+      "next/navigation": {
+        redirect: (path) => {
+          throw Error("REDIRECT:" + path);
+        },
+      },
+    },
+  });
+  await assert.rejects(
+    load("src/app/studio/logout/route.ts").GET(),
+    /REDIRECT:\/studio\/login/,
+  );
+  assert.deepEqual(cleared, ["studio", "hq"]);
 });
