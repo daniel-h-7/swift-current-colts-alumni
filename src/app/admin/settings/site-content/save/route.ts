@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getCurrentClientId } from "@/lib/client-context";
-import { normalizeSiteContent } from "@/lib/site-content";
+import { getSiteContent, normalizeSiteContent } from "@/lib/site-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function redirectTo(request: Request, path: string) {
@@ -17,7 +17,9 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const rawContent = String(formData.get("site_content") ?? "{}");
   const parsedContent = JSON.parse(rawContent) as unknown;
-  const siteContent = normalizeSiteContent(parsedContent);
+  const previousContent = await getSiteContent();
+  const incoming = parsedContent && typeof parsedContent === "object" && !Array.isArray(parsedContent) ? parsedContent : {};
+  const siteContent = normalizeSiteContent({...previousContent, ...incoming}, undefined, previousContent);
   const supabase = createServerSupabaseClient();
   const { error } = await supabase.from("crm_settings").upsert({
     client_id: getCurrentClientId(),
@@ -33,6 +35,9 @@ export async function POST(request: Request) {
   }
 
   revalidatePath("/");
+  revalidatePath("/preview", "layout");
+  revalidatePath("/site", "layout");
+  revalidatePath("/join");
   revalidatePath("/admin/settings/site-content");
 
   return redirectTo(request, "/admin/settings/site-content?saved=1");

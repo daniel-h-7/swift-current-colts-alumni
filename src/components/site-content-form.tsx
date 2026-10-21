@@ -1,4 +1,6 @@
 "use client";
+import { LegendsCopyFields } from "@/components/legends-copy-fields";
+import { getLegendsCopy } from "@/lib/legends-copy";
 
 import { useMemo, useState } from "react";
 import {
@@ -69,6 +71,7 @@ export function SiteContentForm({
   content: SiteContent;
   saved: boolean;
 }) {
+  const [legends, setLegends] = useState(getLegendsCopy(content.brand.siteTitle, content.legends));
   const [spotlights, setSpotlights] = useState(content.spotlights);
   const [sponsors, setSponsors] = useState(content.sponsors);
   const [events, setEvents] = useState(content.events);
@@ -79,13 +82,15 @@ export function SiteContentForm({
   const serializedContent = useMemo(
     () =>
       JSON.stringify({
+        ...content,
+        legends,
         events,
         fundraisingCampaigns,
         impactStats,
         sponsors,
         spotlights,
       }),
-    [events, fundraisingCampaigns, impactStats, sponsors, spotlights],
+    [content, legends, events, fundraisingCampaigns, impactStats, sponsors, spotlights],
   );
 
   function updateSpotlight(index: number, updates: Partial<SiteSpotlight>) {
@@ -190,6 +195,7 @@ export function SiteContentForm({
   return (
     <form action="/admin/settings/site-content/save" className="space-y-6" method="post">
       <input name="site_content" type="hidden" value={serializedContent} />
+      <LegendsCopyFields name={content.brand.siteTitle} value={legends} onChange={(key,value)=>setLegends(current=>({...current,[key]:value}))} />
 
       {saved ? (
         <div className="rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">

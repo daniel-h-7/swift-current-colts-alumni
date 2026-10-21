@@ -1,3 +1,4 @@
+import { getLegendsCopy } from "@/lib/legends-copy";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -87,6 +88,7 @@ function Header({
   preview: boolean;
   join?: string;
 }) {
+  const copy = getLegendsCopy(client.name, content.legends, client.id);
   return (
     <>
       {preview && (
@@ -113,10 +115,7 @@ function Header({
           </Link>
           {join ? (
             <Link className={styles.button} href={join}>
-              {client.id === "unity-warriors"
-                ? "Join the Warriors"
-                : "Become a member"}{" "}
-              <Arrow />
+              {copy.supportButton} <Arrow />
             </Link>
           ) : (
             <Link href={home}>
@@ -137,17 +136,14 @@ function Footer({
   content: SiteContent;
   home: string;
 }) {
+  const copy = getLegendsCopy(client.name, content.legends, client.id);
   return (
     <footer className={styles.footer}>
       <Link href={home} className={styles.identity}>
         <Mark content={content} />
         <strong>{client.name}</strong>
       </Link>
-      <p>
-        Alumni. Families. Community.
-        <br />
-        Always part of the team.
-      </p>
+      <p style={{ whiteSpace: "pre-line" }}>{copy.footerBody}</p>
       <span>
         Powered by <a href="https://www.teamalum.com">TeamAlum ↗</a>
       </span>
@@ -177,29 +173,25 @@ function MembershipInvite({
   settings: MembershipSettings;
   join: string;
 }) {
+  const copy = getLegendsCopy(client.name, content.legends, client.id);
   return (
     <section id="membership" className={styles.invite}>
       <div className={styles.inviteInner}>
-        <p className={styles.eyebrow}>Your next chapter</p>
+        <p className={styles.eyebrow}>{copy.inviteEyebrow}</p>
         <h2>
-          {client.id === "unity-warriors"
-            ? "Still a Warrior."
-            : "Still part of the team."}
+          {copy.inviteTitle}
           <br />
-          <em>Always welcome.</em>
+          <em>{copy.inviteAccent}</em>
         </h2>
         <div className={styles.inviteBottom}>
-          <p>
-            Whether you played, cheered from the stands, or simply believe in
-            this program, there’s a place for you here.
-          </p>
+          <p>{copy.inviteBody}</p>
           <div>
             <span className={styles.price}>
               <Amount settings={settings} />
               <small>/ year</small>
             </span>
             <Link className={styles.button} href={join}>
-              {settings.join_is_open ? "Become a member" : "View membership"}{" "}
+              {settings.join_is_open ? copy.supportButton : "View membership"}{" "}
               <Arrow />
             </Link>
           </div>
@@ -222,6 +214,7 @@ export function LegendsSite({
   showJoin = false,
   manageHref,
 }: Props) {
+  const copy = getLegendsCopy(client.name, content.legends, client.id);
   const view = legendsPresentation(content, features, sections);
   const home = preview ? `/preview/${encodeURIComponent(client.id)}` : "/";
   const join = preview ? `${home}/join` : "/join";
@@ -246,16 +239,14 @@ export function LegendsSite({
             <Link href={home} className={styles.textLink}>
               ← Back home
             </Link>
-            <p className={styles.eyebrow}>A connection that lasts</p>
+            <p className={styles.eyebrow}>{copy.joinEyebrow}</p>
             <h1>
-              Be part of
+              {copy.joinTitle}
               <br />
-              <em>what’s next.</em>
+              <em>{copy.joinAccent}</em>
             </h1>
             <Mark content={content} large />
-            <p>
-              Stay connected to your program and the people who make it matter.
-            </p>
+            <p>{copy.joinBody}</p>
             <div className={styles.joinPrice}>
               <Amount settings={settings} />
               <small>
@@ -300,12 +291,12 @@ export function LegendsSite({
         <section id="sponsors" className={styles.sponsors} key={key}>
           <div className={styles.sectionHeading}>
             <div>
-              <p className={styles.eyebrow}>The people behind the program</p>
+              <p className={styles.eyebrow}>{copy.sponsorsEyebrow}</p>
               <h2>
-                Community, <em>in our corner.</em>
+                {copy.sponsorsTitle} <em>{copy.sponsorsAccent}</em>
               </h2>
             </div>
-            <p>Thank you to the partners who stand with {client.name}.</p>
+            <p>{copy.sponsorsBody}</p>
           </div>
           <div className={styles.sponsorLogos}>
             {view.sponsors.map((s) => {
@@ -331,9 +322,9 @@ export function LegendsSite({
         <section id="alumni" className={styles.alumni} key={key}>
           <div className={styles.sectionHeading}>
             <div>
-              <p className={styles.eyebrow}>Part of our story</p>
+              <p className={styles.eyebrow}>{copy.alumniEyebrow}</p>
               <h2>
-                Our alumni, <em>wherever life leads.</em>
+                {copy.alumniTitle} <em>{copy.alumniAccent}</em>
               </h2>
             </div>
           </div>
@@ -375,12 +366,12 @@ export function LegendsSite({
         <section id="events" className={styles.events} key={key}>
           <div className={styles.sectionHeading}>
             <div>
-              <p className={styles.eyebrow}>Back together</p>
+              <p className={styles.eyebrow}>{copy.eventsEyebrow}</p>
               <h2>
-                Make time <em>for your team.</em>
+                {copy.eventsTitle} <em>{copy.eventsAccent}</em>
               </h2>
             </div>
-            <p>A reason to reconnect. A familiar face in the crowd.</p>
+            <p>{copy.eventsBody}</p>
           </div>
           <div className={styles.eventList}>
             {view.events.map((e, i) => {
@@ -505,10 +496,7 @@ export function LegendsSite({
           <div className={styles.heroActions}>
             {view.memberships ? (
               <Link className={styles.button} href={join}>
-                {client.id === "unity-warriors"
-                  ? "Join the Warriors"
-                  : "Become a member"}{" "}
-                <Arrow />
+                {copy.supportButton} <Arrow />
               </Link>
             ) : (
               <a className={styles.textLink} href="#our-story">
@@ -516,7 +504,7 @@ export function LegendsSite({
               </a>
             )}
             <a href="#our-story" className={styles.textLink}>
-              Our story <span aria-hidden="true">↓</span>
+              {copy.storyMenu} <span aria-hidden="true">↓</span>
             </a>
           </div>
         </div>
@@ -533,46 +521,39 @@ export function LegendsSite({
           </span>
           <div className={styles.heroEmblem}>
             <Mark content={content} large surface="dark" />
-            <span>
-              One program.
-              <br />A lifetime of belonging.
-            </span>
+            <span style={{ whiteSpace: "pre-line" }}>{copy.heroBadge}</span>
           </div>
-          <span className={styles.photoCaption}>{client.name} / Together</span>
+          <span className={styles.photoCaption}>{copy.heroCaption}</span>
         </div>
       </section>
       <nav className={styles.sectionNav} aria-label="Explore this site">
-        <a href="#our-story">Our story</a>
-        {view.spotlights.length > 0 && <a href="#alumni">Alumni</a>}
-        {view.events.length > 0 && <a href="#events">Events</a>}
-        {view.campaigns.length > 0 && <a href="#support">Support</a>}
-        {view.sponsors.length > 0 && <a href="#sponsors">Our partners</a>}
+        <a href="#our-story">{copy.storyMenu}</a>
+        {view.spotlights.length > 0 && <a href="#alumni">{copy.alumniMenu}</a>}
+        {view.events.length > 0 && <a href="#events">{copy.eventsMenu}</a>}
+        {view.campaigns.length > 0 && (
+          <a href="#support">{copy.campaignsMenu}</a>
+        )}
+        {view.sponsors.length > 0 && (
+          <a href="#sponsors">{copy.sponsorsMenu}</a>
+        )}
         {view.memberships && (
           <Link href={join}>
-            Membership <Arrow />
+            {copy.supportMenu} <Arrow />
           </Link>
         )}
       </nav>
       <section id="our-story" className={styles.story}>
         <div className={styles.storyIntro}>
-          <p className={styles.eyebrow}>Roots here. Reach everywhere.</p>
+          <p className={styles.eyebrow}>{copy.storyEyebrow}</p>
           <h2>
-            More than
+            {copy.storyTitle}
             <br />
-            <em>a season.</em>
+            <em>{copy.storyAccent}</em>
           </h2>
         </div>
         <div className={styles.storyBody}>
-          <p className={styles.lead}>
-            {client.id === "unity-warriors"
-              ? "You don’t stop being a Warrior when the final whistle blows."
-              : `Your connection to ${client.name} lasts beyond the final whistle.`}
-          </p>
-          <p>
-            Former players. Proud families. Coaches, volunteers, and fans. This
-            is a place to keep that connection alive—and help the next
-            generation find theirs.
-          </p>
+          <p className={styles.lead}>{copy.storyLead}</p>
+          <p>{copy.storyBody}</p>
         </div>
         <span className={styles.storyWatermark} aria-hidden="true">
           {legendsIdentity(content.brand.siteTitle).watermark}
@@ -605,6 +586,7 @@ export function LegendsSuccess({
   content: SiteContent;
   manageHref?: string;
 }) {
+  const copy = getLegendsCopy(client.name, content.legends, client.id);
   return (
     <main data-legends-page className={styles.site} style={theme(content)}>
       <Header client={client} content={content} home="/" preview={false} />
@@ -615,14 +597,11 @@ export function LegendsSuccess({
         <Mark content={content} large />
         <p className={styles.eyebrow}>Membership complete</p>
         <h1>
-          You’re part of
+          {copy.successTitle}
           <br />
-          <em>what comes next.</em>
+          <em>{copy.successAccent}</em>
         </h1>
-        <p>
-          Thank you for supporting {client.name} and keeping this community
-          connected.
-        </p>
+        <p>{copy.successBody}</p>
         <Link href="/" className={styles.button}>
           Back home <Arrow />
         </Link>

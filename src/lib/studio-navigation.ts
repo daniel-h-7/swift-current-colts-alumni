@@ -17,6 +17,8 @@ export function studioLoginPath(next: string, error?: string) {
 
 export function studioOrigin(requestUrl: string) {
   const origin = new URL(process.env.TEAMALUM_STUDIO_URL || requestUrl);
-  if (origin.protocol !== "https:" && !(origin.protocol === "http:" && ["localhost", "127.0.0.1"].includes(origin.hostname))) throw new Error("Studio requires a secure canonical URL.");
+  const loopback = ["localhost", "127.0.0.1", "[::1]"].includes(origin.hostname);
+  if (process.env.NODE_ENV === "production" && loopback) throw new Error("TEAMALUM_STUDIO_URL must use the live Studio address, not localhost.");
+  if (origin.username || origin.password || (origin.protocol !== "https:" && !(origin.protocol === "http:" && loopback))) throw new Error("Studio requires a secure canonical URL.");
   return origin.origin;
 }

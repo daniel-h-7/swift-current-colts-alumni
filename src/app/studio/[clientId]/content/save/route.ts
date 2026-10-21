@@ -1,9 +1,12 @@
+import { getMembershipSettingsForClient } from "@/lib/membership-settings";
+import { legendsCopyFromForm } from "@/lib/legends-copy";
 import { studioLoginPath } from "@/lib/studio-navigation";
 import { updateSetupState } from "@/lib/setup-state";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import {
   createStarterSiteContent,
+  getSiteContentForClient,
   saveSiteContentForClient,
   SiteContent,
   SiteEvent,
@@ -384,7 +387,9 @@ export async function POST(
         spotlightWithUpload(formData, clientId, 3),
         spotlightWithUpload(formData, clientId, 4),
       ]);
+    const [previousContent, previousMembership] = await Promise.all([getSiteContentForClient(clientId), getMembershipSettingsForClient(clientId)]);
     const content: SiteContent = {
+      legends: legendsCopyFromForm(formData, siteTitle, previousContent.legends, clientId),
       brand: {
         accentColor: color(formData, "accent_color", starter.brand.accentColor),
         heroBody,
@@ -408,19 +413,17 @@ export async function POST(
         ),
         siteTitle,
       },
-      events: [event1, event2].filter(Boolean) as SiteEvent[],
-      fundraisingCampaigns: campaign(formData),
-      impactStats: [],
-      sponsors: [sponsor1, sponsor2, sponsor3].filter(Boolean) as SiteSponsor[],
-      spotlights: [spotlight1, spotlight2, spotlight3, spotlight4].filter(
-        Boolean,
-      ) as SiteSpotlight[],
+      events: [...([event1, event2].filter(Boolean) as SiteEvent[]), ...previousContent.events.slice(2)],
+      fundraisingCampaigns: [...campaign(formData), ...previousContent.fundraisingCampaigns.slice(1)],
+      impactStats: previousContent.impactStats,
+      sponsors: [...([sponsor1, sponsor2, sponsor3].filter(Boolean) as SiteSponsor[]), ...previousContent.sponsors.slice(3)],
+      spotlights: [...([spotlight1, spotlight2, spotlight3, spotlight4].filter(Boolean) as SiteSpotlight[]), ...previousContent.spotlights.slice(4)],
     };
 
     await saveSiteContentForClient(clientId, content, {
-      joinBody: heroBody,
-      joinHeadline: heroTitle,
-      membershipYearLabel: `${siteTitle} Alumni and Booster Club`,
+      joinBody: text(formData, "membership_join_body") || previousMembership.join_body,
+      joinHeadline: text(formData, "membership_join_headline") || previousMembership.join_headline,
+      membershipYearLabel: previousMembership.membership_year_label,
     });
 
     await updateSetupState(clientId, { content_saved_at: new Date().toISOString(), content_reviewed_at: null, visual_reviewed_at: null, preview_reviewed_at: null });

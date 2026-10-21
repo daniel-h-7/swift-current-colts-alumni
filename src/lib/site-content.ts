@@ -1,3 +1,4 @@
+import { getLegendsCopy, type LegendsCopy } from "@/lib/legends-copy";
 import "server-only";
 
 import { getCurrentClientId } from "@/lib/client-context";
@@ -59,6 +60,7 @@ export type SiteBrandContent = {
 };
 
 export type SiteContent = {
+  legends?: Partial<LegendsCopy>;
   brand: SiteBrandContent;
   events: SiteEvent[];
   fundraisingCampaigns: SiteFundraisingCampaign[];
@@ -572,6 +574,7 @@ export function normalizeSiteContent(value: unknown, siteVariant?: string, defau
 
   return {
     brand,
+    legends: getLegendsCopy(brand.siteTitle, content.legends),
     events: Array.isArray(content.events) ? (events as SiteEvent[]) : defaultSiteContent.events,
     fundraisingCampaigns: Array.isArray(content.fundraisingCampaigns)
       ? (fundraisingCampaigns as SiteFundraisingCampaign[])

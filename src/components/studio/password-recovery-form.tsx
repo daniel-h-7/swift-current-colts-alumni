@@ -8,7 +8,7 @@ import { parsePasswordRecoveryFragment, validateNewPassword } from "@/lib/passwo
 const fieldClass = "mt-2 w-full rounded-xl border border-[#dfcc9a] bg-white px-4 py-3 text-[#17130d] outline-none focus:border-[#785d25] focus:ring-2 focus:ring-[#c5a45b]/25";
 const buttonClass = "mt-6 w-full rounded-full bg-[#17130d] px-6 py-4 font-bold text-white transition hover:bg-[#362b19] disabled:cursor-not-allowed disabled:opacity-50";
 
-export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" | "invite" }) {
+export function PasswordRecoveryForm({ mode, resetRedirectTo }: { mode: "request" | "reset" | "invite"; resetRedirectTo?: string }) {
   const client = useRef<ReturnType<typeof createBrowserSupabaseClient> | null>(null);
   const initialization = useRef<Promise<void> | null>(null);
   const [ready, setReady] = useState(mode === "request");
@@ -55,7 +55,7 @@ export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" | "in
       if (mode === "request") {
         const supabase = createBrowserSupabaseClient({ recovery: true });
         const { error: sendError } = await supabase.auth.resetPasswordForEmail(String(data.get("email") ?? "").trim(), {
-          redirectTo: `${window.location.origin}/studio/reset-password`,
+          redirectTo: resetRedirectTo ?? `${window.location.origin}/studio/reset-password`,
         });
         if (sendError) throw new Error("We couldn't send a reset link right now. Please wait a moment and try again.");
         setSent(true);

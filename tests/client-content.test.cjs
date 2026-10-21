@@ -19,6 +19,7 @@ const slugs = load('src/lib/client-slugs.ts');
 let savedContent = null;
 let queriedClient;
 const api = load('src/lib/site-content.ts', {
+  '@/lib/legends-copy': load('src/lib/legends-copy.ts'),
   '@/lib/site-brand': branding,
   '@/lib/client-slugs': slugs,
   '@/lib/client-context': {getCurrentClientId:()=> 'colts'},

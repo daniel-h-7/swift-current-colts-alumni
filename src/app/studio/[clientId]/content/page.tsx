@@ -1,3 +1,5 @@
+import { getMembershipSettingsForClient } from "@/lib/membership-settings";
+import { LegendsCopyFields } from "@/components/legends-copy-fields";
 import { studioLoginPath } from "@/lib/studio-navigation";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -78,7 +80,7 @@ export default async function StudioContentSetupPage({
     notFound();
   }
 
-  const siteContent = await getSiteContentForClient(client.id);
+  const [siteContent, membership] = await Promise.all([getSiteContentForClient(client.id), getMembershipSettingsForClient(client.id)]);
   const previewHref = `/preview/${encodeURIComponent(client.id)}`;
   const action = `/studio/${encodeURIComponent(client.id)}/content/save`;
   const brand = siteContent.brand;
@@ -242,6 +244,14 @@ export default async function StudioContentSetupPage({
                 value={brand.accentColor}
               />
             </div>
+          </section>
+
+          <LegendsCopyFields name={client.name} clientId={client.id} value={siteContent.legends} />
+          <section className="bg-white p-6">
+            <h2 className="text-xl font-black">Support form wording</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Personalize the heading and explanation above the supporter signup fields.</p>
+            <label className="mt-5 block text-sm font-bold">Form heading<input className={fieldClass} name="membership_join_headline" defaultValue={membership.join_headline} required maxLength={200} /></label>
+            <label className="mt-5 block text-sm font-bold">Form introduction<textarea className={areaClass} name="membership_join_body" defaultValue={membership.join_body} required maxLength={2000} /></label>
           </section>
 
           <section

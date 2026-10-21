@@ -10,7 +10,7 @@
 
 ## Supabase configuration before using recovery
 
-1. In Authentication → URL Configuration, allow the exact reset callback URL for every origin where Studio is used, e.g. `https://teamalum.com/studio/reset-password` and `https://demo.teamalum.com/studio/reset-password`. Add each client/custom domain that offers Studio login. For local testing, add the matching localhost URL.
+1. Configure the canonical Studio origin and exact Supabase callbacks as described in [Studio auth email setup](studio-auth-email-setup.md). Live HQ uses `https://www.teamalum.com`; allow `/studio/reset-password` and `/studio/accept-invite` on that origin. With `TEAMALUM_STUDIO_URL` set, client-domain Studio requests redirect to the canonical host. Add other callback origins only if intentionally serving Studio there. Keep localhost callbacks limited to development.
 2. Keep the Reset Password email template's link pointed at `{{ .ConfirmationURL }}`. The implemented flow uses Supabase's default implicit recovery redirect; a custom `token_hash`/PKCE callback template requires a different handler.
 3. Configure production email delivery in Supabase Auth (custom SMTP as appropriate). Supabase's default mail service has recipient and rate limitations. The campaign mail provider configuration does not configure Supabase Auth mail.
 4. Deploy with the existing `NEXT_PUBLIC_SUPABASE_URL` and public anon/publishable key. Never use a service-role key in browser configuration.

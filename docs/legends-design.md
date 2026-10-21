@@ -44,3 +44,11 @@ Browser checks used local fixtures and covered Rams/Colts branding, narrow-scree
 ## Validation completed
 
 All 60 regression tests passed, along with lint, TypeScript, the webpack production build, and whitespace checks. Browser checks verified the actual email editor's text/formatting controls and preserved a custom 26px blue heading, previewed Rams and Colts identities, confirmed the Rams light/dark logo variants, and checked client/mailer/email layouts at 390px without horizontal document overflow. Existing build notices about metadataBase and Node module registration remain unrelated to this presentation change.
+
+## Editable wording
+
+Studio → Site Content now includes **Legends section wording**. Clients can open a group to personalize section eyebrows, main/italic headings, introductions, support buttons, navigation, closing invitation, support-page introduction, thank-you page, hero image text and footer. The same fields are available in legacy Admin → Settings → Site Content. Defaults are prefilled and a cleared field restores its default on save. The separate Studio **Support form wording** fields edit the existing signup form heading/body; saving other content preserves them.
+
+Current shared defaults are **Support the Team** for primary support buttons, **Support Now** for the former Membership menu entry, and **Alumni Spotlight** for the alumni section eyebrow. Link destinations and checkout behavior remain unchanged. Individual campaign button text continues to use its campaign fields.
+
+Copy is stored as an optional `legends` object within the existing `crm_settings.site_content` JSON. Older records receive defaults automatically; no SQL migration or environment setting is needed. Only plain text is supported. Layout, typography, membership price and renewal disclosures are unaffected by section wording edits. Existing custom hero copy and event/alumni/campaign content remain in their established fields.
