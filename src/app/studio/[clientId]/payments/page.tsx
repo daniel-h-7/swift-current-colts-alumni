@@ -157,6 +157,12 @@ export default async function StudioPaymentsPage({
         </div>
 
         <aside className="space-y-6">
+          <section className="rounded-3xl border border-[#dfcc9a] bg-white p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#785d25]">Start here</p>
+            <h2 className="mt-2 text-xl font-black">A clear path through Stripe</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">New account or an existing one? Follow the guide before you connect.</p>
+            <Link className="mt-5 inline-flex rounded-full bg-[#17130d] px-5 py-3 text-sm font-bold text-white hover:bg-[#362b19]" href="/studio/help/stripe">Read the Stripe setup guide</Link>
+          </section>
           <section className="border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-black">Setup Notes</h2>
             <div className="mt-5 space-y-3 text-sm font-semibold leading-6 text-slate-600">

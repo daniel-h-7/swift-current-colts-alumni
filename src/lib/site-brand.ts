@@ -187,8 +187,8 @@ const bfBadgersBrand: SiteBrand = {
   variant: "bfbadgers",
 };
 
-export function getSiteBrand() {
-  const variant = process.env.NEXT_PUBLIC_SITE_VARIANT?.trim().toLowerCase();
+export function getSiteBrand(siteVariant = process.env.NEXT_PUBLIC_SITE_VARIANT) {
+  const variant = siteVariant?.trim().toLowerCase();
 
   if (variant === "demo") {
     return demoBrand;

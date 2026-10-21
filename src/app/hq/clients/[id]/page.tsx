@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { HqClientUserEditor, type HqClientUser } from "@/components/hq-client-user-editor";
 import { HqHeader } from "@/components/hq-header";
 import { isHqAuthenticated } from "@/lib/hq-auth";
 import {
@@ -18,6 +19,8 @@ type PageParams = {
 type PageSearchParams = {
   error?: string;
   saved?: string;
+  account_saved?: string;
+  account_error?: string;
 };
 
 type ClientRow = {
@@ -81,6 +84,7 @@ async function getClientDetail(clientId: string) {
     campaignsResult,
     features,
     integrations,
+    usersResult,
   ] = await Promise.all([
       supabase
         .from("clients")
@@ -107,6 +111,7 @@ async function getClientDetail(clientId: string) {
         .eq("client_id", clientId),
       getClientFeatures(clientId),
       getClientIntegrations(clientId),
+      supabase.from("client_users").select("id, email, full_name, role").eq("client_id", clientId).order("created_at", { ascending: true }),
     ]);
 
   if (clientResult.error) {
@@ -122,6 +127,8 @@ async function getClientDetail(clientId: string) {
   }
 
   return {
+    users: (usersResult.data ?? []) as HqClientUser[],
+    usersError: Boolean(usersResult.error),
     campaignCount: campaignsResult.count ?? 0,
     client: clientResult.data as ClientRow,
     contactCount: contactsResult.count ?? 0,
@@ -143,7 +150,7 @@ export default async function HqClientPage({
   }
 
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const { client, settings, contactCount, campaignCount, features, integrations } =
+  const { client, settings, contactCount, campaignCount, features, integrations, users, usersError } =
     await getClientDetail(id);
   const membershipAmount = ((settings?.annual_membership_amount_cents ?? 10000) / 100).toFixed(2);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
@@ -251,6 +258,16 @@ export default async function HqClientPage({
               </p>
             </div>
           </div>
+        </section>
+
+        <section id="account-access" className="mt-8 scroll-mt-6 rounded-3xl border border-[#e9e1d1] bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-black">Account access</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Manage the people who log in to this client’s Studio. Use Edit email to change their account address.</p>
+          {query.account_saved === "1" ? <p role="status" className="mt-4 rounded-xl bg-[#f1e7ce] p-4 text-sm font-bold">Account email updated. Use the new address for future logins.</p> : null}
+          {query.account_error ? <p role="alert" className="mt-4 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-800">{query.account_error}</p> : null}
+          {usersError ? <p role="alert" className="mt-4 text-sm text-red-800">Unable to load client accounts. Reload the page to try again.</p> : users.length ? (
+            <div className="mt-5 grid gap-4 md:grid-cols-2">{users.map(user => <HqClientUserEditor key={user.id} clientId={client.id} user={user} />)}</div>
+          ) : <p className="mt-4 text-sm text-slate-500">No Studio login is linked to this client yet.</p>}
         </section>
 
         <form

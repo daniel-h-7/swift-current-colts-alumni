@@ -220,10 +220,10 @@ export default async function StudioContentSetupPage({
                 urlValue={brand.heroImageUrl}
               />
               <ColorSettingField
-                fallback="#047857"
+                fallback="#785d25"
                 label="Primary Color"
                 name="primary_color"
-                placeholder="#047857 or rgb(4, 120, 87)"
+                placeholder="#785d25 or rgb(120, 93, 37)"
                 value={brand.primaryColor}
               />
               <ColorSettingField
@@ -234,10 +234,10 @@ export default async function StudioContentSetupPage({
                 value={brand.secondaryColor}
               />
               <ColorSettingField
-                fallback="#10b981"
+                fallback="#c5a45b"
                 label="Accent Color"
                 name="accent_color"
-                placeholder="#10b981 or rgb(16, 185, 129)"
+                placeholder="#c5a45b or rgb(197, 164, 91)"
                 value={brand.accentColor}
               />
             </div>

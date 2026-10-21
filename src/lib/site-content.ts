@@ -2,6 +2,8 @@ import "server-only";
 
 import { getCurrentClientId } from "@/lib/client-context";
 import { getSiteBrand } from "@/lib/site-brand";
+import { getPlatformClient } from "@/lib/platform-data";
+import { resolveClientSlug } from "@/lib/client-slugs";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type SiteSpotlight = {
@@ -65,20 +67,20 @@ export type SiteContent = {
   spotlights: SiteSpotlight[];
 };
 
-function createDefaultBrandContent(): SiteBrandContent {
-  const brand = getSiteBrand();
+function createDefaultBrandContent(siteVariant?: string): SiteBrandContent {
+  const brand = getSiteBrand(siteVariant);
   const primaryColor =
     brand.variant === "rmrfootball"
       ? "#ceb74c"
       : brand.variant === "bfbadgers"
         ? "#1d4ed8"
-        : "#047857";
+        : "#785d25";
   const accentColor =
     brand.variant === "rmrfootball"
       ? "#e5d36b"
       : brand.variant === "bfbadgers"
         ? "#bfdbfe"
-        : "#10b981";
+        : "#c5a45b";
 
   return {
     accentColor,
@@ -385,22 +387,17 @@ const bfBadgersDefaultSiteContent: SiteContent = {
   ],
 };
 
-export function getDefaultSiteContent() {
-  const brand = getSiteBrand();
+export function getDefaultSiteContent(siteVariant?: string): SiteContent {
+  const brand = getSiteBrand(siteVariant);
+  const template = brand.variant === "demo"
+    ? demoDefaultSiteContent
+    : brand.variant === "rmrfootball"
+      ? ramsDefaultSiteContent
+      : brand.variant === "bfbadgers"
+        ? bfBadgersDefaultSiteContent
+        : coltsDefaultSiteContent;
 
-  if (brand.variant === "demo") {
-    return demoDefaultSiteContent;
-  }
-
-  if (brand.variant === "rmrfootball") {
-    return ramsDefaultSiteContent;
-  }
-
-  if (brand.variant === "bfbadgers") {
-    return bfBadgersDefaultSiteContent;
-  }
-
-  return coltsDefaultSiteContent;
+  return { ...template, brand: createDefaultBrandContent(brand.variant) };
 }
 
 function cleanText(value: unknown) {
@@ -421,8 +418,8 @@ function cleanColor(value: unknown, fallback: string) {
   return fallback;
 }
 
-function normalizeBrandContent(value: unknown): SiteBrandContent {
-  const defaults = createDefaultBrandContent();
+function normalizeBrandContent(value: unknown, siteVariant?: string): SiteBrandContent {
+  const defaults = createDefaultBrandContent(siteVariant);
 
   if (!value || typeof value !== "object") {
     return defaults;
@@ -550,15 +547,15 @@ function normalizeFundraisingCampaign(value: unknown): SiteFundraisingCampaign |
   };
 }
 
-export function normalizeSiteContent(value: unknown): SiteContent {
-  const defaultSiteContent = getDefaultSiteContent();
+export function normalizeSiteContent(value: unknown, siteVariant?: string): SiteContent {
+  const defaultSiteContent = getDefaultSiteContent(siteVariant);
 
   if (!value || typeof value !== "object") {
     return defaultSiteContent;
   }
 
   const content = value as Partial<SiteContent>;
-  const brand = normalizeBrandContent(content.brand);
+  const brand = normalizeBrandContent(content.brand, siteVariant);
   const spotlights = Array.isArray(content.spotlights)
     ? content.spotlights.map(normalizeSpotlight).filter(Boolean)
     : [];
@@ -598,8 +595,14 @@ export async function getSiteContent() {
 }
 
 export async function getSiteContentForClient(clientId: string) {
-  const brand = getSiteBrand();
-  const defaultSiteContent = getDefaultSiteContent();
+  const canonicalClientId = resolveClientSlug(clientId);
+  const client = await getPlatformClient(canonicalClientId);
+  const knownVariant = ["colts", "rmrfootball", "demo", "bfbadgers"].includes(canonicalClientId)
+    ? canonicalClientId
+    : undefined;
+  const siteVariant = client?.site_variant ?? knownVariant;
+  const brand = getSiteBrand(siteVariant);
+  const defaultSiteContent = getDefaultSiteContent(siteVariant);
 
   if (
     brand.isDemo &&
@@ -613,7 +616,7 @@ export async function getSiteContentForClient(clientId: string) {
     const { data, error } = await supabase
       .from("crm_settings")
       .select("site_content")
-      .eq("client_id", clientId)
+      .eq("client_id", canonicalClientId)
       .eq("id", "default")
       .maybeSingle();
 
@@ -621,7 +624,7 @@ export async function getSiteContentForClient(clientId: string) {
       return defaultSiteContent;
     }
 
-    return normalizeSiteContent(data.site_content);
+    return normalizeSiteContent(data.site_content, siteVariant);
   } catch {
     return defaultSiteContent;
   }
@@ -633,7 +636,7 @@ export function createStarterSiteContent(clientName: string): SiteContent {
 
   return {
     brand: {
-      accentColor: "#10b981",
+      accentColor: "#c5a45b",
       heroBody:
         `${name} now has one home for alumni, families, sponsors, and supporters to reconnect, stay informed, and help keep the program moving forward.`,
       heroImagePosition: "50% 50%",
@@ -641,7 +644,7 @@ export function createStarterSiteContent(clientName: string): SiteContent {
       heroKicker: supporterName,
       heroTitle: `Support ${name}`,
       logoUrl: "",
-      primaryColor: "#047857",
+      primaryColor: "#785d25",
       secondaryColor: "#0f172a",
       siteTitle: name,
     },

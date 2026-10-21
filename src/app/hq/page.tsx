@@ -300,6 +300,7 @@ export default async function HqHomePage() {
                     </td>
                     <td className="px-5 py-4 text-slate-700">
                       {client.ownerEmail ? <a className="underline decoration-[#c5a45b] underline-offset-4 hover:text-[#785d25]" href={`mailto:${client.ownerEmail}`}>{client.ownerEmail}</a> : <span className="text-slate-500">Not assigned</span>}
+                      <Link className="mt-2 block text-xs font-bold text-[#785d25] underline underline-offset-4 hover:text-black" href={`/hq/clients/${encodeURIComponent(client.id)}#account-access`}>Edit account</Link>
                     </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">
                       {client.site_variant}

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { resolveClientSlug } from "@/lib/client-slugs";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   ClientFeature,
@@ -54,9 +56,6 @@ export const defaultClientIntegrations: ClientIntegration[] = [
 
 const expandedClientSelect =
   "id, name, site_variant, primary_domain, status, plan_key, subdomain, custom_domain, published_at, launch_approved_at, launch_review_requested_at";
-const clientSlugAliases: Record<string, string> = {
-  rmramsfootball: "rmrfootball",
-};
 
 export async function getPlatformClient(clientId: string) {
   try {
@@ -95,7 +94,7 @@ export async function getPlatformClient(clientId: string) {
 }
 
 export async function getPlatformClientByStudioSlug(slug: string) {
-  const resolvedSlug = clientSlugAliases[slug] ?? slug;
+  const resolvedSlug = resolveClientSlug(slug);
   const directClient = await getPlatformClient(resolvedSlug);
 
   if (directClient) {

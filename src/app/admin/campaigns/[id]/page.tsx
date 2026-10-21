@@ -278,7 +278,7 @@ export default async function CampaignDetailPage({
           ))}
         </section>
 
-        <section className="mt-6 border border-[#e9e1d1] bg-white shadow-[0_24px_80px_rgba(23,19,13,0.06)]">
+        <section className="mt-6 overflow-hidden rounded-[2rem] border border-[#e9e1d1] bg-white shadow-[0_24px_80px_rgba(23,19,13,0.06)]">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-[#e9e1d1] text-left text-sm">
               <thead className="bg-[#faf7ef] text-[#17130d]">
