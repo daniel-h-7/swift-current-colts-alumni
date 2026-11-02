@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { isMarketingHost, platformUrl } from "@/lib/platform-seo";
 import { Geist, Geist_Mono } from "next/font/google";
 import { isPlatformApp } from "@/lib/app-mode";
 import { getSiteBrand } from "@/lib/site-brand";
@@ -20,7 +22,7 @@ const description = isPlatformApp()
   ? "Alumni CRM, mailer, and passive fundraising tools for sports programs."
   : brand.metaDescription;
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   description,
   openGraph: {
     description,
@@ -43,6 +45,21 @@ export const metadata: Metadata = {
     title,
   },
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const marketing = isPlatformApp() && isMarketingHost((await headers()).get("host"));
+  return {
+    ...baseMetadata,
+    ...(marketing ? {
+      metadataBase: new URL(platformUrl),
+      applicationName: "TeamAlum",
+      icons: {
+        icon: [{ url: "/images/teamalum-icon-96.png", sizes: "96x96", type: "image/png" }],
+        apple: [{ url: "/images/teamalum-apple-icon.png", sizes: "180x180", type: "image/png" }],
+      },
+    } : {}),
+  };
+}
 
 export default function RootLayout({
   children,

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { platformStructuredData } from "@/lib/platform-seo";
 
 const proofPoints = [
   ["Alumni CRM", "Every supporter, sponsor, parent, and former player in one clean place."],
@@ -34,11 +35,10 @@ const campaignStats = [
 export function PlatformHome() {
   return (
     <main className="min-h-screen bg-[#f5f1e8] text-[#17130d]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(platformStructuredData).replace(/</g, "\\u003c") }} />
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
         <Link className="flex items-center gap-3" href="/">
-          <span className="flex h-10 w-10 items-center justify-center border border-[#c5a45b] bg-[#17130d] text-sm font-black text-[#d9bd72]">
-            TA
-          </span>
+          <Image src="/images/teamalum-monogram.png" alt="" width={64} height={64} priority className="h-14 w-14 object-contain sm:h-16 sm:w-16" />
           <span className="text-base font-black">TeamAlum</span>
         </Link>
 
@@ -70,7 +70,7 @@ export function PlatformHome() {
             Turn pride into momentum.
           </h1>
           <p className="mt-6 max-w-2xl text-lg font-semibold leading-8 text-[#665a43]">
-            TeamAlum gives every program a polished home to collect alumni
+            TeamAlum (Team Alum) gives every program a polished home to collect alumni
             memberships that boost funds for your program, a practical alumni
             CRM, and a built-in mailer so supporters stay close all year.
           </p>

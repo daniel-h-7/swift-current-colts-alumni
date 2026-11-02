@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { isPlatformApp } from "@/lib/app-mode";
 import { getSiteBrand } from "@/lib/site-brand";
 
@@ -9,12 +11,13 @@ export const size = {
   width: 1200,
 };
 
-export default function Image() {
+export default async function Image() {
   const brand = getSiteBrand();
   const platform = isPlatformApp();
+  const logo = platform ? `data:image/png;base64,${(await readFile(join(process.cwd(), "public/images/teamalum-monogram.png"))).toString("base64")}` : "";
   const title = platform ? "TEAMALUM" : brand.programName;
   const subtitle = platform
-    ? "Alumni CRM + passive fundraising"
+    ? "Alumni websites. CRM. Team fundraising."
     : "Powered by TeamAlum";
 
   return new ImageResponse(
@@ -34,7 +37,7 @@ export default function Image() {
       >
         <div
           style={{
-            background: "#d8ff6a",
+            background: platform ? "#c5a45b" : "#d8ff6a",
             borderRadius: 999,
             height: 270,
             left: 86,
@@ -62,7 +65,10 @@ export default function Image() {
             position: "relative",
           }}
         >
-          <div
+          {platform ? (
+            // ImageResponse embeds this local PNG directly; next/image is for browser HTML.
+            <img src={logo} alt="" width={200} height={200} />
+          ) : <div
             style={{
               alignItems: "center",
               background: "#111417",
@@ -77,7 +83,7 @@ export default function Image() {
             }}
           >
             TA
-          </div>
+          </div>}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div
               style={{
@@ -93,7 +99,7 @@ export default function Image() {
               style={{
                 color: "#475569",
                 display: "flex",
-                fontSize: 38,
+                fontSize: platform ? 28 : 38,
                 fontWeight: 800,
                 marginTop: 22,
               }}
