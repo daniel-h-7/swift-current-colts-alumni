@@ -21,3 +21,14 @@ An existing mapping cannot be silently replaced with a different account. Contac
 - **Member paid but membership is unchanged:** confirm the payment in the organization's Stripe Dashboard and contact HQ to inspect notifications. Do not charge the member again to repair their membership record.
 
 The same guidance is available at `/studio/help/stripe`. Operators should complete `docs/setup-reliability-rollout.md` before rollout. This guide describes the implemented workflow, not verified live configuration or tax/legal advice.
+
+
+## One-time TeamAlum configuration
+
+Set the live `STRIPE_CONNECT_CLIENT_ID` on the production platform and register `https://www.teamalum.com/studio/payments/oauth/callback` in the matching Stripe Connect OAuth application. This is one shared callback for every team, not a record to add for every new client. Each team owner still signs in to Stripe and authorizes their own account through Studio. The callback selects the team from unexpired browser-bound server state and rechecks the signed-in owner before consuming authorization once. Legacy per-team callback URLs remain supported. No database migration is required for this callback change; the existing setup-reliability OAuth-state table is still required.
+
+The production client ID was saved in Vercel on November 4, 2026. A deployment and registration of the shared callback in Stripe are required before this flow is live. The earlier RMR callback may remain registered. No team was connected and no payment or payout was initiated by this configuration change.
+
+### November 4 verification
+
+The owner confirmed both the original RMR-specific URI and the shared URI were added in Stripe. Vercel deployment `DcuyGVgJdmpxXqwYu8TJPMEq5QUT` reached Ready/Production with the saved client ID, redeploying existing source `67bf6ce`; it does not contain the subsequent shared-callback code yet. The new shared callback passed all 90 tests, lint and a platform-mode webpack production build, and is ready for the normal code commit/deployment. Owner authorization and live payments/payouts remain unverified until the team completes Connect and checks its status. No team account was authorized by the agent.

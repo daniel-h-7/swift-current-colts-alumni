@@ -1,13 +1,13 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');const loader=require('./helpers/load-ts.cjs');
 function oauthFixture(){
  const states=[];const cookies=new Map();let selected='acct_original';let saved=[];let exchanges=0;
- const supabase={from:()=>({filters:[],insert:async row=>{states.push({...row});return{error:null};},delete(){return this;},eq(k,v){this.filters.push([k,v]);return this;},gt(){return this;},select(){return this;},maybeSingle:async function(){const index=states.findIndex(row=>this.filters.every(([k,v])=>row[k]===v));return{data:index<0?null:states.splice(index,1)[0],error:null};}})};
+ const supabase={from:()=>({filters:[],insert:async row=>{states.push({...row});return{error:null};},delete(){this.deleting=true;return this;},eq(k,v){this.filters.push([k,v]);return this;},gt(k,v){this.filters.push([k,v,"gt"]);return this;},select(){return this;},maybeSingle:async function(){const index=states.findIndex(row=>this.filters.every(([k,v,op])=>op==="gt"?row[k]>v:row[k]===v));return{data:index<0?null:(this.deleting?states.splice(index,1)[0]:states[index]),error:null};}})};
  const load=loader({mocks:{'next/headers':{cookies:async()=>({get:name=>cookies.has(name)?{value:cookies.get(name)}:undefined,set:(name,value)=>cookies.set(name,value)})},'@/lib/supabase/server':{getServerEnvValue:()=> 'ca_test',createServerSupabaseClient:()=>supabase},'@/lib/client-integrations':{getClientIntegration:async()=>({external_account_id:'acct_original'})},'@/lib/stripe-connect':{stripePlatformMode:()=> 'live',exchangeStripeOAuthCode:async()=>{exchanges++;return selected;},retrieveConnectedAccount:async id=>({id})},'@/lib/stripe-connection':{saveVerifiedStripeConnection:async(id,account)=>saved.push([id,account.id])}}});
- return{api:load('src/lib/stripe-oauth.ts'),states,cookies,saved,select:id=>{selected=id;},get exchanges(){return exchanges;}};
+ return{load,api:load('src/lib/stripe-oauth.ts'),states,cookies,saved,select:id=>{selected=id;},get exchanges(){return exchanges;}};
 }
 test('OAuth binds the browser, owner, client, origin and mode, and consumes authorization once',async()=>{
  const f=oauthFixture();const url=new URL(await f.api.beginStripeOAuth('rams','owner','https://teamalum.com'));const state=url.searchParams.get('state');
- assert.equal(url.searchParams.get('redirect_uri'),'https://teamalum.com/studio/rams/payments/oauth/callback');
+ assert.equal(url.searchParams.get('redirect_uri'),'https://teamalum.com/studio/payments/oauth/callback');
  await assert.rejects(f.api.finishStripeOAuth('rams','other','https://teamalum.com',state,'code'),/already used|another account/);assert.equal(f.exchanges,0);
  await assert.rejects(f.api.finishStripeOAuth('rams','owner','https://other.test',state,'code'));assert.equal(f.exchanges,0);
  await assert.rejects(f.api.finishStripeOAuth('colts','owner','https://teamalum.com',state,'code'));assert.equal(f.exchanges,0);
@@ -17,6 +17,15 @@ test('OAuth binds the browser, owner, client, origin and mode, and consumes auth
 test('OAuth refuses an unexpected account replacement and does not save it',async()=>{
  const f=oauthFixture();const url=new URL(await f.api.beginStripeOAuth('rams','owner','https://teamalum.com'));f.select('acct_wrong');
  await assert.rejects(f.api.finishStripeOAuth('rams','owner','https://teamalum.com',url.searchParams.get('state'),'code'),/different Stripe account/);assert.equal(f.saved.length,0);
+});
+test('shared callback discovers only the browser-bound team without consuming state',async()=>{
+ const f=oauthFixture();const url=new URL(await f.api.beginStripeOAuth('rams','owner','https://teamalum.com'));const state=url.searchParams.get('state');
+ assert.equal(await f.api.resolveStripeOAuthClientId(state,'https://teamalum.com'),'rams');assert.equal(f.states.length,1);
+ await assert.rejects(f.api.resolveStripeOAuthClientId('0'.repeat(64),'https://teamalum.com'));
+ await assert.rejects(f.api.resolveStripeOAuthClientId(state,'https://other.test'));
+ f.states[0].mode='test';await assert.rejects(f.api.resolveStripeOAuthClientId(state,'https://teamalum.com'));f.states[0].mode='live';
+ f.states[0].expires_at='2000-01-01T00:00:00Z';await assert.rejects(f.api.resolveStripeOAuthClientId(state,'https://teamalum.com'));
+ assert.equal(f.exchanges,0);
 });
 test('account webhooks read current state, disable revoked connections and ignore other modes',async()=>{
  const writes=[];let reads=0;let current={id:'acct_rams',charges_enabled:true,payouts_enabled:false,details_submitted:true};

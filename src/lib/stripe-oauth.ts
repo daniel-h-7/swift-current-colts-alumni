@@ -17,8 +17,23 @@ export async function beginStripeOAuth(clientId: string, ownerId: string, origin
   if (error) throw new Error("Unable to start secure Stripe authorization. Apply the setup reliability migration.");
   (await cookies()).set(cookieName, state, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 600, path: "/studio" });
   const url = new URL("https://connect.stripe.com/oauth/authorize");
-  url.search = new URLSearchParams({ response_type: "code", client_id: clientKey, scope: "read_write", stripe_landing: "login", state, redirect_uri: `${origin}/studio/${encodeURIComponent(clientId)}/payments/oauth/callback` }).toString();
+  url.search = new URLSearchParams({ response_type: "code", client_id: clientKey, scope: "read_write", stripe_landing: "login", state, redirect_uri: `${origin}/studio/payments/oauth/callback` }).toString();
   return url.toString();
+}
+
+// Resolve the team from browser-bound server state, never a callback query parameter.
+export async function resolveStripeOAuthClientId(state: string, origin: string) {
+  const cookie = (await cookies()).get(cookieName)?.value ?? "";
+  if (!/^[a-f0-9]{64}$/.test(state) || cookie.length !== state.length || !timingSafeEqual(Buffer.from(state), Buffer.from(cookie))) {
+    throw new Error("Stripe authorization expired or did not match this browser. Start again from Payments.");
+  }
+  const { data, error } = await createServerSupabaseClient().from("stripe_oauth_states")
+    .select("client_id, mode").eq("state_hash", digest(state)).eq("callback_origin", origin)
+    .gt("expires_at", new Date().toISOString()).maybeSingle();
+  if (error || !data || data.mode !== stripePlatformMode()) {
+    throw new Error("Stripe authorization was already used, expired, or belongs to another environment. Start again from Payments.");
+  }
+  return data.client_id as string;
 }
 
 export async function finishStripeOAuth(clientId: string, ownerId: string, origin: string, state: string, code: string) {
