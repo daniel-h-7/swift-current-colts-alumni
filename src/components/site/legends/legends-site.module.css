@@ -530,7 +530,18 @@
   padding: 30px 0;
   border-bottom: 1px solid #dedfd7;
 }
-.eventDate {
+.eventMeta {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.eventImage {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+}
+.event .eventDate {
+  margin: 0;
   font-size: 12px;
   font-weight: 750;
   color: var(--legends-brand-ink);

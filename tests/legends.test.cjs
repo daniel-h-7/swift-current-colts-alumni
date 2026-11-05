@@ -18,7 +18,6 @@ const features = [
   { feature_key: "memberships", is_enabled: true },
   { feature_key: "fundraising_campaigns", is_enabled: true },
 ];
-const now = new Date("2026-10-20T12:00:00Z");
 const content = () => createStarterSiteContent("Unity Warriors Football");
 
 test("identity is derived separately for every organization", () => {
@@ -32,13 +31,12 @@ test("starter-only content produces a complete evergreen site without fabricated
     content(),
     features,
     defaultSiteSections,
-    now,
   );
   assert.equal(result.memberships, true);
   for (const field of ["events", "sponsors", "spotlights", "campaigns"])
     assert.equal(result[field].length, 0);
 });
-test("past events retire automatically, seasonal announcements remain, and configured content is preserved", () => {
+test("enabled events keep their saved dates, order and content until the editor hides them", () => {
   const saved = content();
   saved.events = [
     { title: "Last year", date: "October 19, 2026" },
@@ -60,10 +58,10 @@ test("past events retire automatically, seasonal announcements remain, and confi
   ];
   saved.fundraisingCampaigns[0].description = "A real program campaign";
   const before = JSON.stringify(saved);
-  const result = legendsPresentation(saved, features, defaultSiteSections, now);
+  const result = legendsPresentation(saved, features, defaultSiteSections);
   assert.deepEqual(
     Array.from(result.events, (e) => e.title),
-    ["Today", "Reunion", "Future"],
+    ["Last year", "Today", "Reunion", "Future"],
   );
   assert.equal(result.sponsors.length, 1);
   assert.equal(result.spotlights.length, 1);
@@ -73,7 +71,6 @@ test("past events retire automatically, seasonal announcements remain, and confi
     saved,
     features.map((f) => ({ ...f, is_enabled: false })),
     defaultSiteSections.map((s) => ({ ...s, is_enabled: false })),
-    now,
   );
   assert.equal(hidden.memberships, false);
   for (const field of ["events", "sponsors", "spotlights", "campaigns"])
@@ -176,13 +173,44 @@ test("sparse homepage has no empty section links; preview retains organization-s
   const html = renderToStaticMarkup(
     React.createElement(LegendsSite, { ...props(), preview: true }),
   );
-  assert.match(html, /Once a Warrior/);
+  assert.match(html, /Support Unity Warriors Football/);
   assert.match(html, /More than/);
   assert.match(html, /href="\/preview\/unity-warriors\/join"/);
   assert.match(html, /href="\/studio\/unity-warriors\/content"/);
   for (const id of ["events", "alumni", "sponsors", "support"])
     assert.doesNotMatch(html, new RegExp(`href="#${id}"`));
   assert.doesNotMatch(html, /\$6,250|Alumni Spotlight|Founding Sponsor/);
+});
+test("public and preview honor enabled events, uploaded artwork, saved hero copy and section order", () => {
+  const { LegendsSite } = component();
+  const saved = content();
+  saved.events = [{ title: "Rams reunion", date: "September 12, 2020", notes: "Meet at the field", imageUrl: "/uploads/reunion-poster.jpg", linkUrl: "https://example.com/reunion", linkLabel: "Reunion details" }];
+  saved.sponsors = [{ name: "Local supporter", imageUrl: "", linkUrl: "" }];
+  const sections = [
+    ...defaultSiteSections.filter((s) => s.section_key === "events"),
+    ...defaultSiteSections.filter((s) => s.section_key !== "events"),
+  ];
+  for (const preview of [false, true]) {
+    const input = { ...props(), content: saved, sections, preview };
+    const html = renderToStaticMarkup(React.createElement(LegendsSite, input));
+    assert.match(html, /href="#events"/);
+    assert.match(html, /Rams reunion/);
+    assert.match(html, /September 12, 2020/);
+    assert.match(html, /src="\/uploads\/reunion-poster.jpg"/);
+    assert.match(html, /Meet at the field/);
+    assert.match(html, /href="https:\/\/example.com\/reunion"/);
+    assert.match(html, /Reunion details/);
+    assert.match(html, /<h1>Support Unity Warriors Football<\/h1>/);
+    assert.ok(html.includes(saved.brand.heroBody));
+    assert.ok(html.indexOf('id="events"') < html.indexOf('id="sponsors"'));
+    for (const hidden of [
+      { ...input, features: [...features, { feature_key: "events", is_enabled: false }] },
+      { ...input, sections: sections.map((s) => ({ ...s, is_enabled: s.section_key !== "events" })) },
+    ]) {
+      const output = renderToStaticMarkup(React.createElement(LegendsSite, hidden));
+      assert.doesNotMatch(output, /href="#events"|Rams reunion|reunion-poster/);
+    }
+  }
 });
 test("join keeps production and preview checkout boundaries and disables memberships when switched off", () => {
   const { LegendsSite } = component();

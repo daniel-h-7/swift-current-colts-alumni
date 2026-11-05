@@ -225,10 +225,6 @@ export function LegendsSite({
   const home = preview ? `/preview/${encodeURIComponent(client.id)}` : "/";
   const join = preview ? `${home}/join` : "/join";
   const brand = content.brand;
-  const starterTitle = brand.heroTitle === `Support ${client.name}`;
-  const starterBody =
-    brand.heroBody ===
-    `${client.name} now has one home for alumni, families, sponsors, and supporters to reconnect, stay informed, and help keep the program moving forward.`;
   const photo = brand.heroImageUrl || "/images/stadium.jpg";
 
   if (showJoin)
@@ -385,8 +381,16 @@ export function LegendsSite({
               const href = safeLegendsLink(e.linkUrl);
               return (
                 <article key={`${e.title}-${i}`} className={styles.event}>
-                  <div className={styles.eventDate}>
-                    {e.date || "Details to come"}
+                  <div className={styles.eventMeta}>
+                    {e.imageUrl && (
+                      <img
+                        className={styles.eventImage}
+                        src={e.imageUrl}
+                        alt=""
+                        loading="lazy"
+                      />
+                    )}
+                    <p className={styles.eventDate}>{e.date || "Details to come"}</p>
                   </div>
                   <div>
                     <h3>{e.title}</h3>
@@ -478,28 +482,8 @@ export function LegendsSite({
           <p className={styles.eyebrow}>
             {brand.heroKicker || `${client.name} · Alumni & supporters`}
           </p>
-          <h1>
-            {starterTitle ? (
-              <>
-                {client.id === "unity-warriors"
-                  ? "Once a Warrior."
-                  : "Your team."}
-                <br />
-                <em>
-                  {client.id === "unity-warriors"
-                    ? "Always a Warrior."
-                    : "Your next chapter."}
-                </em>
-              </>
-            ) : (
-              brand.heroTitle
-            )}
-          </h1>
-          <p>
-            {starterBody
-              ? "The game brings us together. Our community keeps us connected. A home for everyone who carries this program with them."
-              : brand.heroBody}
-          </p>
+          <h1>{brand.heroTitle}</h1>
+          <p>{brand.heroBody}</p>
           <div className={styles.heroActions}>
             {view.memberships ? (
               <Link className={styles.button} href={join}>

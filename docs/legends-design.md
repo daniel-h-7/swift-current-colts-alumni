@@ -15,7 +15,7 @@ Legends replaces the Unity-only pilot and the older shared/standalone client lay
 
 Each site retains its saved name, primary/accent colours, logo, hero photo/crop, custom headline/body, pricing, membership availability, optional content and section order. Logo-less sites get initials derived from their own identity. The supplied Rams black mark is used on light surfaces and its white mark over the hero image. Unity retains its approved Warriors wording; other clients receive neutral program wording rather than Unity copy.
 
-Generic clients with partial/missing content fall back to their own program's starter content rather than another club's branding. Known legacy variants retain their existing defaults. Sparse sites remain complete with an evergreen introduction and membership invitation. Empty optional sections, exact recognized starter examples and past events are suppressed by the existing pilot rules; their saved data is not deleted. Seasonal/free-text events remain visible. Feature and section switches still control visibility.
+Generic clients with partial/missing content fall back to their own program's starter content rather than another club's branding. Known legacy variants retain their existing defaults. Sparse sites remain complete with an evergreen introduction and membership invitation. Empty optional sections and exact recognized starter examples are suppressed; their saved data is not deleted. Saved events remain visible regardless of their date until the editor hides the Events section or removes the event. Event images, dates, notes and links are preserved. Saved hero titles and body text render as entered, including starter wording. Feature and section switches still control visibility.
 
 ## Functionality
 

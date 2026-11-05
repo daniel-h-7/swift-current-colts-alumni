@@ -1,4 +1,4 @@
-import type { SiteContent, SiteEvent } from "@/lib/site-content";
+import type { SiteContent } from "@/lib/site-content";
 import type { SiteSection, SiteSectionKey } from "@/lib/site-sections-shared";
 
 export function legendsIdentity(name: string) {
@@ -33,34 +33,16 @@ export function safeLegendsLink(value: string) {
   }
 }
 
-// Stored dates are free text. Only hide events with an unambiguous, complete
-// English calendar date or ISO date; keep seasonal/undated announcements.
-export function legendsEventDate(event: SiteEvent) {
-  const value = event.date.trim();
-  if (!/^(?:\d{4}-\d{2}-\d{2}|[A-Za-z]+\s+\d{1,2},?\s+\d{4})$/.test(value))
-    return null;
-  const timestamp = Date.parse(
-    /^\d{4}-/.test(value) ? `${value}T12:00:00Z` : `${value} 12:00:00 GMT`,
-  );
-  return Number.isFinite(timestamp) ? new Date(timestamp) : null;
-}
-
 export function legendsPresentation(
   content: SiteContent,
   features: { feature_key: string; is_enabled: boolean }[],
   sections: SiteSection[],
-  now = new Date(),
 ) {
   const enabled = (key: SiteSectionKey) =>
     sections.find((s) => s.section_key === key)?.is_enabled !== false &&
     (key === "fundraising_campaigns"
       ? features.find((f) => f.feature_key === key)?.is_enabled === true
       : features.find((f) => f.feature_key === key)?.is_enabled !== false);
-  const today = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  );
   const sponsors = content.sponsors.filter(
     (s) =>
       s.name.trim() &&
@@ -102,8 +84,8 @@ export function legendsPresentation(
       !e.imageUrl
     )
       return false;
-    const date = legendsEventDate(e);
-    return !date || date.getTime() >= today;
+    // The editor controls visibility. A saved date is display text, not expiry.
+    return true;
   });
   return {
     memberships: enabled("memberships"),
