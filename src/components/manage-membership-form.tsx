@@ -5,9 +5,9 @@ import { FormEvent, useState } from "react";
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition placeholder:text-gray-500 focus:border-current focus:ring-2 focus:ring-current/20";
 
-export function ManageMembershipForm() {
+export function ManageMembershipForm({ portalPath = "/api/membership/portal", primaryColor = "#171917" }: { portalPath?: string; primaryColor?: string }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
 
@@ -20,7 +20,7 @@ export function ManageMembershipForm() {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch("/api/membership/portal", {
+      const response = await fetch(portalPath, {
         body: JSON.stringify({
           email: String(formData.get("email") ?? "").trim().toLowerCase(),
         }),
@@ -55,7 +55,7 @@ export function ManageMembershipForm() {
 
   return (
     <form
-      className="mt-8 rounded-3xl border border-white/10 bg-zinc-950/85 p-6 shadow-2xl shadow-blue-950/30 backdrop-blur md:p-8"
+      className="mt-8 rounded-3xl border border-white/10 bg-zinc-950/85 p-6 shadow-sm backdrop-blur md:p-8"
       onSubmit={handleSubmit}
     >
       <label className="block text-sm font-bold text-gray-200">
@@ -70,7 +70,8 @@ export function ManageMembershipForm() {
       </label>
 
       <button
-        className="mt-6 w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600 disabled:cursor-wait disabled:opacity-70"
+        className="mt-6 w-full rounded-md bg-black px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
+        style={{ backgroundColor: primaryColor }}
         disabled={status === "submitting"}
         type="submit"
       >
@@ -82,7 +83,7 @@ export function ManageMembershipForm() {
           className={`mt-5 rounded-2xl border p-4 text-sm font-bold ${
             status === "error"
               ? "border-red-500/30 bg-red-950/40 text-red-200"
-              : "border-blue-500/30 bg-blue-950/40 text-blue-200"
+              : "border-[#c5a45b] bg-[#faf7ef] text-[#171917]"
           }`}
         >
           {message}

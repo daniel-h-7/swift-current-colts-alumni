@@ -21,7 +21,7 @@ test('legacy hostnames share the canonical client record', () => {
   assert.equal(slugs.resolveClientSlug('another-club'), 'another-club');
 });
 test('Colts home, join and success requests preserve the canonical tenant and query', async () => {
-  for (const [path, target] of [['/','/site/colts'],['/join','/site/colts/join'],['/membership/success','/site/colts/membership/success'],['/success','/site/colts/membership/success']]) {
+  for (const [path, target] of [['/','/site/colts'],['/join','/site/colts/join'],['/membership/success','/site/colts/membership/success'],['/success','/site/colts/membership/success'],['/membership/manage','/site/colts/membership/manage'],['/api/membership/portal','/site/colts/api/membership/portal']]) {
     const response = await middleware(request(`https://sccoltsfootball.teamalum.com${path}?test=1`));
     const rewrite = new URL(response.headers.get('x-middleware-rewrite'));
     assert.equal(rewrite.pathname,target);

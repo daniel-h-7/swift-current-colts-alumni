@@ -1,7 +1,9 @@
+import { confirmClientMembership } from "@/lib/stripe";
 import { notFound } from "next/navigation";
 import {
   LegendsSite,
   LegendsSuccess,
+  LegendsManage,
 } from "@/components/site/legends/legends-site";
 import { SiteNotLaunched } from "@/components/site-not-launched";
 import { getMembershipSettingsForClient } from "@/lib/membership-settings";
@@ -47,17 +49,19 @@ export async function ClientSitePublic({
       sections={sections}
       showJoin={showJoin}
       preview={preview}
-      manageHref={standalone ? "/membership/manage" : undefined}
+      manageHref={preview ? undefined : standalone ? "/membership/manage" : `/site/${encodeURIComponent(client.id)}/membership/manage`}
     />
   );
 }
 
 export async function ClientSiteSuccess({
   clientId,
+  sessionId,
   standalone = false,
 }: {
   clientId: string;
   standalone?: boolean;
+  sessionId?: string;
 }) {
   const client = await getPlatformClientByStudioSlug(clientId);
   if (!client?.launch_approved_at)
@@ -67,7 +71,16 @@ export async function ClientSiteSuccess({
     <LegendsSuccess
       client={client}
       content={content}
-      manageHref={standalone ? "/membership/manage" : undefined}
+      confirmation={await confirmClientMembership(client.id, sessionId)}
+      manageHref={standalone ? "/membership/manage" : `/site/${encodeURIComponent(client.id)}/membership/manage`}
     />
   );
+}
+
+
+export async function ClientSiteManage({ clientId }: { clientId: string }) {
+  const client = await getPlatformClientByStudioSlug(clientId);
+  if (!client?.launch_approved_at) return <SiteNotLaunched siteName={client?.name} />;
+  const content = await getSiteContentForClient(client.id);
+  return <LegendsManage client={client} content={content} portalPath={`/site/${encodeURIComponent(client.id)}/api/membership/portal`} />;
 }

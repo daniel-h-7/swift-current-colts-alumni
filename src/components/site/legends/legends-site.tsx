@@ -1,3 +1,5 @@
+import { ManageMembershipForm } from "@/components/manage-membership-form";
+import type { MembershipConfirmation } from "@/lib/stripe";
 import { getLegendsCopy } from "@/lib/legends-copy";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
@@ -11,6 +13,7 @@ import { teamHubHref } from "@/lib/studio-navigation";
 import {
   legendsColors,
   safeLegendsLink,
+  safeSponsorHref,
   legendsPresentation,
   legendsIdentity,
 } from "@/lib/legends";
@@ -131,10 +134,12 @@ function Footer({
   client,
   content,
   home,
+  manageHref,
 }: {
   client: Client;
   content: SiteContent;
   home: string;
+  manageHref?: string;
 }) {
   const copy = getLegendsCopy(client.name, content.legends, client.id);
   return (
@@ -143,6 +148,7 @@ function Footer({
         <Mark content={content} />
         <strong>{client.name}</strong>
       </Link>
+      {manageHref && <Link className={styles.textLink} href={manageHref}>Manage membership</Link>}
       <p style={{ whiteSpace: "pre-line" }}>{copy.footerBody}</p>
       <span>
         Powered by <a href="https://www.teamalum.com">TeamAlum ↗</a>
@@ -265,6 +271,7 @@ export function LegendsSite({
           </aside>
           <div className={styles.joinForm}>
             <JoinForm
+              annualMembershipAmountCents={settings.annual_membership_amount_cents}
               checkoutPath={
                 preview
                   ? `${home}/api/membership/checkout`
@@ -281,7 +288,7 @@ export function LegendsSite({
             />
           </div>
         </div>
-        <Footer client={client} content={content} home={home} />
+        <Footer client={client} content={content} home={home} manageHref={manageHref} />
       </main>
     );
 
@@ -300,7 +307,7 @@ export function LegendsSite({
           </div>
           <div className={styles.sponsorLogos}>
             {view.sponsors.map((s) => {
-              const href = safeLegendsLink(s.linkUrl);
+              const href = safeSponsorHref(s.name, s.linkUrl);
               const inner = s.imageUrl ? (
                 <img src={s.imageUrl} alt={s.name} loading="lazy" />
               ) : (
@@ -572,21 +579,24 @@ export function LegendsSite({
         </div>
       )}
       {sections.map((s) => renderSection(s.section_key))}
-      <Footer client={client} content={content} home={home} />
+      <Footer client={client} content={content} home={home} manageHref={manageHref} />
     </main>
   );
 }
 
 export function LegendsSuccess({
   client,
+  confirmation = "unverified",
   content,
   manageHref,
 }: {
   client: Client;
   content: SiteContent;
   manageHref?: string;
+  confirmation?: MembershipConfirmation;
 }) {
   const copy = getLegendsCopy(client.name, content.legends, client.id);
+  const confirmed = confirmation === "confirmed";
   return (
     <main data-legends-page className={styles.site} style={theme(content)}>
       <Header client={client} content={content} home="/" preview={false} />
@@ -595,13 +605,13 @@ export function LegendsSuccess({
           Thank you
         </span>
         <Mark content={content} large />
-        <p className={styles.eyebrow}>Membership complete</p>
+        <p className={styles.eyebrow}>{confirmed ? "Membership complete" : confirmation === "pending" ? "Payment processing" : "Membership status"}</p>
         <h1>
-          {copy.successTitle}
+          {confirmed ? copy.successTitle : "Let’s check"}
           <br />
-          <em>{copy.successAccent}</em>
+          <em>{confirmed ? copy.successAccent : "your membership."}</em>
         </h1>
-        <p>{copy.successBody}</p>
+        <p>{confirmed ? copy.successBody : confirmation === "pending" ? "Stripe has not confirmed payment yet. Your membership will be updated after payment completes. Please don’t pay again while it is processing." : "We couldn’t confirm a completed payment from this link. Check your Stripe receipt, or use membership management below. This page does not mean a payment was made."}</p>
         <Link href="/" className={styles.button}>
           Back home <Arrow />
         </Link>
@@ -610,13 +620,31 @@ export function LegendsSuccess({
             Manage your membership
           </Link>
         )}
-        <div className={styles.share}>
+        {confirmed && <div className={styles.share}>
           <SupportShareBar
             shareText={`Join me in supporting ${client.name} and our alumni community.`}
           />
-        </div>
+        </div>}
       </section>
-      <Footer client={client} content={content} home="/" />
+      <Footer client={client} content={content} home="/" manageHref={manageHref} />
     </main>
   );
+}
+
+
+export function LegendsManage({client, content, portalPath}: {client: Client; content: SiteContent; portalPath: string}) {
+  return <main data-legends-page className={styles.site} style={theme(content)}>
+    <Header client={client} content={content} home="/" preview={false} />
+    <section className={styles.joinLayout}>
+      <aside className={styles.joinAside}>
+        <p className={styles.eyebrow}>Your membership</p>
+        <h1>Stay in<br /><em>control.</em></h1>
+        <Mark content={content} large />
+        <p>Manage your {client.name} membership. We’ll email a secure Stripe link to update your payment method or cancel future renewals.</p>
+        <Link className={styles.textLink} href="/join">Back to supporting the team</Link>
+      </aside>
+      <div className={styles.joinForm}><ManageMembershipForm portalPath={portalPath} primaryColor={legendsColors(content.brand.primaryColor, content.brand.accentColor).brand} /></div>
+    </section>
+    <Footer client={client} content={content} home="/" />
+  </main>;
 }

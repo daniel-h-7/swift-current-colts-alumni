@@ -240,6 +240,7 @@ test("Legends renders every tenant with saved copy and branding and no Unity lea
         preview: true,
       }),
       React.createElement(LegendsSuccess, {
+        confirmation: "confirmed",
         client: input.client,
         content: saved,
         manageHref: "/membership/manage",
@@ -269,6 +270,7 @@ test("existing membership management and sharing entry points remain on standalo
   assert.match(join, /href="\/membership\/manage"/);
   const success = renderToStaticMarkup(
     React.createElement(LegendsSuccess, {
+        confirmation: "confirmed",
       ...props(),
       manageHref: "/membership/manage",
     }),
@@ -292,4 +294,14 @@ test("generic organizations with partial content use their own identity, never a
   assert.equal(normalized.brand.primaryColor, "#123456");
   assert.equal(normalized.sponsors.length, 0);
   assert.match(normalized.brand.heroBody, /Lakeside Lions/);
+});
+
+test('success copy and sharing require an explicitly confirmed payment', () => {
+  const { LegendsSuccess } = component();
+  const unverified = renderToStaticMarkup(React.createElement(LegendsSuccess, { ...props(), manageHref: '/membership/manage' }));
+  assert.doesNotMatch(unverified, /Membership complete|data-share=/);
+  assert.match(unverified, /couldn’t confirm a completed payment/);
+  const pending = renderToStaticMarkup(React.createElement(LegendsSuccess, { ...props(), confirmation: 'pending' }));
+  assert.match(pending, /Payment processing/);
+  assert.doesNotMatch(pending, /Membership complete/);
 });

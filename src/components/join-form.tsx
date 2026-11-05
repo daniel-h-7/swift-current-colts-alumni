@@ -37,6 +37,7 @@ function getGiftAmountCents(formData: FormData) {
 }
 
 export function JoinForm({
+  annualMembershipAmountCents,
   accentColor = "#ffffff",
   checkoutPath = "/api/membership/checkout",
   headline = "Support Colts Football",
@@ -45,6 +46,7 @@ export function JoinForm({
   programName = "the Colts",
   subtext = "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
 }: {
+  annualMembershipAmountCents?: number;
   accentColor?: string;
   checkoutPath?: string;
   headline?: string;
@@ -55,7 +57,11 @@ export function JoinForm({
 }) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [customGift, setCustomGift] = useState("");
   const [giftOption, setGiftOption] = useState<GiftOption>("none");
+
+  const extraCents = giftOption === "100" || giftOption === "200" ? Number(giftOption) * 100 : giftOption === "other" ? Math.max(0, Math.round((Number(customGift) || 0) * 100)) : 0;
+  const money = (cents: number) => new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -260,6 +266,7 @@ export function JoinForm({
             ["other", "Other"],
           ].map(([value, label]) => (
             <button
+              aria-pressed={giftOption === value}
               className="rounded-xl border px-4 py-4 font-black text-gray-200 transition hover:bg-white/10"
               key={value}
               onClick={() =>
@@ -281,6 +288,7 @@ export function JoinForm({
           ))}
         </div>
 
+        <button className="mt-3 text-sm underline underline-offset-4" type="button" aria-pressed={giftOption === "none"} onClick={() => setGiftOption("none")}>No extra gift</button>
         {giftOption === "other" ? (
           <label className={`mt-4 block ${labelClass}`}>
             One-time gift amount
@@ -288,6 +296,9 @@ export function JoinForm({
               className={fieldClass}
               min="1"
               name="additional_gift_amount"
+              required
+              value={customGift}
+              onChange={event => setCustomGift(event.target.value)}
               placeholder="Enter amount"
               step="1"
               type="number"
@@ -296,6 +307,11 @@ export function JoinForm({
         ) : null}
       </div>
 
+      {annualMembershipAmountCents !== undefined && <section aria-label="Membership total" aria-live="polite" className="mt-6 border-t border-current/20 pt-5 text-sm">
+        <p className="font-black">Today: {money(annualMembershipAmountCents + extraCents)} CAD</p>
+        <p className="mt-2">{money(annualMembershipAmountCents)} annual membership{extraCents > 0 ? ` + ${money(extraCents)} one-time gift` : " · No extra gift"}</p>
+        <p className="mt-2">Then {money(annualMembershipAmountCents)} CAD each year until canceled.</p>
+      </section>}
       {message ? (
         <p
           className={`mt-5 rounded-xl border px-4 py-3 text-sm font-bold ${

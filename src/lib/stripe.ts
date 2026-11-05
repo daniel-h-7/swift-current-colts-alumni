@@ -231,9 +231,13 @@ export async function createStripeCheckoutSession({
 
 export async function createStripeCustomerPortalSession({
   customerId,
+  clientId,
+  expectedAccountId,
   returnUrl,
 }: {
   customerId: string;
+  clientId?: string;
+  expectedAccountId?: string | null;
   returnUrl: string;
 }) {
   const secretKey = getStripeSecretKey();
@@ -246,8 +250,10 @@ export async function createStripeCustomerPortalSession({
   body.set("customer", customerId);
   body.set("return_url", returnUrl);
   const connectedAccountId = await getRequiredClientStripeAccountId(
-    getCurrentClientId(),
+    clientId ?? getCurrentClientId(),
   );
+
+  if (expectedAccountId && expectedAccountId !== connectedAccountId) throw new Error("Membership belongs to a different payment account. Contact your team for help.");
 
   const response = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
     body,
@@ -336,4 +342,22 @@ export function constructStripeWebhookEvent({
   }
 
   return JSON.parse(payload) as StripeWebhookEvent;
+}
+
+
+export type MembershipConfirmation = "confirmed" | "pending" | "unverified";
+export async function confirmClientMembership(clientId: string, sessionId?: string): Promise<MembershipConfirmation> {
+  if (!sessionId || !/^cs_(?:test_|live_)?[A-Za-z0-9]+$/.test(sessionId) || getStripeMode() === "mock") return "unverified";
+  try {
+    const connectedAccountId = await getRequiredClientStripeAccountId(clientId);
+    const response = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, {
+      headers: getStripeRequestHeaders({ connectedAccountId, secretKey: getStripeSecretKey()! }),
+      cache: "no-store",
+    });
+    if (!response.ok) return "unverified";
+    const session = await response.json() as { id?: string; livemode?: boolean; mode?: string; status?: string; payment_status?: string; metadata?: Record<string, string> };
+    if (session.id !== sessionId || session.metadata?.client_id !== clientId || session.livemode !== (getStripeMode() === "live") || session.mode !== "subscription") return "unverified";
+    if (session.status === "complete" && ["paid", "no_payment_required"].includes(session.payment_status ?? "")) return "confirmed";
+    return session.status === "expired" ? "unverified" : "pending";
+  } catch { return "unverified"; }
 }

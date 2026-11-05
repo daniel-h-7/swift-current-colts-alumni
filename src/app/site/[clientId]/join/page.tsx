@@ -1,3 +1,4 @@
+import { clientPublicMetadata } from "@/lib/client-public-metadata";
 import { ClientSitePublic } from "@/components/site/client-site-public";
 
 export const dynamic = "force-dynamic";
@@ -15,3 +16,5 @@ export default async function ClientSiteJoinPage({
 
   return <ClientSitePublic clientId={clientId} showJoin />;
 }
+
+export async function generateMetadata({ params }: { params: Promise<{ clientId: string }> }) { return clientPublicMetadata((await params).clientId, "join"); }

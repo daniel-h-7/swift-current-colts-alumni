@@ -144,3 +144,11 @@ export function legendsColors(primary: string, accent: string) {
     ink: luminance(brand) < 0.183 ? brand : "#363b35",
   };
 }
+
+
+export function safeSponsorHref(name: string, value: string) {
+  const href = safeLegendsLink(value);
+  // Known stale template URL retained when this sponsor was renamed in saved content.
+  if (href && /sussex\s+insurance/i.test(name) && /^(www\.)?cranbrookflooring\.com$/i.test(new URL(href, "https://teamalum.com").hostname)) return null;
+  return href;
+}

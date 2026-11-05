@@ -6,6 +6,7 @@ function harness(client) {
   const calls = [];
   const loader = createLoader({
     mocks: {
+      "@/lib/stripe": { confirmClientMembership: async () => "unverified" },
       "next/navigation": {
         notFound() {
           throw Error("NOT_FOUND");

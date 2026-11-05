@@ -100,7 +100,7 @@ test("custom section, support-page and thank-you text renders safely with unchan
     /Stay involved/,
   );
   assert.match(
-    renderToStaticMarkup(React.createElement(LegendsSuccess, props)),
+    renderToStaticMarkup(React.createElement(LegendsSuccess, { ...props, confirmation: "confirmed" })),
     /Thank you, Lions/,
   );
 });
