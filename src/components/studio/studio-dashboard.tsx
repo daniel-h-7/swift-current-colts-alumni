@@ -57,7 +57,7 @@ export async function StudioDashboard({
           ...(isHqEditing ? [{ href: `/hq/clients/${client.id}`, label: "Back to HQ" }] : []),
           { href: `/studio/${client.id}/hub`, label: "Team Hub" },
           { href: `/studio/${client.id}`, label: "Site Setup", tone: "primary" },
-          { href: "/studio/start", label: "Start Site" },
+          { href: `/studio/${encodeURIComponent(client.id)}/content`, label: "Edit Content" },
           { href: isHqEditing ? "/hq/logout" : "/studio/logout", label: "Log Out" },
         ]}
         subtitle="The client-facing workspace for building and managing a TeamAlum site."
