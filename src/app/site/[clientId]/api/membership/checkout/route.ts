@@ -9,7 +9,7 @@ import {
   getStripeMode,
   isStripeConfigured,
 } from "@/lib/stripe";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { prepareMembershipContact, recordMembershipCheckout } from "@/lib/membership-checkout-contact";
 
 export const runtime = "nodejs";
 
@@ -64,24 +64,7 @@ export async function POST(
       );
     }
 
-    const supabase = createServerSupabaseClient();
-    const { data, error } = await supabase
-      .from("contacts")
-      .upsert(
-        {
-          ...contact,
-          annual_dues_amount_cents: settings.annual_membership_amount_cents,
-          client_id: client.id,
-          membership_status: "Pending Payment",
-        },
-        { onConflict: "client_id,email" },
-      )
-      .select("id")
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    const data = await prepareMembershipContact(client.id, contact, settings.annual_membership_amount_cents);
 
     await logContactActivity({
       body: `${settings.membership_year_label} started. Amount: ${settings.annual_membership_amount_cents} cents.`,
@@ -112,14 +95,7 @@ export async function POST(
         successUrl: `${origin}/membership/success?contact_id=${data.id}&session_id={CHECKOUT_SESSION_ID}`,
       });
 
-      await supabase
-        .from("contacts")
-        .update({
-          stripe_account_id: checkoutSession.stripeAccountId ?? null,
-          stripe_checkout_session_id: checkoutSession.id,
-        })
-        .eq("client_id", client.id)
-        .eq("id", data.id);
+      await recordMembershipCheckout(client.id, data.id, checkoutSession);
 
       return NextResponse.json({
         checkoutUrl: checkoutSession.url,
