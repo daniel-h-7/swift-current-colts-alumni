@@ -27,7 +27,9 @@ export function LegendsCopyFields({
         wording, or keep the Legends defaults. Clearing a field restores its
         default after saving. Main and italic headings keep the existing design.
       </p>
-      <div className="mt-5 divide-y divide-[#dedfd7]">
+      <details className="mt-5">
+        <summary className="cursor-pointer text-sm font-bold">Editable sections</summary>
+        <div className="mt-3 divide-y divide-[#dedfd7]">
         {legendsCopyGroups.map((group) => (
           <details key={group.title} className="py-4">
             <summary className="cursor-pointer text-sm font-bold">
@@ -72,7 +74,8 @@ export function LegendsCopyFields({
             </div>
           </details>
         ))}
-      </div>
+        </div>
+      </details>
     </section>
   );
 }

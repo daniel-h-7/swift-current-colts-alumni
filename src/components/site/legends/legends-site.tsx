@@ -1,3 +1,4 @@
+import { SponsorRail } from "./sponsor-rail";
 import { ManageMembershipForm } from "@/components/manage-membership-form";
 import type { MembershipConfirmation } from "@/lib/stripe";
 import { getLegendsCopy } from "@/lib/legends-copy";
@@ -301,8 +302,8 @@ export function LegendsSite({
             </div>
             <p>{copy.sponsorsBody}</p>
           </div>
-          <div className={styles.sponsorLogos}>
-            {view.sponsors.map((s) => {
+          <SponsorRail>
+            {view.sponsors.map((s, index) => {
               const href = safeSponsorHref(s.name, s.linkUrl);
               const inner = s.imageUrl ? (
                 <img src={s.imageUrl} alt={s.name} loading="lazy" />
@@ -310,14 +311,14 @@ export function LegendsSite({
                 <span>{s.name}</span>
               );
               return href ? (
-                <a href={href} key={s.name}>
+                <a href={href} key={`${s.name}-${index}`}>
                   {inner}
                 </a>
               ) : (
-                <div key={s.name}>{inner}</div>
+                <div key={`${s.name}-${index}`}>{inner}</div>
               );
             })}
-          </div>
+          </SponsorRail>
         </section>
       );
     if (key === "spotlights" && view.spotlights.length)

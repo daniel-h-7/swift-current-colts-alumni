@@ -1,3 +1,4 @@
+import { HomepageListFields } from "@/components/studio/homepage-list-fields";
 import { getMembershipSettingsForClient } from "@/lib/membership-settings";
 import { LegendsCopyFields } from "@/components/legends-copy-fields";
 import { studioLoginPath } from "@/lib/studio-navigation";
@@ -84,29 +85,6 @@ export default async function StudioContentSetupPage({
   const previewHref = `/preview/${encodeURIComponent(client.id)}`;
   const action = `/studio/${encodeURIComponent(client.id)}/content/save`;
   const brand = siteContent.brand;
-  const sponsors = [
-    row(siteContent.sponsors, 0, { imageUrl: "", linkUrl: "", name: "" }),
-    row(siteContent.sponsors, 1, { imageUrl: "", linkUrl: "", name: "" }),
-    row(siteContent.sponsors, 2, { imageUrl: "", linkUrl: "", name: "" }),
-  ];
-  const events = [
-    row(siteContent.events, 0, {
-      date: "",
-      imageUrl: "",
-      linkLabel: "Details",
-      linkUrl: "",
-      notes: "",
-      title: "",
-    }),
-    row(siteContent.events, 1, {
-      date: "",
-      imageUrl: "",
-      linkLabel: "Details",
-      linkUrl: "",
-      notes: "",
-      title: "",
-    }),
-  ];
   const campaign = row(siteContent.fundraisingCampaigns, 0, {
     buttonLabel: "Support the Program",
     buttonUrl: "/join",
@@ -248,8 +226,12 @@ export default async function StudioContentSetupPage({
 
           <LegendsCopyFields name={client.name} clientId={client.id} value={siteContent.legends} />
           <section className="bg-white p-6">
-            <h2 className="text-xl font-black">Support form wording</h2>
+            <h2 className="text-xl font-black">Supporter fee &amp; form wording</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">Personalize the heading and explanation above the supporter signup fields.</p>
+            <label className="mt-5 block text-sm font-bold">Annual supporter fee (CAD)
+              <input className={fieldClass} name="annual_membership_amount" type="number" min="0" step="0.01" required defaultValue={(membership.annual_membership_amount_cents / 100).toFixed(2)} />
+            </label>
+            <p className="mt-2 text-sm text-slate-500">Applies to new signups after saving. Existing Stripe subscriptions keep their current renewal price. This is a live price setting; use Stripe test mode for test payments.</p>
             <label className="mt-5 block text-sm font-bold">Form heading<input className={fieldClass} name="membership_join_headline" defaultValue={membership.join_headline} required maxLength={200} /></label>
             <label className="mt-5 block text-sm font-bold">Form introduction<textarea className={areaClass} name="membership_join_body" defaultValue={membership.join_body} required maxLength={2000} /></label>
           </section>
@@ -274,105 +256,7 @@ export default async function StudioContentSetupPage({
               </Link>
             </div>
 
-            <div className="mt-6 space-y-8">
-              <div>
-                <h3 className="font-black">Sponsors</h3>
-                <div className="mt-4 grid gap-4">
-                  {sponsors.map((sponsor, index) => (
-                    <div className="grid gap-3 md:grid-cols-4" key={index}>
-                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
-                        Name
-                        <input
-                          className={fieldClass}
-                          defaultValue={sponsor.name}
-                          name={`sponsor_${index + 1}_name`}
-                          placeholder={`Sponsor ${index + 1} name`}
-                        />
-                      </label>
-                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
-                        Website
-                        <input
-                          className={fieldClass}
-                          defaultValue={sponsor.linkUrl}
-                          name={`sponsor_${index + 1}_link_url`}
-                          placeholder="Website URL"
-                        />
-                      </label>
-                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
-                        Logo URL
-                        <input
-                          className={fieldClass}
-                          defaultValue={sponsor.imageUrl}
-                          name={`sponsor_${index + 1}_image_url`}
-                          placeholder="Logo URL"
-                        />
-                      </label>
-                      <label className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
-                        Logo Upload
-                        <input
-                          accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                          className={fieldClass}
-                          name={`sponsor_${index + 1}_image_file`}
-                          type="file"
-                        />
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-black">Events</h3>
-                <div className="mt-4 grid gap-4">
-                  {events.map((event, index) => (
-                    <div className="grid gap-3 md:grid-cols-[1fr_180px] md:items-start" key={index}>
-                      <div>
-                        <input
-                          className={fieldClass}
-                          defaultValue={event.title}
-                          name={`event_${index + 1}_title`}
-                          placeholder={`Event ${index + 1} title`}
-                        />
-                        <textarea
-                          className={areaClass}
-                          defaultValue={event.notes}
-                          name={`event_${index + 1}_notes`}
-                          placeholder="Short event description"
-                        />
-                        <ImageUploadField
-                          help="Upload a thumbnail for this event, crop it for the event rail, or paste an image URL."
-                          label={`Event ${index + 1} Image`}
-                          name={`event_${index + 1}_image_file`}
-                          previewMode="event"
-                          urlName={`event_${index + 1}_image_url`}
-                          urlValue={event.imageUrl}
-                        />
-                      </div>
-                      <div>
-                        <input
-                          className={fieldClass}
-                          defaultValue={event.date}
-                          name={`event_${index + 1}_date`}
-                          placeholder="Date"
-                        />
-                        <input
-                          className={fieldClass}
-                          defaultValue={event.linkUrl}
-                          name={`event_${index + 1}_link_url`}
-                          placeholder="Registration URL"
-                        />
-                        <input
-                          className={fieldClass}
-                          defaultValue={event.linkLabel}
-                          name={`event_${index + 1}_link_label`}
-                          placeholder="Details"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <HomepageListFields initialSponsors={siteContent.sponsors} initialEvents={siteContent.events} />
           </section>
 
           <section

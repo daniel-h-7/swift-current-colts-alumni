@@ -435,13 +435,28 @@
 }
 .sponsorLogos {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;
+  justify-content: safe center;
   align-items: center;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
   gap: 35px 55px;
   padding: 30px 0;
 }
+.sponsorControls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sponsorControls button {
+  cursor: pointer;
+  padding: 10px 4px;
+}
 .sponsorLogos > * {
+  flex: 0 0 150px;
+  scroll-snap-align: start;
   display: flex;
   align-items: center;
   justify-content: center;

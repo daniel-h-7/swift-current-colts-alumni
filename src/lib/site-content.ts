@@ -697,6 +697,7 @@ export async function saveSiteContentForClient(
     joinBody: string;
     joinHeadline: string;
     membershipYearLabel: string;
+    annualMembershipAmountCents?: number;
   },
 ) {
   const supabase = createServerSupabaseClient();
@@ -705,6 +706,9 @@ export async function saveSiteContentForClient(
     {
       client_id: clientId,
       id: "default",
+      ...(membership.annualMembershipAmountCents !== undefined
+        ? { annual_membership_amount_cents: membership.annualMembershipAmountCents }
+        : {}),
       join_body: membership.joinBody,
       join_headline: membership.joinHeadline,
       membership_year_label: membership.membershipYearLabel,
