@@ -12,3 +12,13 @@ Both standalone and tenant checkout routes now use the same contact preparation 
 Validation: 105 tests, lint and the platform webpack production build passed. Tests exercise both public routes, tenant/email scoping, active-member preservation, missing-column failure before Stripe and failure to persist a created session. No payment, refund, cancellation or paid-status correction was performed by these tests.
 
 The reported existing Rams contact had the new fee but remained Pending Payment and had no recorded gift. Stripe payment/event inspection and CRM reconciliation remain separate follow-up work; do not mark the charge reconciled or request another payment based only on the schema repair.
+
+## Live recovery confirmed
+
+Stripe inspection confirmed the reported CAD 6.00 payment succeeded directly on the Rams connected account: CAD 5.00 membership plus CAD 1.00 gift. The matching checkout metadata identifies the existing Rams contact. The actual webhook delivery blocker was HTTP 308 from the non-www endpoint, not payment routing. Updated the existing TeamAlum connected-account destination to `https://www.teamalum.com/api/stripe/webhook`, preserving its signing secret, API version, account source and five subscribed event types. Replayed the original checkout completion once; Stripe returned HTTP 200.
+
+The live CRM record was then verified as Active Member, annual dues 500 cents, gift 100 cents, paid through 2027-11-06, with the correct Rams account and Stripe customer. No new payment, refund, subscription cancellation or fund transfer was performed. The source's earlier schema failure also required its existing additive migration, now applied.
+
+The checkout completion handler now checks team-, contact-, account- and session-scoped completed activity before processing a later replay. This prevents scheduled retries of an already recorded checkout from adding its gift or running signup automation again. This uses existing activity records and adds no schema. The change protects already recorded completions; it is not an atomic ledger for simultaneous first deliveries. A read error stops processing instead of assuming the session is new. Tests cover successful completion followed by replay and history lookup failure. All 107 tests, lint and the production webpack build passed.
+
+Deploy this code together with the checkout safeguards before the scheduled automatic replay. Stripe's manual resend does not cancel its automatic retry schedule: https://docs.stripe.com/webhooks#manual-retries . The destination URL repair and the recovered membership are already live; the replay guard requires application deployment.

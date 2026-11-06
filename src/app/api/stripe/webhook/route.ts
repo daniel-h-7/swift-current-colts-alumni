@@ -107,6 +107,24 @@ async function activateMembership(
     throw new Error("Stripe session is missing contact metadata.");
   }
 
+  const supabase = createServerSupabaseClient();
+  // Manual replay does not cancel Stripe's scheduled retries. Recognize the
+  // completed checkout across later signup attempts, scoped to team and account.
+  const { data: completed, error: completionError } = await supabase
+    .from("contact_activities")
+    .select("id")
+    .eq("client_id", clientId)
+    .eq("contact_id", contactId)
+    .eq("activity_type", "membership_payment_completed")
+    .contains("metadata", {
+      stripe_checkout_session_id: session.id,
+      stripe_account_id: stripeAccountId ?? null,
+    })
+    .limit(1)
+    .maybeSingle();
+  if (completionError) throw new Error(completionError.message);
+  if (completed) return;
+
   const now = new Date().toISOString();
   const paidThrough = getPaidThroughDate();
   const membershipAmountCents = Number(
@@ -116,13 +134,14 @@ async function activateMembership(
     session.metadata?.additional_gift_amount_cents ?? 0,
   );
   const totalAmountCents = session.amount_total ?? membershipAmountCents;
-  const supabase = createServerSupabaseClient();
-  const { data: contact } = await supabase
+  const { data: contact, error: contactError } = await supabase
     .from("contacts")
     .select("gift_donation_amount_cents")
     .eq("client_id", clientId)
     .eq("id", contactId)
     .maybeSingle();
+  if (contactError) throw new Error(contactError.message);
+  if (!contact) throw new Error("Stripe checkout contact was not found in this team.");
   const contactUpdates = {
     annual_dues_amount_cents: membershipAmountCents,
     gift_donation_amount_cents:
