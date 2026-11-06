@@ -1,3 +1,4 @@
+import { getDefaultEmailSettings, resolveEmailSettings } from "@/lib/email-settings";
 import { getClientLaunchReadiness } from "@/lib/launch-review";
 import { AuthNavigationLink as Link } from "@/components/auth-navigation-link";
 import { notFound, redirect } from "next/navigation";
@@ -156,6 +157,7 @@ export default async function HqClientPage({
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const { client, settings, contactCount, campaignCount, features, integrations, users, usersError } =
     await getClientDetail(id);
+  const emailSettings = resolveEmailSettings(getDefaultEmailSettings(client.name), settings ?? {});
   const readiness = await getClientLaunchReadiness(id);
   const membershipAmount = ((settings?.annual_membership_amount_cents ?? 10000) / 100).toFixed(2);
   const stripeStatus = getIntegrationStatus(integrations, "stripe_connect");
@@ -547,6 +549,7 @@ export default async function HqClientPage({
 
             <section className="border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black">Email Settings</h2>
+              <p className="mt-2 text-sm text-slate-500">TeamAlum supplies the default sender for each team. A custom From address needs a verified sending domain; use Reply-To for the team’s contact address.</p>
               <div className="mt-5 space-y-5">
                 <label className="block text-sm font-bold text-slate-700">
                   From Name
@@ -554,7 +557,7 @@ export default async function HqClientPage({
                     className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_from_name"
                     required
-                    defaultValue={settings?.email_from_name ?? "TeamAlum"}
+                    defaultValue={emailSettings.email_from_name}
                   />
                 </label>
                 <label className="block text-sm font-bold text-slate-700">
@@ -564,7 +567,7 @@ export default async function HqClientPage({
                     name="email_from_address"
                     required
                     type="email"
-                    defaultValue={settings?.email_from_address ?? "onboarding@resend.dev"}
+                    defaultValue={emailSettings.email_from_address}
                   />
                 </label>
                 <label className="block text-sm font-bold text-slate-700">
@@ -573,7 +576,7 @@ export default async function HqClientPage({
                     className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_reply_to"
                     type="email"
-                    defaultValue={settings?.email_reply_to ?? ""}
+                    defaultValue={emailSettings.email_reply_to}
                   />
                 </label>
                 <label className="block text-sm font-bold text-slate-700">
@@ -582,7 +585,7 @@ export default async function HqClientPage({
                     className="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#a18442] focus:ring-2 focus:ring-[#a18442]/25"
                     name="email_sending_domain"
                     placeholder="mg.example.com"
-                    defaultValue={settings?.email_sending_domain ?? ""}
+                    defaultValue={emailSettings.email_sending_domain}
                   />
                 </label>
               </div>
