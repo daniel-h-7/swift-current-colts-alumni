@@ -1,3 +1,4 @@
+import { isPlatformApp } from "./lib/app-mode";
 import { teamAdminHeader, teamAdminPathHeader, teamAdminRoute } from "./lib/team-admin-routing";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveClientSlug } from "./lib/client-slugs";
@@ -77,6 +78,24 @@ export async function proxy(request: NextRequest) {
       if (!["GET", "HEAD"].includes(request.method)) return NextResponse.json({ error: `Open Studio at ${canonical} and sign in before submitting this form.` }, { status: 409 });
       return NextResponse.redirect(target, 307);
     }
+  }
+
+  // HQ never executes standalone shared-password admin routes. Recover old
+  // bookmarks through an authenticated resolver without guessing a tenant.
+  if (isPlatformApp() && /^\/admin(?:\/|$)/.test(request.nextUrl.pathname)) {
+    if (!["GET", "HEAD"].includes(request.method)) {
+      return NextResponse.json({ error: "This old admin form is no longer used by TeamAlum HQ. Reopen the campaign from your Team Hub; no changes were saved." }, { status: 409 });
+    }
+    const destination = new URL(request.nextUrl.pathname === "/admin/logout" ? "/studio/logout" : "/studio/admin/recover", studioOrigin(request.url));
+    if (request.nextUrl.pathname !== "/admin/logout") {
+      destination.searchParams.set("path", request.nextUrl.pathname + request.nextUrl.search);
+      try {
+        const referrer = new URL(request.headers.get("referer") || "");
+        const scope = referrer.origin === request.nextUrl.origin ? teamAdminRoute(referrer.pathname) : null;
+        if (scope) destination.searchParams.set("team", scope.clientId);
+      } catch { /* Missing referrer: choose an authorized organization in Studio. */ }
+    }
+    return NextResponse.redirect(destination, 307);
   }
 
   // Never trust a tenant header supplied by the browser, including on legacy routes.
