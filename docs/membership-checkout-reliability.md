@@ -22,3 +22,11 @@ The live CRM record was then verified as Active Member, annual dues 500 cents, g
 The checkout completion handler now checks team-, contact-, account- and session-scoped completed activity before processing a later replay. This prevents scheduled retries of an already recorded checkout from adding its gift or running signup automation again. This uses existing activity records and adds no schema. The change protects already recorded completions; it is not an atomic ledger for simultaneous first deliveries. A read error stops processing instead of assuming the session is new. Tests cover successful completion followed by replay and history lookup failure. All 107 tests, lint and the production webpack build passed.
 
 Deploy this code together with the checkout safeguards before the scheduled automatic replay. Stripe's manual resend does not cancel its automatic retry schedule: https://docs.stripe.com/webhooks#manual-retries . The destination URL repair and the recovered membership are already live; the replay guard requires application deployment.
+
+## Transactional sender correction
+
+Rams had a saved `crm_settings.email_from_address` of `onboarding@resend.dev`, overriding the configured production `RESEND_FROM_EMAIL`. Corrected that team's saved address to `accounts@teamalum.com` and sending domain to `teamalum.com`, preserving its sender name and reply-to. Membership management and signup automation share `getEmailSettingsForClient`, so this live settings correction applies to both without deployment.
+
+The settings resolver now uses the configured sender when a saved address is blank/null or is a stale `@resend.dev` test address. Custom team sender domains remain unchanged; this does not infer that any domain is verified or invent a production sender when none is configured. This resolver safeguard requires deployment. All 110 tests, lint and the production webpack build passed.
+
+The user explicitly authorized one management-link test to their specified membership email. The live public form returned success after submission with the corrected sender. This confirms acceptance of the request, not inbox placement. No failed welcome email was resent and no subscription was changed.

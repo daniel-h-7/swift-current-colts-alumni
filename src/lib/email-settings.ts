@@ -26,6 +26,22 @@ export function getDefaultEmailSettings(clientName?: string): EmailSettings {
   };
 }
 
+export function resolveEmailSettings(defaults: EmailSettings, saved: Partial<EmailSettings>): EmailSettings {
+  const savedAddress = saved.email_from_address?.trim() || "";
+  const defaultAddress = defaults.email_from_address.trim();
+  const staleTestSender = /@resend\.dev$/i.test(savedAddress) &&
+    defaultAddress && !/@resend\.dev$/i.test(defaultAddress);
+
+  return {
+    ...defaults,
+    ...saved,
+    email_from_address: !savedAddress || staleTestSender ? defaultAddress : savedAddress,
+    email_from_name: saved.email_from_name ?? defaults.email_from_name,
+    email_reply_to: saved.email_reply_to ?? defaults.email_reply_to,
+    email_sending_domain: saved.email_sending_domain ?? defaults.email_sending_domain,
+  };
+}
+
 export function formatFromEmail(settings: EmailSettings) {
   const name = settings.email_from_name.trim();
   const address = settings.email_from_address.trim();
@@ -56,10 +72,7 @@ export async function getEmailSettingsForClient(clientId: string) {
       return defaultEmailSettings;
     }
 
-    return {
-      ...defaultEmailSettings,
-      ...data,
-    } as EmailSettings;
+    return resolveEmailSettings(defaultEmailSettings, data);
   } catch {
     return defaultEmailSettings;
   }
