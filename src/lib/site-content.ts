@@ -391,6 +391,7 @@ const bfBadgersDefaultSiteContent: SiteContent = {
 
 export function getDefaultSiteContent(siteVariant?: string): SiteContent {
   const brand = getSiteBrand(siteVariant);
+  if (brand.variant === "generic") return createStarterSiteContent("Your Team");
   const template = brand.variant === "demo"
     ? demoDefaultSiteContent
     : brand.variant === "rmrfootball"

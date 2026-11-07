@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 const defaultShareText =
-  "I invite you to join me in supporting Swift Current Colts Football. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
+  "I invite you to join me in supporting our team. As an alumni or booster, our gift can make a lasting impact on our young student-athletes!";
 
 const iconButtonClass =
   "flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white transition hover:-translate-y-0.5 hover:border-red-500 hover:bg-red-950/40 focus:outline-none focus:ring-2 focus:ring-red-500/50";

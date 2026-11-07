@@ -17,9 +17,9 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const amount = String(formData.get("annual_membership_amount") ?? "").trim();
-    const parsedAmount = amount ? Number.parseFloat(amount) : 0;
+    const parsedAmount = Number(amount);
 
-    if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+    if (!/^\d+(?:\.\d{1,2})?$/.test(amount) || !Number.isSafeInteger(Math.round(parsedAmount * 100))) {
       return redirectTo(
         request,
         "/admin/settings/?error=Enter%20a%20valid%20membership%20amount.",
@@ -31,14 +31,6 @@ export async function POST(request: Request) {
       annual_membership_amount_cents: Math.round(parsedAmount * 100),
       client_id: (await getWorkspaceClientId()),
       id: "default",
-      join_body: String(formData.get("join_body") ?? "").trim(),
-      join_headline: String(formData.get("join_headline") ?? "").trim(),
-      join_is_open: formData.get("join_is_open") === "on",
-      membership_year_label: String(
-        formData.get("membership_year_label") ?? "",
-      ).trim(),
-      renewal_deadline:
-        String(formData.get("renewal_deadline") ?? "").trim() || null,
       updated_at: new Date().toISOString(),
     }, {
       onConflict: "client_id,id",
@@ -51,6 +43,10 @@ export async function POST(request: Request) {
       );
     }
 
+    const clientId = await getWorkspaceClientId();
+    revalidatePath(`/site/${clientId}/join`);
+    revalidatePath(`/studio/${clientId}/content`);
+    revalidatePath(`/studio/${clientId}`);
     revalidatePath(await adminPath("/join"));
     revalidatePath(await adminPath("/admin/settings"));
 

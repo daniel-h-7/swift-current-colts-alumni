@@ -40,10 +40,10 @@ export function JoinForm({
   annualMembershipAmountCents,
   accentColor = "#ffffff",
   checkoutPath = "/api/membership/checkout",
-  headline = "Support Colts Football",
+  headline = "Support Your Team",
   isOpen = true,
   primaryColor = "#dc2626",
-  programName = "the Colts",
+  programName = "Your Team",
   subtext = "Your gift today helps ensure our student-athletes have the necessary tools to succeed on and off the football field.",
 }: {
   annualMembershipAmountCents?: number;

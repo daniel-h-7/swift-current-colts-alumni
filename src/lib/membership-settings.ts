@@ -1,7 +1,6 @@
 import "server-only";
 
 import { getWorkspaceClientId } from "@/lib/team-admin";
-import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type MembershipSettings = {
@@ -16,21 +15,14 @@ export type MembershipSettings = {
 };
 
 export function getDefaultMembershipSettings(): MembershipSettings {
-  const brand = getSiteBrand();
-
   return {
     id: "default",
     annual_membership_amount_cents: 10000,
-    membership_year_label:
-      brand.variant === "rmrfootball"
-        ? "Rocky Mountain Rams Football Alumni & Boosters"
-        : brand.variant === "bfbadgers"
-          ? "Bonners Ferry Badgers Football Alumni & Boosters"
-          : `2026 ${brand.programName} Alumni & Booster Club`,
+    membership_year_label: "Your Team Alumni & Boosters",
     renewal_deadline: null,
     join_is_open: true,
     join_headline: "Help build the legacy.",
-    join_body: brand.joinSubtext,
+    join_body: "Your support helps create opportunities for our student-athletes on and off the field.",
   };
 }
 

@@ -7,7 +7,7 @@ import { useState, useTransition } from "react";
 import { EmailSettings } from "@/lib/email-settings";
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30";
+  "mt-2 w-full rounded-xl border border-[#dedfd7] bg-white px-4 py-3 text-[#171917] outline-none transition focus:border-[#785d25] focus:ring-2 focus:ring-[#c5a45b]/25";
 
 type EmailSettingsFormProps = {
   defaultSettings: EmailSettings;
@@ -63,34 +63,34 @@ export function EmailSettingsForm({
   return (
     <AdminForm
       action="/admin/settings/email"
-      className="mt-6 space-y-5"
+      className="space-y-5"
       method="post"
       onSubmit={handleSubmit}
     >
       {status === "saved" ? (
-        <div className="rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 text-sm font-bold text-blue-200">
+        <div className="border-l-2 border-[#c5a45b] pl-4 text-sm font-bold text-[#785d25]">
           {message}
         </div>
       ) : null}
 
       {status === "error" ? (
-        <div className="rounded-2xl border border-red-500/30 bg-red-950/40 p-4 text-sm font-bold text-red-200">
+        <div className="text-sm font-bold text-red-800">
           {message}
         </div>
       ) : null}
 
-      <label className="block text-sm font-bold text-gray-200">
+      <label className="block text-sm font-bold text-[#171917]">
         Sender name
         <input
           className={fieldClass}
           defaultValue={defaultSettings.email_from_name}
           name="email_from_name"
-          placeholder="Colts Alumni"
+          placeholder="Your Team"
           required
         />
       </label>
 
-      <label className="block text-sm font-bold text-gray-200">
+      <label className="block text-sm font-bold text-[#171917]">
         From email
         <input
           className={fieldClass}
@@ -102,18 +102,18 @@ export function EmailSettingsForm({
         />
       </label>
 
-      <label className="block text-sm font-bold text-gray-200">
+      <label className="block text-sm font-bold text-[#171917]">
         Reply-to email
         <input
           className={fieldClass}
           defaultValue={defaultSettings.email_reply_to}
           name="email_reply_to"
-          placeholder="alumni@coltsfootball.ca"
+          placeholder="alumni@yourteam.com"
           type="email"
         />
       </label>
 
-      <label className="block text-sm font-bold text-gray-200">
+      <label className="block text-sm font-bold text-[#171917]">
         Sending domain
         <input
           className={fieldClass}
@@ -123,14 +123,14 @@ export function EmailSettingsForm({
         />
       </label>
 
-      <div className="rounded-2xl border border-red-500/25 bg-red-950/25 p-4 text-sm leading-6 text-red-100">
+      <div className="border-l-2 border-[#c5a45b] pl-4 text-sm leading-6 text-[#62675e]">
         The from email must belong to a domain verified with your email
-        provider. If Wix blocks DNS access, use a separate sending domain with
-        DNS you control.
+        provider. Use the TeamAlum sender supplied by HQ unless your team has
+        configured its own verified sending domain.
       </div>
 
       <button
-        className="w-full rounded-md bg-blue-700 px-8 py-4 font-black uppercase tracking-[3px] text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-full bg-[#171917] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#785d25] disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isPending}
         type="submit"
       >

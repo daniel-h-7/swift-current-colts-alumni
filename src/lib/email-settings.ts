@@ -2,7 +2,6 @@ import "server-only";
 
 import { getWorkspaceClientId } from "@/lib/team-admin";
 import { getPlatformClient } from "@/lib/platform-data";
-import { getSiteBrand } from "@/lib/site-brand";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type EmailSettings = {
@@ -15,12 +14,10 @@ export type EmailSettings = {
 };
 
 export function getDefaultEmailSettings(clientName?: string): EmailSettings {
-  const brand = getSiteBrand();
-
   return {
     id: "default",
     email_from_address: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
-    email_from_name: clientName || `${brand.programName} Alumni`,
+    email_from_name: clientName || "Your Team",
     email_reply_to: process.env.RESEND_REPLY_TO_EMAIL ?? "",
     email_sending_domain: "",
   };

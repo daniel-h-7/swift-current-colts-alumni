@@ -214,7 +214,7 @@ export async function GET(request: Request) {
 
   return new Response(csv, {
     headers: {
-      "Content-Disposition": 'attachment; filename="colts-contacts.csv"',
+      "Content-Disposition": 'attachment; filename="team-contacts.csv"',
       "Content-Type": "text/csv; charset=utf-8",
     },
   });

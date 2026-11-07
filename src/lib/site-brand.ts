@@ -28,7 +28,7 @@ export type SiteBrand = {
   successHeading: string;
   successProgramLine: string;
   themeClass: string;
-  variant: "colts" | "demo" | "rmrfootball" | "bfbadgers";
+  variant: "colts" | "demo" | "rmrfootball" | "bfbadgers" | "generic";
 };
 
 const coltsBrand: SiteBrand = {
@@ -187,6 +187,37 @@ const bfBadgersBrand: SiteBrand = {
   variant: "bfbadgers",
 };
 
+const genericBrand: SiteBrand = {
+  alumniSectionCopy: "Celebrate the people who helped build your team’s story.",
+  alumniEyebrow: "Alumni Spotlight",
+  crmName: "Your Team CRM",
+  ctaLabel: "Support the Team",
+  footerLocation: "Your Community",
+  heroBody: "Connecting alumni, families, and supporters behind the next generation of student-athletes.",
+  heroImage: "/images/stadium.jpg",
+  heroKicker: "Your Team Alumni & Boosters",
+  heroLineOne: "THE LEGACY",
+  heroLineTwo: "LIVES ON.",
+  initials: "YT",
+  isDemo: false,
+  joinProgramName: "Your Team",
+  joinHeadline: "Support Your Team",
+  joinSubtext: "Your support helps create opportunities for our student-athletes on and off the field.",
+  logoEyebrow: "Your Team",
+  logoTitle: "Alumni & Boosters",
+  metaDescription: "Connect with your team’s alumni, families, and supporters.",
+  metaTitle: "Your Team Alumni & Boosters",
+  programName: "Your Team",
+  shareDescription: "Join me in supporting our team and the next generation of student-athletes.",
+  sponsorCopy: "Thank you to the sponsors and community partners supporting our team.",
+  sponsorEyebrow: "Community Powered",
+  sponsorTitle: "Our Partners",
+  successHeading: "Thank you for supporting Your Team!",
+  successProgramLine: "Stay connected for updates and events from your team.",
+  themeClass: "team-public",
+  variant: "generic",
+};
+
 export function getSiteBrand(siteVariant = process.env.NEXT_PUBLIC_SITE_VARIANT) {
   const variant = siteVariant?.trim().toLowerCase();
 
@@ -202,5 +233,5 @@ export function getSiteBrand(siteVariant = process.env.NEXT_PUBLIC_SITE_VARIANT)
     return bfBadgersBrand;
   }
 
-  return coltsBrand;
+  return variant === "colts" ? coltsBrand : genericBrand;
 }
