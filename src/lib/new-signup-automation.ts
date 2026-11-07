@@ -252,6 +252,7 @@ export async function runNewSignupAutomation({
 
       try {
         const result = await sendCampaignTestEmail({
+          campaignTracking: { clientId: resolveClientId(clientId), blastId },
           from: formatFromEmail(emailSettings),
           html: blast.html_content,
           preheader: blast.preheader,

@@ -15,6 +15,7 @@ function isBypassedPath(pathname: string) {
     pathname.startsWith("/hq") ||
     pathname.startsWith("/studio") ||
     pathname.startsWith("/api/stripe/webhook") ||
+    pathname === "/api/resend/webhook" ||
     pathname.startsWith("/demo") ||
     pathname.startsWith("/images") ||
     pathname === "/favicon.ico" ||

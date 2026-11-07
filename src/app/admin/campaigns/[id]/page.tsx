@@ -240,7 +240,7 @@ export default async function CampaignDetailPage({
   }
 
   const blasts = sortBlasts(unsortedBlasts, filters);
-  const sentBlasts = blasts.filter((blast) => blast.status === "Sent");
+  const sentBlasts = blasts.filter((blast) => Boolean(blast.sent_at));
   const recipients = blasts.reduce((total, blast) => total + blast.recipient_count, 0);
   const opens = blasts.reduce((total, blast) => total + blast.open_count, 0);
   const clicks = blasts.reduce((total, blast) => total + blast.click_count, 0);

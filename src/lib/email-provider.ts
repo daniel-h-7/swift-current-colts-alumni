@@ -4,6 +4,7 @@ import net from "node:net";
 import tls from "node:tls";
 
 type SendEmailInput = {
+  campaignTracking?: { clientId: string; blastId: string };
   from: string;
   html: string;
   preheader?: string | null;
@@ -317,6 +318,10 @@ async function sendResendEmail(input: SendEmailInput): Promise<SendEmailResult> 
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({
       from: input.from,
+      tags: input.campaignTracking ? [
+        { name: "teamalum_client_id", value: input.campaignTracking.clientId },
+        { name: "teamalum_blast_id", value: input.campaignTracking.blastId },
+      ] : undefined,
       html: buildEmailHtml(input),
       headers: input.unsubscribeUrl
         ? {

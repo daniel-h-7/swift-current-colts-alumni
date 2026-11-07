@@ -254,6 +254,7 @@ async function sendBlast(formData: FormData) {
 
   for (const contact of contacts) {
     const result = await sendCampaignTestEmail({
+      campaignTracking: { clientId, blastId },
       from: sender,
       html: blast.html_content,
       preheader: blast.preheader,
